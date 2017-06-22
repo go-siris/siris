@@ -15,7 +15,7 @@ const (
 
 // Config the configs for the Editor plugin
 type Config struct {
-	// Hostname if empty used the iris server's hostname
+	// Hostname if empty used the siris server's hostname
 	Hostname string
 	// Port if 0 4444
 	Port int

@@ -82,7 +82,7 @@ func main() {
 	app.Run(siris.Addr(":8080"))
 
 	// Note: In this example we just saw one use case,
-	// you may want to .WrapRouter or .Downgrade in order to bypass the iris' default router, i.e:
+	// you may want to .WrapRouter or .Downgrade in order to bypass the siris' default router, i.e:
 	// you can use that method to setup custom proxies too.
 	//
 	// If you just want to serve static files on other path than root

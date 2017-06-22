@@ -58,7 +58,7 @@ func main() {
 	})
 
 	// GET: http://localhost:8080/users/42
-	// **/users/42 and /users/help works after Iris version 7.0.5**
+	// **/users/42 and /users/help works after Siris version 7.0.5**
 	usersRoutes.Get("/{id:int}", func(ctx context.Context) {
 		id, _ := ctx.Params().GetInt("id")
 		ctx.Writef("get user by id: %d", id)

@@ -142,7 +142,7 @@ func (r RequestParams) Len() int {
 // Context is the midle-man server's "object" for the clients.
 //
 // A New context is being acquired from a sync.Pool on each connection.
-// The Context is the most important thing on the Iris' http flow.
+// The Context is the most important thing on the Siris' http flow.
 //
 // Developers send responses to the client's request through a Context.
 // Developers get request information from the client's request a Context.
@@ -155,7 +155,7 @@ type Context interface {
 	// BeginRequest is executing once for each request
 	// it should prepare the (new or acquired from pool) context's fields for the new request.
 	//
-	// To follow the Iris' flow, developer should:
+	// To follow the Siris' flow, developer should:
 	// 1. reset handlers to nil
 	// 2. reset values to empty
 	// 3. reset sessions to nil
@@ -165,7 +165,7 @@ type Context interface {
 	BeginRequest(http.ResponseWriter, *http.Request)
 	// EndRequest is executing once after a response to the request was sent and this context is useless or released.
 	//
-	// To follow the Iris' flow, developer should:
+	// To follow the Siris' flow, developer should:
 	// 1. flush the response writer's result
 	// 2. release the response writer
 	// and any other optional steps, depends on dev's application type.
@@ -344,7 +344,7 @@ type Context interface {
 
 	// NotFound emits an error 404 to the client, using the specific custom error error handler.
 	// Note that you may need to call ctx.StopExecution() if you don't want the next handlers
-	// to be executed. Next handlers are being executed on Iris because you can alt the
+	// to be executed. Next handlers are being executed on Siris because you can alt the
 	// error code and change it to a more specific one, i.e
 	// users := app.Party("/users")
 	// users.Done(func(ctx context.Context){ if ctx.StatusCode() == 400 { /*  custom error code for /users */ }})
@@ -583,7 +583,7 @@ type Context interface {
 	// You can search third-party articles or books on how Business Transaction works (it's quite simple, especially here).
 	//
 	// Note that this is unique and new
-	// (=I haver never seen any other examples or code in Golang on this subject, so far, as with the most of iris features...)
+	// (=I haver never seen any other examples or code in Golang on this subject, so far, as with the most of siris features...)
 	// it's not covers all paths,
 	// such as databases, this should be managed by the libraries you use to make your database connection,
 	// this transaction scope is only for context's response.
@@ -601,7 +601,7 @@ type Context interface {
 	// based on this context but with a changed method and path
 	// like it was requested by the user, but it is not.
 	//
-	// Offline means that the route is registered to the iris and have all features that a normal route has
+	// Offline means that the route is registered to the siris and have all features that a normal route has
 	// BUT it isn't available by browsing, its handlers executed only when other handler's context call them
 	// it can validate paths, has sessions, path parameters and all.
 	//
@@ -622,7 +622,7 @@ type Context interface {
 	// It's for extreme use cases, 99% of the times will never be useful for you.
 	Exec(method string, path string)
 
-	// Application returns the Iris framework instance which belongs to this context.
+	// Application returns the Siris framework instance which belongs to this context.
 	// Worth to notice that this function returns an interface
 	// of the Application, which contains methods that are safe
 	// to be executed at serve-time. The full framework's fields
@@ -782,7 +782,7 @@ func NewContext(framework Application) Context {
 // BeginRequest is executing once for each request
 // it should prepare the (new or acquired from pool) context's fields for the new request.
 //
-// To follow the Iris' flow, developer should:
+// To follow the Siris' flow, developer should:
 // 1. reset handlers to nil
 // 2. reset store to empty
 // 3. reset sessions to nil
@@ -802,7 +802,7 @@ func (ctx *context) BeginRequest(w http.ResponseWriter, r *http.Request) {
 
 // EndRequest is executing once after a response to the request was sent and this context is useless or released.
 //
-// To follow the Iris' flow, developer should:
+// To follow the Siris' flow, developer should:
 // 1. flush the response writer's result
 // 2. release the response writer
 // and any other optional steps, depends on dev's application type.
@@ -1160,7 +1160,7 @@ func (ctx *context) StatusCode(statusCode int) {
 
 // NotFound emits an error 404 to the client, using the specific custom error error handler.
 // Note that you may need to call ctx.StopExecution() if you don't want the next handlers
-// to be executed. Next handlers are being executed on Iris because you can alt the
+// to be executed. Next handlers are being executed on Siris because you can alt the
 // error code and change it to a more specific one, i.e
 // users := app.Party("/users")
 // users.Done(func(ctx context.Context){ if ctx.StatusCode() == 400 { /*  custom error code for /users */ }})
@@ -2109,7 +2109,7 @@ var errTransactionInterrupted = errors.New("transaction interrupted, recovery fr
 // You can search third-party articles or books on how Business Transaction works (it's quite simple, especially here).
 //
 // Note that this is unique and new
-// (=I haver never seen any other examples or code in Golang on this subject, so far, as with the most of iris features...)
+// (=I haver never seen any other examples or code in Golang on this subject, so far, as with the most of siris features...)
 // it's not covers all paths,
 // such as databases, this should be managed by the libraries you use to make your database connection,
 // this transaction scope is only for context's response.
@@ -2169,7 +2169,7 @@ func (ctx *context) TransactionsSkipped() bool {
 // based on this context but with a changed method and path
 // like it was requested by the user, but it is not.
 //
-// Offline means that the route is registered to the iris and have all features that a normal route has
+// Offline means that the route is registered to the siris and have all features that a normal route has
 // BUT it isn't available by browsing, its handlers executed only when other handler's context call them
 // it can validate paths, has sessions, path parameters and all.
 //
@@ -2233,7 +2233,7 @@ func (ctx *context) Exec(method string, path string) {
 	}
 }
 
-// Application returns the Iris framework instance which belongs to this context.
+// Application returns the Siris framework instance which belongs to this context.
 // Worth to notice that this function returns an interface
 // of the Application, which contains methods that are safe
 // to be executed at serve-time. The full framework's fields

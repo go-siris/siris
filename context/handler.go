@@ -10,7 +10,7 @@ package context
 // it is not valid to use the Context after or concurrently with the completion of the Handler call.
 //
 // Depending on the HTTP client software, HTTP protocol version,
-// and any intermediaries between the client and the Iris server,
+// and any intermediaries between the client and the Siris server,
 // it may not be possible to read from the Context.Request().Body after writing to the context.ResponseWriter().
 // Cautious handlers should read the Context.Request().Body first, and then reply.
 //

@@ -135,7 +135,7 @@ func Prioritize(r *Route) context.Handler {
 // StaticHandler returns a new Handler which is ready
 // to serve all kind of static files.
 //
-// Developers can wrap this handler using the `iris.StripPrefix`
+// Developers can wrap this handler using the `siris.StripPrefix`
 // for a fixed static path when the result handler is being, finally, registered to a route.
 //
 //
@@ -206,7 +206,7 @@ func Abs(path string) string {
 // NewStaticHandlerBuilder returns a new Handler which serves static files
 // supports gzip, no listing and much more
 // Note that, this static builder returns a Handler
-// it doesn't cares about the rest of your iris configuration.
+// it doesn't cares about the rest of your siris configuration.
 //
 // Use the siris.StaticHandler/StaticWeb in order to serve static files on more automatic way
 // this builder is used by people who have more complicated application
@@ -372,14 +372,14 @@ func StripPrefix(prefix string, h context.Handler) context.Handler {
 	}
 }
 
-//  +------------------------------------------------------------+
-//  |                                                            |
-//  |                      serve file handler                    |
-//  | edited from net/http/fs.go in order to support GZIP with   |
-//  | custom iris http errors and fallback to non-compressed data|
-//  | when not supported.                                        |
-//  |                                                            |
-//  +------------------------------------------------------------+
+//  +--------------------------------------------------------------+
+//  |                                                              |
+//  |                      serve file handler                      |
+//  | edited from net/http/fs.go in order to support GZIP with     |
+//  | custom siris http errors and fallback to non-compressed data |
+//  | when not supported.                                          |
+//  |                                                              |
+//  +--------------------------------------------------------------+
 
 var htmlReplacer = strings.NewReplacer(
 	"&", "&amp;",

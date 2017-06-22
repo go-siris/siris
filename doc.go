@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
-package siris is a fully-featured HTTP/2 backend web framework written entirely in Google’s Go Language.
+Package Siris is a fully-featured HTTP/2 backend web framework written entirely in Google’s Go Language.
 
 Source code and other details for the project are available at GitHub:
 
@@ -180,7 +180,7 @@ Example code:
     })
 
 
-In order to make things easier for the user, Iris provides functions for all HTTP Methods.
+In order to make things easier for the user, Siris provides functions for all HTTP Methods.
 The first parameter is the request path of the route,
 second variadic parameter should contains one or more context.Handler executed
 by the registered order when a user requests for that specific resouce path from the server.
@@ -252,7 +252,7 @@ Example code:
 Custom HTTP Errors
 
 
-Iris developers are able to register their own handlers for http statuses like 404 not found, 500 internal server error and so on.
+Siris developers are able to register their own handlers for http statuses like 404 not found, 500 internal server error and so on.
 
 Example code:
 
@@ -268,7 +268,7 @@ Example code:
 
 Basic HTTP API
 
-With the help of Iris's expressionist router you can build any form of API you desire, with
+With the help of Siris's expressionist router you can build any form of API you desire, with
 safety.
 
 Example code:
@@ -295,7 +295,7 @@ Example code:
         // Third receiver should contains the route's handler(s), they are executed by order.
         app.Handle("GET", "/", func(ctx context.Context) {
             // navigate to the middle of $GOPATH/src/github.com/go-siris/siris/context/context.go
-            // to overview all context's method (there a lot of them, read that and you will learn how iris works too)
+            // to overview all context's method (there a lot of them, read that and you will learn how siris works too)
             ctx.HTML("Hello from " + ctx.Path()) // Hello from /
         })
 
@@ -430,7 +430,7 @@ Example code:
 
     func donateFinishHandler(ctx context.Context) {
         // values can be any type of object so we could cast the value to a string
-        // but Iris provides an easy to do that, if donate_url is not defined, then it returns an empty string instead.
+        // but Siris provides an easy to do that, if donate_url is not defined, then it returns an empty string instead.
         donateURL := ctx.Values().GetString("donate_url")
         ctx.Application().Log("donate_url value was: " + donateURL)
         ctx.Writef("\n\nDonate sent(?).")
@@ -447,15 +447,15 @@ At the previous example,
 we've seen static routes, group of routes, subdomains, wildcard subdomains, a small example of parameterized path
 with a single known paramete and custom http errors, now it's time to see wildcard parameters and macros.
 
-Iris, like net/http std package registers route's handlers
-by a Handler, the Iris' type of handler is just a func(ctx context.Context)
+Siris, like net/http std package registers route's handlers
+by a Handler, the Siris' type of handler is just a func(ctx context.Context)
 where context comes from github.com/go-siris/siris/context.
 Until go 1.9 you will have to import that package too, after go 1.9 this will be not be necessary.
 
-Iris has the easiest and the most powerful routing process you have ever meet.
+Siris has the easiest and the most powerful routing process you have ever meet.
 
 At the same time,
-Iris has its own interpeter(yes like a programming language)
+Siris has its own interpeter(yes like a programming language)
 for route's path syntax and their dynamic path parameters parsing and evaluation,
 I am calling them "macros" for shortcut.
 How? It calculates its needs and if not any special regexp needed then it just
@@ -510,7 +510,7 @@ i.e:
     {param:int min(3)}
 
 
-Besides the fact that Iris provides the basic types and some default "macro funcs"
+Besides the fact that Siris provides the basic types and some default "macro funcs"
 you are able to register your own too!.
 
 Register a named path parameter function:
@@ -714,7 +714,7 @@ Example code:
             ctx.HTML(`<a href="/favicon.ico"> press here to see the favicon.ico</a>.
             At some browsers like chrome, it should be visible at the top-left side of the browser's window,
             because some browsers make requests to the /favicon.ico automatically,
-            so Iris serves your favicon in that path too (you can change it).`)
+            so Siris serves your favicon in that path too (you can change it).`)
         }) // if favicon doesn't show to you, try to clear your browser's cache.
 
         app.Run(siris.Addr(":8080"))
@@ -764,7 +764,7 @@ Example code:
       })
 
 
-Iris is able to wrap and convert any external, third-party Handler you used to use to your web application.
+Siris is able to wrap and convert any external, third-party Handler you used to use to your web application.
 Let's convert the https://github.com/rs/cors net/http external middleware which returns a `next form` handler.
 
 
@@ -810,7 +810,7 @@ Example code:
 View Engine
 
 
-Iris supports 5 template engines out-of-the-box, developers can still use any external golang template engine,
+Siris supports 5 template engines out-of-the-box, developers can still use any external golang template engine,
 as `context.ResponseWriter()` is an `io.Writer`.
 
 All of these five template engines have common features with common API,
@@ -873,7 +873,7 @@ Example code:
 
     func hi(ctx context.Context) {
         ctx.ViewData("Title", "Hi Page")
-        ctx.ViewData("Name", "siris") // {{.Name}} will render: Iris
+        ctx.ViewData("Name", "Siris") // {{.Name}} will render: Siris
         // ctx.ViewData("", myCcustomStruct{})
         ctx.View("hi.html")
     }

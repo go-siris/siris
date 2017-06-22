@@ -1,12 +1,12 @@
 <input id="input" type="text" />
 <button onclick="send()">Send</button>
 <pre id="output"></pre>
-<script src="/iris-ws.js"></script>
+<script src="/siris-ws.js"></script>
 <script>
 	var input = document.getElementById("input");
 	var output = document.getElementById("output");
 
-	// Ws comes from the auto-served '/iris-ws.js'
+	// Ws comes from the auto-served '/siris-ws.js'
 	var socket = new Ws("ws://localhost:8080/echo");
 	socket.OnConnect(function () {
 		output.innerHTML += "Status: Connected\n";

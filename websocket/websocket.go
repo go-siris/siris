@@ -32,7 +32,7 @@ func fixPath(s string) string {
 	return s
 }
 
-// Attach adapts the websocket server to one or more Iris instances.
+// Attach adapts the websocket server to one or more Siris instances.
 func (s *server) Attach(app *siris.Application) {
 	wsPath := fixPath(s.config.Endpoint)
 	if wsPath == "" {
@@ -52,7 +52,7 @@ func (s *server) Attach(app *siris.Application) {
 	app.Get(wsPath, wsHandler)
 	// check if client side doesn't already exists
 	if app.GetRoute(clientSideLookupName) == nil {
-		// serve the client side on domain:port/iris-ws.js
+		// serve the client side on domain:port/siris-ws.js
 		r, err := app.StaticContent(wsClientSidePath, "application/javascript", ClientSource)
 		if err != nil {
 			app.Log("websocket's route for javascript client-side library failed with: %v", err)

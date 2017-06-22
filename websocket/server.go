@@ -7,15 +7,15 @@ package websocket
 import (
 	"sync"
 
-	"github.com/gorilla/websocket"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
+	"github.com/gorilla/websocket"
 )
 
 // Server is the websocket server,
 // listens on the config's port, the critical part is the event OnConnection
 type Server interface {
-	// Attach adapts the websocket server to an Iris instance.
+	// Attach adapts the websocket server to an Siris instance.
 	// see websocket.go
 	Attach(app *siris.Application)
 

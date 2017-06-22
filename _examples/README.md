@@ -1,6 +1,6 @@
 # Examples
 
-This folder provides easy to understand code snippets on how to get started with web development with the Go programming language using the [Iris](https://github.com/go-siris/siris) web framework.
+This folder provides easy to understand code snippets on how to get started with web development with the Go programming language using the [Siris](https://github.com/go-siris/siris) web framework.
 
 It doesn't contains "best ways" neither explains all its features. It's just a simple, practical cookbook for young Gophers!
 
@@ -26,7 +26,7 @@ It doesn't contains "best ways" neither explains all its features. It's just a s
         * [Dynamic Path](beginner/routing/dynamic-path/main.go)
         * [Reverse routing](beginner/routing/reverse/main.go)
         * [Custom wrapper](beginner/routing/custom-wrapper/main.go)
-    * [Transform any third-party handler to iris-compatible handler](beginner/convert-handlers)
+    * [Transform any third-party handler to siris-compatible handler](beginner/convert-handlers)
         * [From func(http.ResponseWriter, *http.Request, http.HandlerFunc)](beginner/convert-handlers/negroni-like/main.go)
         * [From http.Handler or http.HandlerFunc](beginner/convert-handlers/nethttp/main.go)
     * [Internal Application File Logger](beginner/file-logger/main.go)

@@ -7,9 +7,9 @@ import (
 
 // NOTE: Some machines don't allow to install typescript automatically, so if you don't have typescript installed
 // and the typescript adaptor doesn't works for you then follow the below steps:
-// 1. close the iris server
+// 1. close the siris server
 // 2. open your terminal and execute: npm install -g typescript
-// 3. start your iris server, it should be work, as expected, now.
+// 3. start your siris server, it should be work, as expected, now.
 func main() {
 	app := siris.New()
 
@@ -30,4 +30,4 @@ func main() {
 // - compiles the typescript files using default compiler options if not tsconfig found
 // - watches for changes on typescript files, if a change then it recompiles the .ts to .js
 //
-// same as you used to do with gulp-like tools, but here at Iris I do my bests to help GO developers.
+// same as you used to do with gulp-like tools, but here at Siris I do my bests to help GO developers.

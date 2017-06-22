@@ -10,7 +10,7 @@ import (
 	"github.com/go-siris/siris/websocket"
 )
 
-/* Native messages no need to import the iris-ws.js to the ./templates.client.html
+/* Native messages no need to import the siris-ws.js to the ./templates.client.html
 Use of: OnMessage and EmitMessage.
 
 

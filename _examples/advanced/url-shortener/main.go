@@ -1,4 +1,4 @@
-// Package main shows how you can create a simple URL SHortener using only Iris and BoltDB.
+// Package main shows how you can create a simple URL SHortener using only Siris and BoltDB.
 //
 // $ go get github.com/boltdb/bolt/...
 // $ go run main.go

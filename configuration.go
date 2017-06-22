@@ -175,7 +175,7 @@ func WithOtherValue(key string, val interface{}) Configurator {
 	}
 }
 
-// Configuration the whole configuration for an Iris instance
+// Configuration the whole configuration for an Siris instance
 // these can be passed via options also, look at the top of this file(configuration.go).
 // Configuration is a valid OptionSetter.
 type Configuration struct {
@@ -459,7 +459,7 @@ func WithConfiguration(c Configuration) Configurator {
 	}
 }
 
-// DefaultConfiguration returns the default configuration for an Iris station, fills the main Configuration
+// DefaultConfiguration returns the default configuration for an Siris station, fills the main Configuration
 func DefaultConfiguration() Configuration {
 	return Configuration{
 		DisableBanner:                     false,

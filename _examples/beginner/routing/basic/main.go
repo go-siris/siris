@@ -19,7 +19,7 @@ func main() {
 	// Third receiver should contains the route's handler(s), they are executed by order.
 	app.Handle("GET", "/", func(ctx context.Context) {
 		// navigate to the middle of $GOPATH/src/github.com/go-siris/siris/context/context.go
-		// to overview all context's method (there a lot of them, read that and you will learn how iris works too)
+		// to overview all context's method (there a lot of them, read that and you will learn how siris works too)
 		ctx.HTML("Hello from " + ctx.Path()) // Hello from /
 	})
 
@@ -154,7 +154,7 @@ func donateHandler(ctx context.Context) {
 
 func donateFinishHandler(ctx context.Context) {
 	// values can be any type of object so we could cast the value to a string
-	// but Iris provides an easy to do that, if donate_url is not defined, then it returns an empty string instead.
+	// but Siris provides an easy to do that, if donate_url is not defined, then it returns an empty string instead.
 	donateURL := ctx.Values().GetString("donate_url")
 	ctx.Application().Log("donate_url value was: " + donateURL)
 	ctx.Writef("\n\nDonate sent(?).")

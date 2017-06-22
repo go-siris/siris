@@ -1,7 +1,7 @@
 package main
 
 // Any OAuth2 (even the pure golang/x/net/oauth2) package
-// can be used with Iris but at this example we will see the markbates' goth:
+// can be used with Siris but at this example we will see the markbates' goth:
 //
 // $ go get github.com/markbates/goth/...
 //

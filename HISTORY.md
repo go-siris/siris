@@ -13,7 +13,7 @@
 ### Should I upgrade my Iris?
 
 Developers are not forced to upgrade if they don't really need it. Upgrade whenever you feel ready.
-> Iris uses the [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) feature, so you get truly reproducible builds, as this method guards against upstream renames and deletes.
+> Siris uses the [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) feature, so you get truly reproducible builds, as this method guards against upstream renames and deletes.
 
 **How to upgrade**: Open your command-line and execute this command: `go get -u github.com/go-siris/siris`. 
 For further installation support, please click [here](http://support.iris-go.com/d/16-how-to-install-iris-web-framework).
@@ -34,9 +34,9 @@ The amount of the next two or three donations you'll send they will be immediate
 
 ### Cache
 
-Declare the `iris.Cache alias` to the new, improved and most-suited for common usage, `cache.Handler function`.
+Declare the `Siris.Cache alias` to the new, improved and most-suited for common usage, `cache.Handler function`.
 
-`iris.Cache` be used as middleware in the chain now, example [here](_examples/intermediate/cache-markdown/main.go). However [you can still use the cache as a wrapper](cache/cache_test.go) by importing the `github.com/go-siris/siris/cache` package. 
+`Siris.Cache` be used as middleware in the chain now, example [here](_examples/intermediate/cache-markdown/main.go). However [you can still use the cache as a wrapper](cache/cache_test.go) by importing the `github.com/go-siris/siris/cache` package. 
 
 
 ### File server
@@ -96,12 +96,12 @@ Fix [that](https://github.com/iris-contrib/community-board/issues/10).
 
 # Su, 11 June 2017 | v7.0.5
 
-Iris now supports static paths and dynamic paths for the same path prefix with zero performance cost:
+Siris now supports static paths and dynamic paths for the same path prefix with zero performance cost:
 
 `app.Get("/profile/{id:int}", handler)` and `app.Get("/profile/create", createHandler)` are not in conflict anymore.
 
 
-The rest of the special Iris' routing features, including static & wildcard subdomains are still work like a charm.
+The rest of the special Siris' routing features, including static & wildcard subdomains are still work like a charm.
 
 > This was one of the most popular community's feature requests. Click [here](https://github.com/go-siris/siris/blob/master/_examples/beginner/routing/overview/main.go) to see a trivial example.
 
@@ -133,9 +133,9 @@ stored inside the Context anymore, developers can get the validated user(usernam
 
 # Sa, 03 June 2017 
 
-After 2+ months of hard work and collaborations, Iris [version 7](https://github.com/go-siris/siris) was published earlier today.
+After 2+ months of hard work and collaborations, Siris [version 7](https://github.com/go-siris/siris) was published earlier today.
 
-If you're new to Iris you don't have to read all these, just navigate to the [updated examples](https://github.com/go-siris/siris/tree/master/_examples) and you should be fine:)
+If you're new to Siris you don't have to read all these, just navigate to the [updated examples](https://github.com/go-siris/siris/tree/master/_examples) and you should be fine:)
 
 Note that this section will not
 cover the internal changes, the difference is so big that anybody can see them with a glimpse, even the code structure itself.
@@ -161,7 +161,7 @@ by go dep, but they had lines with the `typealias` feature, which is not ready b
 
 The go dep tool does what is says, as expected, don't be afraid of it now.
 I am totally recommending this tool for package authors, even if it's in its alpha state.
-I remember when Iris was in its alpha state and it had 4k stars on its first weeks/or month and that helped me a lot to fix reported bugs by users and make the framework even better, so give love to go dep from today!
+I remember when Siris was in its alpha state and it had 4k stars on its first weeks/or month and that helped me a lot to fix reported bugs by users and make the framework even better, so give love to go dep from today!
 
 General
 
@@ -178,10 +178,10 @@ General
     - `app.Adapt(siris.RenderPolicy(...))` -> removed and replaced with the ability to replace the whole context with a custom one or override some methods of it, see below.
 
 Routing
-- Remove of multiple routers, now we have the fresh Iris router which is based on top of the julien's [httprouter](https://github.com/julienschmidt/httprouter).
+- Remove of multiple routers, now we have the fresh Siris router which is based on top of the julien's [httprouter](https://github.com/julienschmidt/httprouter).
     > Update 11 June 2017: As of 7.0.5 this is changed, read [here](https://github.com/go-siris/siris/blob/master/HISTORY.md#su-11-june-2017--v705).
 - Subdomains routing algorithm has been improved.
-- Iris router is using a custom interpreter with parser and path evaluator to achieve the best expressiveness, with zero performance loss, you ever seen so far, i.e: 
+- Siris router is using a custom interpreter with parser and path evaluator to achieve the best expressiveness, with zero performance loss, you ever seen so far, i.e: 
     - `app.Get("/", "/users/{userid:int min(1)}", handler)`,
         - `{username:string}` or just `{username}`
         - `{asset:path}`,
@@ -195,7 +195,7 @@ Click [here](https://github.com/go-siris/siris/tree/master/_examples/beginner/ro
 > It was my first attempt/experience on the interpreters field, so be good with it :)
 
 Context
-- `iris.Context pointer` replaced with `context.Context interface` as we already mention
+- `siris.Context pointer` replaced with `context.Context interface` as we already mention
     - in order to be able to use a custom context and/or catch lifetime like `BeginRequest` and `EndRequest` from context itself, see below
 - `context.JSON, context.JSONP, context.XML, context.Markdown, context.HTML` work faster
 - `context.Render("filename.ext", bindingViewData{}, options) ` -> `context.View("filename.ext")`
@@ -207,7 +207,7 @@ Context
     - `context.StatusCode()` -> `context.GetStatusCode()`
     - `app.OnError` -> `app.OnErrorCode`
     - Errors per party are removed by-default, you can just use one global error handler with logic like "if path starts with 'prefix' fire this error handler, else...". 
-- Easy way to change Iris' default `Context` with a custom one, see [here](https://github.com/go-siris/siris/tree/master/_examples/intermediate/custom-context)
+- Easy way to change Siris' default `Context` with a custom one, see [here](https://github.com/go-siris/siris/tree/master/_examples/intermediate/custom-context)
 - `context.ResponseWriter().SetBeforeFlush(...)` works for Flush and HTTP/2 Push, respectfully
 - Several improvements under the `Request transactions` 
 - Remember that you had to set a status code on each of the render-relative methods? Now it's not required, it just renders
@@ -224,4 +224,4 @@ Server
 
 Future plans
 - Future Go1.9's [ServeTLS](https://go-review.googlesource.com/c/38114/2/src/net/http/server.go) is ready when 1.9 released
-- Future Go1.9's typealias feature is ready when 1.9 released, i.e `context.Context` -> `iris.Context` just one import path instead of todays' two.
+- Future Go1.9's typealias feature is ready when 1.9 released, i.e `context.Context` -> `siris.Context` just one import path instead of todays' two.

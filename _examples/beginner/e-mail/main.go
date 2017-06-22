@@ -35,7 +35,7 @@ func main() {
 
 	//inside handler
 	app.Get("/send", func(ctx context.Context) {
-		content := `<h1>Hello From Iris web framework</h1> <br/><br/> <span style="color:blue"> This is the rich message body </span>`
+		content := `<h1>Hello From Siris web framework</h1> <br/><br/> <span style="color:blue"> This is the rich message body </span>`
 
 		err := mailService.Send("siris e-mail just t3st subject", content, to...)
 

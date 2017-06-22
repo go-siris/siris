@@ -18,7 +18,7 @@ func main() {
 		ctx.HTML(`<a href="/favicon.ico"> press here to see the favicon.ico</a>.
 		 At some browsers like chrome, it should be visible at the top-left side of the browser's window,
 		 because some browsers make requests to the /favicon.ico automatically,
-		  so Iris serves your favicon in that path too (you can change it).`)
+		  so Siris serves your favicon in that path too (you can change it).`)
 	}) // if favicon doesn't show to you, try to clear your browser's cache.
 
 	app.Run(siris.Addr(":8080"))

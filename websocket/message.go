@@ -121,15 +121,15 @@ func websocketMessageSerialize(event string, data interface{}) (string, error) {
 var errInvalidTypeMessage = errors.New("Type %s is invalid for message: %s")
 
 // websocketMessageDeserialize deserializes a custom websocket message from the client
-// ex: iris-websocket-message;chat;4;themarshaledstringfromajsonstruct will return 'hello' as string
+// ex: siris-websocket-message;chat;4;themarshaledstringfromajsonstruct will return 'hello' as string
 // Supported data types are: string, int, bool, bytes and JSON.
 func websocketMessageDeserialize(event string, websocketMessage string) (message interface{}, err error) {
-	t, formaterr := strconv.Atoi(websocketMessage[websocketMessagePrefixAndSepIdx+len(event)+1 : websocketMessagePrefixAndSepIdx+len(event)+2]) // in order to iris-websocket-message;user;-> 4
+	t, formaterr := strconv.Atoi(websocketMessage[websocketMessagePrefixAndSepIdx+len(event)+1 : websocketMessagePrefixAndSepIdx+len(event)+2]) // in order to siris-websocket-message;user;-> 4
 	if formaterr != nil {
 		return nil, formaterr
 	}
 	_type := websocketMessageType(t)
-	_message := websocketMessage[websocketMessagePrefixAndSepIdx+len(event)+3:] // in order to iris-websocket-message;user;4; -> themarshaledstringfromajsonstruct
+	_message := websocketMessage[websocketMessagePrefixAndSepIdx+len(event)+3:] // in order to siris-websocket-message;user;4; -> themarshaledstringfromajsonstruct
 
 	if _type == websocketStringMessageType {
 		message = string(_message)

@@ -17,7 +17,7 @@ func main() {
 		ctx.Writef("The path after /anything is: %s", paramValue)
 	})
 
-	// useful for links, altough iris' view engine has the {{ urlpath "routename" "path values"}} already.
+	// useful for links, altough siris' view engine has the {{ urlpath "routename" "path values"}} already.
 	app.Get("/reverse_myroute", func(ctx context.Context) {
 		myrouteRequestPath := rv.Path(myroute.Name, "any/path")
 		ctx.HTML("Should be <b>/anything/any/path</b>: " + myrouteRequestPath)

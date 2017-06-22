@@ -51,7 +51,7 @@ func main() {
 	app.AttachSessionManager(sessionManager)
 
 	// The only one Required:
-	// here is how you define how your own context will be created and acquired from the iris' generic context pool.
+	// here is how you define how your own context will be created and acquired from the siris' generic context pool.
 	app.ContextPool.Attach(func() context.Context {
 		return &MyContext{
 			// Optional Part 3:

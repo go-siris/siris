@@ -16,7 +16,7 @@ const websocketBoolMessageType = 2;
 // bytes is missing here for reasons I will explain somewhen
 const websocketJSONMessageType = 4;
 
-const websocketMessagePrefix = "iris-websocket-message:";
+const websocketMessagePrefix = "siris-websocket-message:";
 const websocketMessageSeparator = ";";
 
 const websocketMessagePrefixLen = websocketMessagePrefix.length;

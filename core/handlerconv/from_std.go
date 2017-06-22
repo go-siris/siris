@@ -30,7 +30,7 @@ func FromStd(handler interface{}) context.Handler {
 	case context.Handler:
 		{
 			//
-			//it's already a iris handler
+			//it's already a siris handler
 			//
 			return handler.(context.Handler)
 		}

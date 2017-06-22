@@ -31,7 +31,7 @@ func main() {
 	defer f.Close()
 
 	app := siris.New()
-	// attach the file as logger, remember, iris' app logger is just an io.Writer.
+	// attach the file as logger, remember, siris' app logger is just an io.Writer.
 	app.AttachLogger(f)
 
 	app.Get("/", func(ctx context.Context) {

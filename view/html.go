@@ -122,7 +122,7 @@ func (s *HTMLEngine) Delims(left, right string) *HTMLEngine {
 //         // mainLayout.html is inside: "./templates/layouts/".
 //
 // Note: Layout can be changed for a specific call
-// action with the option: "layout" on the Iris' context.Render function.
+// action with the option: "layout" on the Siris' context.Render function.
 func (s *HTMLEngine) Layout(layoutFile string) *HTMLEngine {
 	s.layout = layoutFile
 	return s
