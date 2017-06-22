@@ -24,7 +24,7 @@ func main() {
 
 	ws := websocket.New(websocket.Config{
 		Endpoint:         "/my_endpoint",
-		ClientSourcePath: "/iris-ws.js",
+		ClientSourcePath: "/siris-ws.js",
 	})
 
 	ws.Attach(app)

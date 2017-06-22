@@ -55,7 +55,7 @@ type ResponseWriter interface {
 	StatusCode() int
 
 	// Written should returns the total length of bytes that were being written to the client.
-	// In addition Iris provides some variables to help low-level actions:
+	// In addition Siris provides some variables to help low-level actions:
 	// NoWritten, means that nothing were written yet and the response writer is still live.
 	// StatusCodeWritten, means that status code were written but no other bytes are written to the client, response writer may closed.
 	// > 0 means that the reply was written and it's the total number of bytes were written.
@@ -138,7 +138,7 @@ func (w *responseWriter) EndResponse() {
 }
 
 // Written should returns the total length of bytes that were being written to the client.
-// In addition Iris provides some variables to help low-level actions:
+// In addition Siris provides some variables to help low-level actions:
 // NoWritten, means that nothing were written yet and the response writer is still live.
 // StatusCodeWritten, means that status code were written but no other bytes are written to the client, response writer may closed.
 // > 0 means that the reply was written and it's the total number of bytes were written.

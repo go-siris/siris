@@ -275,7 +275,7 @@ func (s *HandlebarsEngine) ExecuteWriter(w io.Writer, filename string, layout st
 			if context == nil {
 				context = make(map[string]interface{}, 1)
 			}
-			// I'm implemented the {{ yield }} as with the rest of template engines, so this is not inneed for iris, but the user can do that manually if want
+			// I'm implemented the {{ yield }} as with the rest of template engines, so this is not inneed for siris, but the user can do that manually if want
 			// there is no performanrce different: raymond.RegisterPartialTemplate(name, tmpl)
 			context["yield"] = raymond.SafeString(contents)
 		}

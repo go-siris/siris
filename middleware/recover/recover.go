@@ -19,12 +19,12 @@ func getRequestLogs(ctx context.Context) string {
 	path = ctx.Path()
 	method = ctx.Method()
 	ip = ctx.RemoteAddr()
-	// the date should be logged by iris' Logger, so we skip them
+	// the date should be logged by siris' Logger, so we skip them
 	return fmt.Sprintf("%v %s %s %s", status, path, method, ip)
 }
 
 // New returns a new recover middleware
-// it logs to the LoggerOut iris' configuration field if its IsDeveloper configuration field is enabled.
+// it logs to the LoggerOut siris' configuration field if its IsDeveloper configuration field is enabled.
 // otherwise it just continues to serve
 func New() context.Handler {
 	return func(ctx context.Context) {

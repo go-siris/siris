@@ -37,7 +37,7 @@ func main() {
 
 func hi(ctx context.Context) {
 	ctx.ViewData("Title", "Hi Page")
-	ctx.ViewData("Name", "siris") // {{.Name}} will render: Iris
+	ctx.ViewData("Name", "Siris") // {{.Name}} will render: Siris
 	// ctx.ViewData("", myCcustomStruct{})
 	ctx.View("hi.html")
 }

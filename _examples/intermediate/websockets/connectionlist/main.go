@@ -27,10 +27,10 @@ func main() {
 		Endpoint: "/my_endpoint",
 		// the client-side javascript static file path
 		// which will be served by siris.
-		// default is /iris-ws.js
+		// default is /siris-ws.js
 		// if you change that you have to change the bottom of templates/client.html
 		// script tag:
-		ClientSourcePath: "/iris-ws.js",
+		ClientSourcePath: "/siris-ws.js",
 		//
 		// Set the timeouts, 0 means no timeout
 		// websocket has more configuration, go to ../../config.go for more:

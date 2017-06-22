@@ -55,7 +55,7 @@ type (
 		ClearFlashes()
 	} // Session is being implemented inside session.go
 
-	// Manager implements the Sessions interface which Iris uses to start and destroy a session from its Context.
+	// Manager implements the Sessions interface which Siris uses to start and destroy a session from its Context.
 	Manager struct {
 		config   Config
 		provider *provider
@@ -63,7 +63,7 @@ type (
 )
 
 // New returns a new fast, feature-rich sessions manager
-// it can be adapted to an Iris station
+// it can be adapted to an Siris station
 func New(cfg Config) *Manager {
 	return &Manager{
 		config:   cfg.Validate(),

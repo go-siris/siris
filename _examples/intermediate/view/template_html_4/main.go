@@ -15,7 +15,7 @@ const (
 func main() {
 	app := siris.New()
 
-	// create a custom path reverser, iris let you define your own host and scheme
+	// create a custom path reverser, siris let you define your own host and scheme
 	// which is useful when you have nginx or caddy in front of siris.
 	rv := router.NewRoutePathReverser(app, router.WithHost(host), router.WithScheme("http"))
 	// locate and define our templates as usual.

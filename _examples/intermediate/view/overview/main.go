@@ -40,7 +40,7 @@ func main() {
 	})
 
 	app.Get("/markdown", func(ctx context.Context) {
-		ctx.Markdown([]byte("# Hello Dynamic Markdown -- Iris"))
+		ctx.Markdown([]byte("# Hello Dynamic Markdown -- Siris"))
 	})
 
 	//
@@ -61,8 +61,8 @@ func main() {
 	app.Get("/template", func(ctx context.Context) {
 
 		ctx.ViewData("Name", "siris") // the .Name inside the ./templates/hi.html
-		ctx.Gzip(true)               // enable gzip for big files
-		ctx.View("hi.html")          // render the template with the file name relative to the './templates'
+		ctx.Gzip(true)                // enable gzip for big files
+		ctx.View("hi.html")           // render the template with the file name relative to the './templates'
 
 	})
 

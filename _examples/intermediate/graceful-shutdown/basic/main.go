@@ -11,7 +11,7 @@ import (
 
 // Before continue, please read the below notes:
 //
-// Current version of Iris is auto-graceful on control+C/command+C
+// Current version of Siris is auto-graceful on control+C/command+C
 // or kill command sent or whenever app.Shutdown called.
 //
 // In order to add a custom interrupt handler(ctrl+c/cmd+c) or

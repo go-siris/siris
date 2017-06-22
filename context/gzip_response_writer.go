@@ -74,7 +74,7 @@ func releaseGzipResponseWriter(w *GzipResponseWriter) {
 
 // GzipResponseWriter is an upgraded response writer which writes compressed data to the underline ResponseWriter.
 //
-// It's a separate response writer because Iris gives you the ability to "fallback" and "roll-back" the gzip encoding if something
+// It's a separate response writer because Siris gives you the ability to "fallback" and "roll-back" the gzip encoding if something
 // went wrong with the response, and write http errors in plain form instead.
 type GzipResponseWriter struct {
 	ResponseWriter

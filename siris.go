@@ -38,7 +38,7 @@ const (
          _| |_| |  | |\__ \
         |_____|_|  |_||___/ `
 
-	// Version is the current version number of the Iris Web framework.
+	// Version is the current version number of the Siris Web framework.
 	//
 	// Look https://github.com/go-siris/siris#where-can-i-find-older-versions for older versions.
 	Version = "7.2.0"
@@ -85,7 +85,7 @@ type Application struct {
 	Shutdown func(stdContext.Context) error
 }
 
-// New creates and returns a fresh empty Iris *Application instance.
+// New creates and returns a fresh empty Siris *Application instance.
 func New() *Application {
 	config := DefaultConfiguration()
 
@@ -318,7 +318,7 @@ func AutoTLS(addr string) Runner {
 // only when the server exited or a fatal error caused.
 //
 // With this option you're not limited to the servers
-// that Iris can run by-default.
+// that Siris can run by-default.
 //
 // See `Run` for more.
 func Raw(f func() error) Runner {
@@ -331,13 +331,13 @@ func Raw(f func() error) Runner {
 //
 // Run should be called only once per Application instance, it blocks like http.Server.
 //
-// If more than one server needed to run on the same iris instance
+// If more than one server needed to run on the same siris instance
 // then create a new host and run it manually by `go NewHost(*http.Server).Serve/ListenAndServe` etc...
 // or use an already created host:
 // h := NewHost(*http.Server)
 // Run(Raw(h.ListenAndServe), WithoutBanner, WithCharset("UTF-8"))
 //
-// The Application can go online with any type of server or iris's host with the help of
+// The Application can go online with any type of server or siris's host with the help of
 // the following runners:
 // `Listener`, `Server`, `Addr`, `TLS`, `AutoTLS` and `Raw`.
 func (app *Application) Run(serve Runner, withOrWithout ...Configurator) error {

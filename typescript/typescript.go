@@ -20,7 +20,7 @@ import (
 )
 
 type (
-	// Typescript contains the unique iris' typescript loader, holds all necessary fields & methods.
+	// Typescript contains the unique siris' typescript loader, holds all necessary fields & methods.
 	Typescript struct {
 		Config *Config
 		// taken from framework
@@ -222,7 +222,7 @@ func (t *Typescript) getTypescriptFiles() []string {
 	return files
 }
 
-// Attach attaches the typescript to one or more Iris instance(s).
+// Attach attaches the typescript to one or more Siris instance(s).
 func (t *Typescript) Attach(app *siris.Application) {
 	t.log = app.Log
 	t.start()

@@ -26,8 +26,8 @@ const (
 	DefaultWebsocketReadBufferSize = 4096
 	// DefaultWebsocketWriterBufferSize 4096
 	DefaultWebsocketWriterBufferSize = 4096
-	// DefaultClientSourcePath "/iris-ws.js"
-	DefaultClientSourcePath = "/iris-ws.js"
+	// DefaultClientSourcePath "/siris-ws.js"
+	DefaultClientSourcePath = "/siris-ws.js"
 )
 
 var (
@@ -44,8 +44,8 @@ type Config struct {
 	// Default value is empty string, if you don't set it the Websocket server is disabled.
 	Endpoint string
 	// ClientSourcePath is is the path which the client-side
-	// will be auto-served when the server adapted to an Iris station.
-	// Default value is "/iris-ws.js"
+	// will be auto-served when the server adapted to an Siris station.
+	// Default value is "/siris-ws.js"
 	ClientSourcePath string
 	Error            func(w http.ResponseWriter, r *http.Request, status int, reason error)
 	CheckOrigin      func(r *http.Request) bool

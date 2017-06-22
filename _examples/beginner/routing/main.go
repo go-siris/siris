@@ -12,7 +12,7 @@ Read:
 "overview"
 "basic"
 "dynamic-path"
-and "reverse" examples if you want to release Iris' real power.
+and "reverse" examples if you want to release Siris' real power.
 */
 
 const maxBodySize = 1 << 20

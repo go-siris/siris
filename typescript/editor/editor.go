@@ -42,7 +42,7 @@ import (
 type (
 	// Editor is the alm-tools adaptor.
 	//
-	// It holds a logger from the iris' station
+	// It holds a logger from the siris' station
 	// username,password for basic auth
 	// directory which the client side code is
 	// keyfile,certfile for TLS listening
@@ -110,9 +110,9 @@ func (e *Editor) DisableOutput() {
 	e.config.DisableOutput = true
 }
 
-// GetDescription EditorPlugin is a bridge between Iris and the alm-tools, the browser-based IDE for client-side sources.
+// GetDescription EditorPlugin is a bridge between Siris and the alm-tools, the browser-based IDE for client-side sources.
 func (e *Editor) GetDescription() string {
-	return "A bridge between Iris and the alm-tools, the browser-based IDE."
+	return "A bridge between Siris and the alm-tools, the browser-based IDE."
 }
 
 // we use that editorWriter to prefix the editor's output with "Editor Adaptor: "
@@ -138,7 +138,7 @@ func (e *Editor) build(s *siris.Application) {
 	e.start()
 }
 
-// close kills the editor's server when Iris is closed
+// close kills the editor's server when Siris is closed
 func (e *Editor) close(s *siris.Application) {
 	if e.process != nil {
 		err := e.process.Kill()
@@ -176,7 +176,7 @@ func (e *Editor) start() {
 	prefix := ""
 	// when debug is not disabled
 	// show any messages to the user( they are useful here)
-	// to the io.Writer that iris' user is defined from configuration
+	// to the io.Writer that siris' user is defined from configuration
 	if !e.config.DisableOutput {
 
 		outputReader, err := cmd.StdoutPipe()
@@ -211,7 +211,7 @@ func (e *Editor) start() {
 	// e.logger.Printf("Editor is running at %s:%d | %s", e.config.Hostname, e.config.Port, e.config.WorkingDir)
 }
 
-// Attach adapts the editor to one or more Iris instance(s).
+// Attach adapts the editor to one or more Siris instance(s).
 func (e *Editor) Attach(app *siris.Application) {
 
 	e.build(app)

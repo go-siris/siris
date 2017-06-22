@@ -36,7 +36,7 @@ func (d *Database) Load(sid string) map[string]interface{} {
 		if err != nil {
 			if err != nil {
 				// don't use to get the logger, just prin these to the console... atm
-				///TODO: Find a way to use the iris' defined logger via an optional interface to Database.
+				///TODO: Find a way to use the siris' defined logger via an optional interface to Database.
 				// println("Redis Connection error on Connect: " + err.Error())
 				// println("But don't panic, auto-switching to memory store right now!")
 			}
