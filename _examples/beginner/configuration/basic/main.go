@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/kataras/iris"
+	"github.com/go-siris/siris"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// [...]
 
 	// Good when you want to modify the whole configuration.
-	app.Run(iris.Addr(":8080"), iris.WithConfiguration(iris.Configuration{ // default configuration:
+	app.Run(siris.Addr(":8080"), siris.WithConfiguration(siris.Configuration{ // default configuration:
 		DisableBanner:                     false,
 		DisableInterruptHandler:           false,
 		DisablePathCorrection:             false,
@@ -23,6 +23,6 @@ func main() {
 	}))
 
 	// or before run:
-	// app.Configure(iris.WithConfiguration(...))
-	// app.Run(iris.Addr(":8080"))
+	// app.Configure(siris.WithConfiguration(...))
+	// app.Run(siris.Addr(":8080"))
 }

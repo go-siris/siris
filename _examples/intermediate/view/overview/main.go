@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/xml"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 // ExampleXML just a test struct to view represents xml content-type
@@ -16,7 +16,7 @@ type ExampleXML struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// Just some general restful render types, none of these has to do anything with templates.
 	app.Get("/binary", func(ctx context.Context) { // useful when you want force-download of contents of raw bytes form.
@@ -60,7 +60,7 @@ func main() {
 	app.AttachView(view.HTML("./templates", ".html"))
 	app.Get("/template", func(ctx context.Context) {
 
-		ctx.ViewData("Name", "Iris") // the .Name inside the ./templates/hi.html
+		ctx.ViewData("Name", "siris") // the .Name inside the ./templates/hi.html
 		ctx.Gzip(true)               // enable gzip for big files
 		ctx.View("hi.html")          // render the template with the file name relative to the './templates'
 
@@ -73,5 +73,5 @@ func main() {
 	// http://localhost:8080/xml
 	// http://localhost:8080/markdown
 	// http://localhost:8080/template
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/view"
-	"github.com/kataras/iris/websocket"
+	"github.com/go-siris/siris/view"
+	"github.com/go-siris/siris/websocket"
 )
 
 /* Native messages no need to import the iris-ws.js to the ./templates.client.html
@@ -24,7 +24,7 @@ type clientPage struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.AttachView(view.HTML("./templates", ".html")) // select the html engine to serve templates
 
@@ -58,6 +58,6 @@ func main() {
 
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 }

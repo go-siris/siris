@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 // User is just a bindable object structure.
@@ -16,7 +16,7 @@ type User struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// Define templates using the std html/template engine.
 	// Parse and load all files inside "./views" folder with ".html" file extension.
@@ -24,7 +24,7 @@ func main() {
 	app.AttachView(view.HTML("./views", ".html").Reload(true))
 
 	// Regster custom handler for specific http errors.
-	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
+	app.OnErrorCode(siris.StatusInternalServerError, func(ctx context.Context) {
 		// .Values are used to communicate between handlers, middleware.
 		errMessage := ctx.Values().GetString("error")
 		if errMessage != "" {
@@ -74,7 +74,7 @@ func main() {
 	}
 
 	// Listen for incoming HTTP/1.x & HTTP/2 clients on localhost port 8080.
-	app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"))
+	app.Run(siris.Addr(":8080"), siris.WithCharset("UTF-8"))
 }
 
 func logThisMiddleware(ctx context.Context) {
@@ -107,7 +107,7 @@ func createUser(ctx context.Context) {
 	err := ctx.ReadForm(&user)
 	if err != nil {
 		ctx.Values().Set("error", "creating user, read and parse form failed. "+err.Error())
-		ctx.StatusCode(iris.StatusInternalServerError)
+		ctx.StatusCode(siris.StatusInternalServerError)
 		return
 	}
 	// renders "./views/users/create_verification.html"

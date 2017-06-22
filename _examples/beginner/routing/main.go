@@ -3,8 +3,8 @@ package main
 import (
 	"io/ioutil"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 /*
@@ -17,15 +17,15 @@ and "reverse" examples if you want to release Iris' real power.
 
 const maxBodySize = 1 << 20
 
-var app *iris.Application
+var app *siris.Application
 
 func init() {
-	app = iris.New()
+	app = siris.New()
 }
 
 func registerErrors() {
 	// set a custom 404 handler
-	app.OnErrorCode(iris.StatusNotFound, func(ctx context.Context) {
+	app.OnErrorCode(siris.StatusNotFound, func(ctx context.Context) {
 		ctx.HTML("<h1> custom http error page </h1>")
 	})
 }
@@ -91,7 +91,7 @@ func main() {
 		b, err := ioutil.ReadAll(ctx.Request().Body)
 		// if is larger then send a bad request status
 		if err != nil {
-			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.StatusCode(siris.StatusBadRequest)
 			ctx.Writef(err.Error())
 			return
 		}
@@ -100,7 +100,7 @@ func main() {
 	})
 
 	// start the server on 0.0.0.0:8080
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 func h(ctx context.Context) {

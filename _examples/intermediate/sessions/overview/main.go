@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/sessions"
+	"github.com/go-siris/siris/sessions"
 )
 
 var (
@@ -15,7 +15,7 @@ func secret(ctx context.Context) {
 
 	// Check if user is authenticated
 	if auth, _ := ctx.Session().GetBoolean("authenticated"); !auth {
-		ctx.StatusCode(iris.StatusForbidden)
+		ctx.StatusCode(siris.StatusForbidden)
 		return
 	}
 
@@ -41,9 +41,9 @@ func logout(ctx context.Context) {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
-	// Look https://github.com/kataras/iris/tree/master/sessions/_examples for more features,
+	// Look https://github.com/go-siris/siris/tree/master/sessions/_examples for more features,
 	// i.e encode/decode and lifetime.
 	sess := sessions.New(sessions.Config{Cookie: key})
 	app.AttachSessionManager(sess)
@@ -52,5 +52,5 @@ func main() {
 	app.Get("/login", login)
 	app.Get("/logout", logout)
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

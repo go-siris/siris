@@ -5,7 +5,7 @@
 package lexer
 
 import (
-	"github.com/kataras/iris/core/router/macro/interpreter/token"
+	"github.com/go-siris/siris/core/router/macro/interpreter/token"
 )
 
 // Lexer helps us to read/scan characters of a source and resolve their token types.

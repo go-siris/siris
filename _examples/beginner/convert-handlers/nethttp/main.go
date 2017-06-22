@@ -3,15 +3,15 @@ package main
 import (
 	"net/http"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/handlerconv"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/handlerconv"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	irisMiddleware := handlerconv.FromStd(nativeTestMiddleware)
-	app.Use(irisMiddleware)
+	app.Use(sirisMiddleware)
 
 	// Method GET: http://localhost:8080/
 	app.Get("/", func(ctx context.Context) {
@@ -25,7 +25,7 @@ func main() {
 
 	// http://localhost:8080
 	// http://localhost:8080/ok
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 func nativeTestMiddleware(w http.ResponseWriter, r *http.Request) {

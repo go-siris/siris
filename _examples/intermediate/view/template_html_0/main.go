@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 func main() {
-	app := iris.New() // defaults to these
+	app := siris.New() // defaults to these
 
 	// - standard html  | view.HTML(...)
 	// - django         | view.Django(...)
@@ -32,12 +32,12 @@ func main() {
 	app.Get("/", hi)
 
 	// http://localhost:8080
-	app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8")) // defaults to that but you can change it.
+	app.Run(siris.Addr(":8080"), siris.WithCharset("UTF-8")) // defaults to that but you can change it.
 }
 
 func hi(ctx context.Context) {
 	ctx.ViewData("Title", "Hi Page")
-	ctx.ViewData("Name", "Iris") // {{.Name}} will render: Iris
+	ctx.ViewData("Name", "siris") // {{.Name}} will render: Iris
 	// ctx.ViewData("", myCcustomStruct{})
 	ctx.View("hi.html")
 }

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 // same as embedding-single-page-application but without go-bindata, the files are "physical" stored in the
@@ -13,8 +13,8 @@ var page = struct {
 	Title string
 }{"Welcome"}
 
-func newApp() *iris.Application {
-	app := iris.New()
+func newApp() *siris.Application {
+	app := siris.New()
 	app.AttachView(view.HTML("./public", ".html"))
 
 	app.Get("/", func(ctx context.Context) {
@@ -40,5 +40,5 @@ func main() {
 	// http://localhost:8080/index.html
 	// http://localhost:8080/app.js
 	// http://localhost:8080/css/main.css
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

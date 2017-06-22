@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/kataras/iris/core/logger"
+	"github.com/go-siris/siris/core/logger"
 )
 
 func TestLog(t *testing.T) {

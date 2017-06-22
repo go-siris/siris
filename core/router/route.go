@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/router/macro"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/router/macro"
 )
 
 // Route contains the information about a registered Route.

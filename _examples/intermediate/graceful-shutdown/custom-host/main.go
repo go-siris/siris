@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/host"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/host"
 )
 
 // The difference from its parent main.go is that
@@ -15,7 +15,7 @@ import (
 // and be notified about its .Shutdown call.
 // Almost the same as before.
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// output startup banner and error logs on os.Stdout
 
 	app.Get("/", func(ctx context.Context) {
@@ -44,7 +44,7 @@ func main() {
 		srv.Shutdown(ctx)       // Shutdown the supervisor, only this way the proc.Host().Done will be notified
 		// the proc.Host().Shutdown, closes the underline server but no the supervisor.
 		// This behavior was choosen because is inneed for custom maintanance services
-		// (i.e restart server every week without loosing connections) which you can easly adapt with Iris.
+		// (i.e restart server every week without loosing connections) which you can easly adapt with siris.
 	}))
 
 	// schedule a task to be notify when the server was closed by our interrutp handler,

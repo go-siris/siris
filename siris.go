@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package iris
+package siris
 
 import (
 	// std packages
@@ -15,19 +15,19 @@ import (
 	"time"
 
 	// context for the handlers
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/context"
 	// core packages, needed to build the application
-	"github.com/kataras/iris/core/errors"
-	"github.com/kataras/iris/core/host"
-	"github.com/kataras/iris/core/logger"
-	"github.com/kataras/iris/core/nettools"
-	"github.com/kataras/iris/core/router"
+	"github.com/go-siris/siris/core/errors"
+	"github.com/go-siris/siris/core/host"
+	"github.com/go-siris/siris/core/logger"
+	"github.com/go-siris/siris/core/nettools"
+	"github.com/go-siris/siris/core/router"
 	// sessions and view
-	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/view"
 	// middleware used in Default method
-	requestLogger "github.com/kataras/iris/middleware/logger"
-	"github.com/kataras/iris/middleware/recover"
+	requestLogger "github.com/go-siris/siris/middleware/logger"
+	"github.com/go-siris/siris/middleware/recover"
 )
 
 const (
@@ -40,7 +40,7 @@ const (
 
 	// Version is the current version number of the Iris Web framework.
 	//
-	// Look https://github.com/kataras/iris#where-can-i-find-older-versions for older versions.
+	// Look https://github.com/go-siris/siris#where-can-i-find-older-versions for older versions.
 	Version = "7.2.0"
 )
 
@@ -113,7 +113,7 @@ func Default() *Application {
 
 	app.AttachView(view.HTML("./templates", ".html"))
 	app.AttachSessionManager(sessions.New(sessions.Config{
-		Cookie:  "irissessionid",
+		Cookie:  "sirissessionid",
 		Expires: 7 * (24 * time.Hour), // 1 week
 	}))
 
@@ -139,7 +139,7 @@ func (app *Application) Configure(configurators ...Configurator) *Application {
 
 // Build sets up, once, the framework.
 // It builds the default router with its default macros
-// and the template functions that are very-closed to Iris.
+// and the template functions that are very-closed to siris.
 func (app *Application) Build() (err error) {
 	app.once.Do(func() {
 		// view engine
@@ -421,7 +421,7 @@ func (app *Application) SessionManager() (sessions.Sessions, error) {
 //
 // Use that instead of `StaticWeb` for root "/" file server.
 //
-// Example: https://github.com/kataras/iris/tree/master/_examples/beginner/file-server/single-page-application
+// Example: https://github.com/go-siris/siris/tree/master/_examples/beginner/file-server/single-page-application
 func (app *Application) SPA(assetHandler context.Handler) {
 	s := router.NewSPABuilder(assetHandler)
 	wrapper := s.BuildWrapper(app.ContextPool)

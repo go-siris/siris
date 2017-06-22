@@ -22,7 +22,7 @@ import (
 s := New(...)
 s.UseDatabase(myDatabase) // <---
 
-app := iris.New()
+app := siris.New()
 app.Adapt(s)
 
 app.Listen(":8080")

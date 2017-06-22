@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package iris
+package siris
 
 // The below code will be removed at the next release.
-// It's here to make your overall experience more familiar with the APIs you used before Iris.
+// It's here to make your overall experience more familiar with the APIs you used before siris.
 import (
 	"net"
 	"net/url"
 	"os"
 
-	"github.com/kataras/iris/cache"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/handlerconv"
-	"github.com/kataras/iris/core/host"
-	"github.com/kataras/iris/core/nettools"
+	"github.com/go-siris/siris/cache"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/handlerconv"
+	"github.com/go-siris/siris/core/host"
+	"github.com/go-siris/siris/core/nettools"
 )
 
 // ToHandler converts native http.Handler & http.HandlerFunc to context.Handler.
@@ -32,11 +32,11 @@ func ToHandler(handler interface{}) context.Handler {
 
 // Cache provides cache capabilities to a route's handler.
 // Usage:
-// Get("/", iris.Cache(time.Duration(10*time.Second)), func(ctx context.Context){
+// Get("/", siris.Cache(time.Duration(10*time.Second)), func(ctx context.Context){
 //    ctx.Writef("Hello, world!") // or a template or anything else
 // })
 //
-// Deprecated. Use "github.com/kataras/iris/cache" sub-package which contains the full features instead.
+// Deprecated. Use "github.com/go-siris/siris/cache" sub-package which contains the full features instead.
 var Cache = cache.Handler
 
 // CheckErr is the old `Must`. It panics on errors as expected with
@@ -207,5 +207,5 @@ const (
 	MethodPatch   = "PATCH"
 	MethodOptions = "OPTIONS"
 	MethodTrace   = "TRACE"
-	// MethodNone is declared at iris.go, it will stay.
+	// MethodNone is declared at siris.go, it will stay.
 )

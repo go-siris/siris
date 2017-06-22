@@ -1,6 +1,6 @@
 # Examples
 
-This folder provides easy to understand code snippets on how to get started with web development with the Go programming language using the [Iris](https://github.com/kataras/iris) web framework.
+This folder provides easy to understand code snippets on how to get started with web development with the Go programming language using the [Iris](https://github.com/go-siris/siris) web framework.
 
 It doesn't contains "best ways" neither explains all its features. It's just a simple, practical cookbook for young Gophers!
 
@@ -105,6 +105,6 @@ It doesn't contains "best ways" neither explains all its features. It's just a s
 
 You may want to check out examples for jwt, cors and the rest of community-maden middleware by clicking [here](https://github.com/iris-contrib/middleware)
 
-> Do not forget to [star or watch the project](https://github.com/kataras/iris/stargazers) in order to stay updated with the latest tech trends, it takes some seconds for the sake of go!
+> Do not forget to [star or watch the project](https://github.com/go-siris/siris/stargazers) in order to stay updated with the latest tech trends, it takes some seconds for the sake of go!
 
-> Developers should read the official [documentation](https://godoc.org/github.com/kataras/iris) in depth, for deep understanding.
+> Developers should read the official [documentation](https://godoc.org/github.com/go-siris/siris) in depth, for deep understanding.

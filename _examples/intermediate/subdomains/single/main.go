@@ -2,12 +2,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// subdomains works with all available routers, like other features too.
 
@@ -43,5 +43,5 @@ func main() {
 	// http://admin.mydomain.com/hey2
 	// http://mydomain.com
 	// http://mydomain.com/hey
-	app.Run(iris.Addr("mydomain.com:80")) // for beginners: look ../hosts file
+	app.Run(siris.Addr("mydomain.com:80")) // for beginners: look ../hosts file
 }

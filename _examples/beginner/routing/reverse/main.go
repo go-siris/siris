@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/router"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/router"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// need for manually reverse routing when needed outside of view engine.
 	// you normally don't need it because of the {{ urlpath "routename" "path" "values" "here"}}
 	rv := router.NewRoutePathReverser(app)
@@ -31,5 +31,5 @@ func main() {
 	// http://localhost:8080/reverse_myroute
 	// http://localhost:8080/execute_myroute
 	// http://localhost:8080/anything/any/path/here
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

@@ -3,9 +3,9 @@ package main
 import (
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/sessions"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/sessions"
 )
 
 type businessModel struct {
@@ -13,11 +13,11 @@ type businessModel struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	mySessions := sessions.New(sessions.Config{
 		// Cookie string, the session's client cookie name, for example: "mysessionid"
 		//
-		// Defaults to "irissessionid"
+		// Defaults to "sirissessionid"
 		Cookie: "mysessionid",
 		// it's time.Duration, from the time cookie is created, how long it can be alive?
 		// 0 means no expire.
@@ -39,7 +39,7 @@ func main() {
 
 		//set session values.
 
-		ctx.Session().Set("name", "iris")
+		ctx.Session().Set("name", "siris")
 
 		//test if setted here
 		ctx.Writef("All ok session setted to: %s", ctx.Session().GetString("name"))
@@ -116,5 +116,5 @@ func main() {
 		// the name should remains "Edward"
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

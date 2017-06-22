@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
-func newApp() *iris.Application {
-	app := iris.New()
+func newApp() *siris.Application {
+	app := siris.New()
 
 	app.Get("/", info)
 	app.Get("/about", info)
@@ -50,7 +50,7 @@ func main() {
 	// http://www.iris-go.com/contact
 	// http://www.iris-go.com/api/users
 	// http://www.iris-go.com/api/users/42
-	if err := app.Run(iris.Addr("iris-go.com:80")); err != nil {
+	if err := app.Run(siris.Addr("siris-go.com:80")); err != nil {
 		panic(err)
 	}
 }

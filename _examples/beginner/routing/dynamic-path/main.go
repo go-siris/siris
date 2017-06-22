@@ -3,12 +3,12 @@ package main
 import (
 	"strconv"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// At the previous example "routing/basic",
 	// we've seen static routes, group of routes, subdomains, wildcard subdomains, a small example of parameterized path
@@ -16,7 +16,7 @@ func main() {
 
 	// Iris, like net/http std package registers route's handlers
 	// by a Handler, the Iris' type of handler is just a func(ctx context.Context)
-	// where context comes from github.com/kataras/iris/context.
+	// where context comes from github.com/go-siris/siris/context.
 	// Until go 1.9 you will have to import that package too, after go 1.9 this will be not be necessary.
 	//
 	// Iris has the easiest and the most powerful routing process you have ever meet.
@@ -86,7 +86,7 @@ func main() {
 	// at the func(argument ...) you can have any standard type, it will be validated before the server starts
 	// so don't care about performance here, the only thing it runs at serve time is the returning func(paramValue string) bool.
 	//
-	// {param:string equal(iris)} , "iris" will be the argument here:
+	// {param:string equal(siris)} , "siris" will be the argument here:
 	// app.Macros().String.RegisterFunc("equal", func(argument string) func(paramValue string) bool {
 	//  return func(paramValue string){ return argument == paramValue }
 	// })
@@ -177,7 +177,7 @@ func main() {
 	// that can be used to communicate between handlers and middleware(s) goes to
 	// ctx.Values(), path parameters and the rest of any custom values are separated for your own good.
 
-	if err := app.Run(iris.Addr(":8080")); err != nil {
+	if err := app.Run(siris.Addr(":8080")); err != nil {
 		panic(err)
 	}
 }

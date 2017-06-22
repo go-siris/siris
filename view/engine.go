@@ -9,7 +9,7 @@ import (
 )
 
 // NoLayout disables the configuration's layout for a specific execution.
-const NoLayout = "iris.nolayout"
+const NoLayout = "siris.nolayout"
 
 // returns empty if it's no layout or empty layout and empty configuration's layout.
 func getLayout(layout string, globalLayout string) string {
@@ -33,7 +33,7 @@ type Options interface {
 	GetData() interface{}
 } // this Options interface is implemented inside context, in order to use one import path for all context's methods.
 
-// Engine is the interface which all viwe engines should be implemented in order to be adapted inside Iris.
+// Engine is the interface which all viwe engines should be implemented in order to be adapted inside siris.
 type Engine interface {
 	// Load should load the templates from a directory of by binary(assets/go-bindata).
 	Load() error

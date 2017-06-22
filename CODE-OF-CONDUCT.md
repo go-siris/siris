@@ -24,7 +24,7 @@ This code of conduct applies to all repos and communities for kataras-managed op
 
 ## Reporting Code of Conduct Issues
 
-We encourage all communities to resolve issues on their own whenever possible. This builds a broader and deeper understanding and ultimately a healthier interaction. In the event that an issue cannot be resolved locally, please feel free to report your concerns by mail to kataras2006@hotmail.com or kataras@tutanota.com (secure way).
+We encourage all communities to resolve issues on their own whenever possible. This builds a broader and deeper understanding and ultimately a healthier interaction. In the event that an issue cannot be resolved locally, please feel free to report your concerns by mail to github@josef-froehle.de (secure way).
 
 In your report please include:
 
@@ -34,7 +34,7 @@ In your report please include:
 * Any additional information that may be helpful.
 
 
-All reports will be reviewed by [kataras](https://github.com/kataras) and will result in a response that is deemed necessary and appropriate to the circumstances. Where additional perspectives are needed, I may seek insight from others with relevant expertise or experience. The confidentiality of the person reporting the incident will be kept at all times. Involved parties are never part of the review team.
+All reports will be reviewed by [go-siris](https://github.com/go-siris) members and will result in a response that is deemed necessary and appropriate to the circumstances. Where additional perspectives are needed, I may seek insight from others with relevant expertise or experience. The confidentiality of the person reporting the incident will be kept at all times. Involved parties are never part of the review team.
 
 Anyone asked to stop unacceptable behavior is expected to comply immediately. If an individual engages in **unacceptable behavior**, the review team may take any action they deem appropriate, **including a permanent ban from the community**.
 

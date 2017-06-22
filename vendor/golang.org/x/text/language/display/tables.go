@@ -29469,7 +29469,7 @@ const etScriptStr string = "" + // Size: 1555 bytes
 	"nkoonüšuogamsantaliOrhonioriaosmaniPalmyravanapermiphakpapahlavi raidkir" +
 	"ipahlavi psalmikiripahlavi raamatukirifoiniikiaPollardi miaopartia raidk" +
 	"iriredžangirongorongoruunikiriSamaariasaratiLõuna-Araabiasauraštraviipek" +
-	"iriShaw’ kirišaaradasiddhamihudavadisingalisorasundasilotisüüriasüüria e" +
+	"sirishaw’ kirišaaradasiddhamihudavadisingalisorasundasilotisüüriasüüria e" +
 	"strangeloläänesüüriaidasüüriatagbanvataakritai-lööuus tai-lõõtamilitangu" +
 	"uditai-vietiteluguTengwaritifinagitagalogitaanataitiibetitirhutaugaritiv" +
 	"ainähtava kõnehoovoleaivanapärsiasumeri-akadi kiilkirijiipäritudmatemaat" +

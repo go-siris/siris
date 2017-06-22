@@ -2,12 +2,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Get("/", func(ctx context.Context) {
 		ctx.Writef("Hello from SECURE SERVER!")
@@ -27,5 +27,5 @@ func main() {
 	// NOTE: This may not work on local addresses like this,
 	// use it on a real domain, because
 	// it uses the 	"golang.org/x/crypto/acme/autocert" package.
-	app.Run(iris.AutoTLS("localhost:443"))
+	app.Run(siris.AutoTLS("localhost:443"))
 }

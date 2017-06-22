@@ -5,10 +5,10 @@
 package client
 
 import (
-	"github.com/kataras/iris/cache/cfg"
-	"github.com/kataras/iris/cache/client/rule"
-	"github.com/kataras/iris/cache/ruleset"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/cache/cfg"
+	"github.com/go-siris/siris/cache/client/rule"
+	"github.com/go-siris/siris/cache/ruleset"
+	"github.com/go-siris/siris/context"
 )
 
 // DefaultRuleSet is a list of the default pre-cache validators

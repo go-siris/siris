@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris/core/errors"
 	"github.com/valyala/bytebufferpool"
 )
 
@@ -35,7 +35,7 @@ const (
 )
 
 const (
-	websocketMessagePrefix          = "iris-websocket-message:"
+	websocketMessagePrefix          = "siris-websocket-message:"
 	websocketMessageSeparator       = ";"
 	websocketMessagePrefixLen       = len(websocketMessagePrefix)
 	websocketMessageSeparatorLen    = len(websocketMessageSeparator)

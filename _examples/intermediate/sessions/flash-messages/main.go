@@ -1,20 +1,20 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/sessions"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/sessions"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// output startup banner and error logs on os.Stdout
 
 	sess := sessions.New(sessions.Config{Cookie: "myappsessionid"})
 	app.AttachSessionManager(sess)
 
 	app.Get("/set", func(ctx context.Context) {
-		ctx.Session().SetFlash("name", "iris")
+		ctx.Session().SetFlash("name", "siris")
 		ctx.Writef("Message setted, is available for the next request")
 	})
 
@@ -39,5 +39,5 @@ func main() {
 
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

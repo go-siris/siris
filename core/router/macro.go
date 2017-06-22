@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/errors"
-	"github.com/kataras/iris/core/router/macro"
-	"github.com/kataras/iris/core/router/macro/interpreter/ast"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/errors"
+	"github.com/go-siris/siris/core/router/macro"
+	"github.com/go-siris/siris/core/router/macro/interpreter/ast"
 )
 
 // defaultMacros returns a new macro map which

@@ -8,8 +8,8 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 // Server is the websocket server,
@@ -17,9 +17,9 @@ import (
 type Server interface {
 	// Attach adapts the websocket server to an Iris instance.
 	// see websocket.go
-	Attach(app *iris.Application)
+	Attach(app *siris.Application)
 
-	// Handler returns the iris.Handler
+	// Handler returns the siris.Handler
 	// which is setted to the 'Websocket Endpoint path',
 	// the client should target to this handler's developer's custom path
 	// ex: app.Any("/myendpoint", mywebsocket.Handler())
@@ -208,7 +208,7 @@ func (s *server) Handler() context.Handler {
 		conn, err := upgrader.Upgrade(ctx.ResponseWriter(), ctx.Request(), ctx.ResponseWriter().Header())
 		if err != nil {
 			ctx.Application().Log("websocket error: %v", err)
-			ctx.StatusCode(iris.StatusServiceUnavailable)
+			ctx.StatusCode(siris.StatusServiceUnavailable)
 			return
 		}
 		s.handleConnection(ctx, conn)

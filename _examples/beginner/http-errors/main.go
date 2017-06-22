@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
-	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
+	app.OnErrorCode(siris.StatusInternalServerError, func(ctx context.Context) {
 		ctx.HTML("Message: <b>" + ctx.Values().GetString("message") + "</b>")
 	})
 
@@ -25,5 +25,5 @@ func main() {
 		ctx.Writef("Hello %s", ctx.Params().Get("firstname"))
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

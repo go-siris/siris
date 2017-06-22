@@ -12,7 +12,7 @@ import (
 
 const (
 	// DefaultCookieName the secret cookie's name for sessions
-	DefaultCookieName = "irissessionid"
+	DefaultCookieName = "sirissessionid"
 	// DefaultCookieLength is the default Session Manager's CookieLength, which is 32
 	DefaultCookieLength = 32
 )
@@ -22,7 +22,7 @@ type (
 	Config struct {
 		// Cookie string, the session's client cookie name, for example: "mysessionid"
 		//
-		// Defaults to "irissessionid"
+		// Defaults to "sirissessionid"
 		Cookie string
 
 		// CookieSecureTLS set to true if server is running over TLS

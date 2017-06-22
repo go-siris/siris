@@ -3,12 +3,12 @@ package main
 import (
 	"net/http"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Get("/", func(ctx context.Context) {
 		ctx.Writef("Hello from the server")
@@ -21,11 +21,11 @@ func main() {
 	srv := &http.Server{Addr: ":8080" /* Any custom fields here: Handler and ErrorLog are setted to the server automatically */}
 	// http://localhost:8080/
 	// http://localhost:8080/mypath
-	app.Run(iris.Server(srv)) // same as app.Run(iris.Addr(":8080"))
+	app.Run(siris.Server(srv)) // same as app.Run(siris.Addr(":8080"))
 
 	// More:
 	// see "multi" if you need to use more than one server at the same app.
 	//
-	// for a custom listener use: iris.Listener(net.Listener) or
-	// iris.TLS(cert,key) or iris.AutoTLS(), see "custom-listener" example for those.
+	// for a custom listener use: siris.Listener(net.Listener) or
+	// siris.TLS(cert,key) or siris.AutoTLS(), see "custom-listener" example for those.
 }

@@ -10,9 +10,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/nettools"
-	"github.com/kataras/iris/core/router/node"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/nettools"
+	"github.com/go-siris/siris/core/router/node"
 )
 
 // RequestHandler the middle man between acquiring a context and releasing it.

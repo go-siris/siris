@@ -4,8 +4,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/errors"
 )
 
 // Nodes a conversion type for []*node.

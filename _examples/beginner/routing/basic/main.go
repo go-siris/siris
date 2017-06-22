@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// registers a custom handler for 404 not found http (error) status code,
-	// fires when route not found or manually by ctx.StatusCode(iris.StatusNotFound).
-	app.OnErrorCode(iris.StatusNotFound, notFoundHandler)
+	// fires when route not found or manually by ctx.StatusCode(siris.StatusNotFound).
+	app.OnErrorCode(siris.StatusNotFound, notFoundHandler)
 
 	// GET -> HTTP Method
 	// / -> Path
@@ -18,7 +18,7 @@ func main() {
 	//
 	// Third receiver should contains the route's handler(s), they are executed by order.
 	app.Handle("GET", "/", func(ctx context.Context) {
-		// navigate to the middle of $GOPATH/src/github.com/kataras/iris/context/context.go
+		// navigate to the middle of $GOPATH/src/github.com/go-siris/siris/context/context.go
 		// to overview all context's method (there a lot of them, read that and you will learn how iris works too)
 		ctx.HTML("Hello from " + ctx.Path()) // Hello from /
 	})
@@ -36,7 +36,7 @@ func main() {
 		if err != nil {
 			ctx.Writef("error while trying to parse userid parameter," +
 				"this will never happen if :int is being used because if it's not integer it will fire Not Found automatically.")
-			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.StatusCode(siris.StatusBadRequest)
 			return
 		}
 
@@ -72,7 +72,7 @@ func main() {
 	// GET: http://localhost:8080/admin
 	adminRoutes.Get("/", func(ctx context.Context) {
 		// [...]
-		ctx.StatusCode(iris.StatusOK) // default is 200 == iris.StatusOK
+		ctx.StatusCode(siris.StatusOK) // default is 200 == siris.StatusOK
 		ctx.HTML("<h1>Hello from admin/</h1>")
 
 		ctx.Next() // in order to execute the party's "Done" Handler(s)
@@ -134,7 +134,7 @@ func main() {
 	//  http://v1.localhost:8080/api/users
 	//  http://v1.localhost:8080/api/users/42
 	//  http://anything.localhost:8080
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 func adminMiddleware(ctx context.Context) {
@@ -148,7 +148,7 @@ func donateHandler(ctx context.Context) {
 
 	// let's pass a value to the next handler
 	// Values is the way handlers(or middleware) are communicating between each other.
-	ctx.Values().Set("donate_url", "https://github.com/kataras/iris#buy-me-a-cup-of-coffee")
+	ctx.Values().Set("donate_url", "https://github.com/go-siris/siris#buy-me-a-cup-of-coffee")
 	ctx.Next() // in order to execute the next handler in the chain, look donate route.
 }
 

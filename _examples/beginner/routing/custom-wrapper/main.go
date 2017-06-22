@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 // In this example you'll just see one use case of .WrapRouter.
@@ -16,11 +16,11 @@ import (
 // just navigate to the "beginner/file-server/single-page-application" example.
 //
 // This is just for the proof of concept, you can skip this tutorial if it's too much for you.
-func newApp() *iris.Application {
+func newApp() *siris.Application {
 
-	app := iris.New()
+	app := siris.New()
 
-	app.OnErrorCode(iris.StatusNotFound, func(ctx context.Context) {
+	app.OnErrorCode(siris.StatusNotFound, func(ctx context.Context) {
 		ctx.HTML("<b>Resource Not found</b>")
 	})
 
@@ -79,7 +79,7 @@ func main() {
 	// http://localhost:8080/app.js
 	// http://localhost:8080/css/main.css
 	// http://localhost:8080/profile/kataras
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 	// Note: In this example we just saw one use case,
 	// you may want to .WrapRouter or .Downgrade in order to bypass the iris' default router, i.e:

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/typescript"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/typescript"
 )
 
 // NOTE: Some machines don't allow to install typescript automatically, so if you don't have typescript installed
@@ -11,14 +11,14 @@ import (
 // 2. open your terminal and execute: npm install -g typescript
 // 3. start your iris server, it should be work, as expected, now.
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	ts := typescript.New()
 	ts.Config.Dir = "./www/scripts"
 	ts.Attach(app) // attach the application to the typescript compiler
 
 	app.StaticWeb("/", "./www") // serve the index.html
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 // open http://localhost:8080

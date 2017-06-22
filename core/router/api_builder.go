@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/errors"
-	"github.com/kataras/iris/core/router/macro"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/errors"
+	"github.com/go-siris/siris/core/router/macro"
 )
 
 const (
@@ -188,7 +188,7 @@ func (rb *APIBuilder) Party(relativePath string, handlers ...context.Handler) Pa
 // Macros returns the macro map which is responsible
 // to register custom macro functions for all routes.
 //
-// Learn more at:  https://github.com/kataras/iris/tree/master/_examples/beginner/routing/dynamic-path
+// Learn more at:  https://github.com/go-siris/siris/tree/master/_examples/beginner/routing/dynamic-path
 func (rb *APIBuilder) Macros() *macro.Map {
 	return rb.macros
 }
@@ -357,7 +357,7 @@ func (rb *APIBuilder) registerResourceRoute(reqPath string, h context.Handler) (
 // is appended to the party's relative path and stripped here.
 //
 // Usage:
-// app := iris.New()
+// app := siris.New()
 // ...
 // mySubdomainFsServer := app.Party("mysubdomain.")
 // h := mySubdomainFsServer.StaticHandler("./static_files", false, false)
@@ -427,7 +427,7 @@ func (rb *APIBuilder) StaticContent(reqPath string, cType string, content []byte
 // embedded into executable files.
 //
 //
-// Examples: https://github.com/kataras/iris/tree/master/_examples/file-server
+// Examples: https://github.com/go-siris/siris/tree/master/_examples/file-server
 func (rb *APIBuilder) StaticEmbeddedHandler(vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string) context.Handler {
 	// Notes:
 	// This doesn't need to be APIBuilder's scope,
@@ -443,7 +443,7 @@ func (rb *APIBuilder) StaticEmbeddedHandler(vdir string, assetFn func(name strin
 //
 // Returns the GET *Route.
 //
-// Examples: https://github.com/kataras/iris/tree/master/_examples/file-server
+// Examples: https://github.com/go-siris/siris/tree/master/_examples/file-server
 func (rb *APIBuilder) StaticEmbedded(requestPath string, vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string) (*Route, error) {
 	fullpath := joinPath(rb.relativePath, requestPath)
 	requestPath = joinPath(fullpath, WildcardParam("file"))
@@ -593,7 +593,7 @@ func (rb *APIBuilder) FireErrorCode(ctx context.Context) {
 // Layout oerrides the parent template layout with a more specific layout for this Party
 // returns this Party, to continue as normal
 // Usage:
-// app := iris.New()
+// app := siris.New()
 // my := app.Party("/my").Layout("layouts/mylayout.html")
 // 	{
 // 		my.Get("/", func(ctx context.Context) {

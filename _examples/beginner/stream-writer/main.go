@@ -5,12 +5,12 @@ import (
 	"io"
 	"time" // showcase the delay
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	timeWaitForCloseStream := 4 * time.Second
 
@@ -48,5 +48,5 @@ func main() {
 		})
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

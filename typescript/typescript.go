@@ -15,8 +15,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/typescript/npm"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/typescript/npm"
 )
 
 type (
@@ -223,7 +223,7 @@ func (t *Typescript) getTypescriptFiles() []string {
 }
 
 // Attach attaches the typescript to one or more Iris instance(s).
-func (t *Typescript) Attach(app *iris.Application) {
+func (t *Typescript) Attach(app *siris.Application) {
 	t.log = app.Log
 	t.start()
 }

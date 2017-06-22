@@ -1,18 +1,18 @@
 package main
 
 import (
-	"github.com/kataras/iris"
+	"github.com/go-siris/siris"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// [...]
 
 	// Good when you have two configurations, one for development and a different one for production use.
-	app.Run(iris.Addr(":8080"), iris.WithConfiguration(iris.YAML("./configs/iris.yml")))
+	app.Run(siris.Addr(":8080"), siris.WithConfiguration(siris.YAML("./configs/iris.yml")))
 
 	// or before run:
-	// app.Configure(iris.WithConfiguration(iris.YAML("./configs/iris.yml")))
-	// app.Run(iris.Addr(":8080"))
+	// app.Configure(siris.WithConfiguration(siris.YAML("./configs/iris.yml")))
+	// app.Run(siris.Addr(":8080"))
 }

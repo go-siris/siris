@@ -20,15 +20,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/errors"
 )
 
 // StaticEmbeddedHandler returns a Handler which can serve
 // embedded into executable files.
 //
 //
-// Examples: https://github.com/kataras/iris/tree/master/_examples/file-server
+// Examples: https://github.com/go-siris/siris/tree/master/_examples/file-server
 func StaticEmbeddedHandler(vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string) context.Handler {
 	// Depends on the command the user gave to the go-bindata
 	// the assset path (names) may be or may not be prepended with a slash.
@@ -108,9 +108,9 @@ func StaticEmbeddedHandler(vdir string, assetFn func(name string) ([]byte, error
 // if this function is not enough for you and you want to test more than one parameterized path
 // then use the:  if c := ExecRoute(r); c == nil { /*  move to the next, the route is not valid */ }
 //
-// You can find the Route by iris.Default.Routes().Lookup("theRouteName")
-// you can set a route name as: myRoute := iris.Default.Get("/mypath", handler)("theRouteName")
-// that will set a name to the route and returns its iris.Route instance for further usage.
+// You can find the Route by siris.Default.Routes().Lookup("theRouteName")
+// you can set a route name as: myRoute := siris.Default.Get("/mypath", handler)("theRouteName")
+// that will set a name to the route and returns its siris.Route instance for further usage.
 //
 // if the route found then it executes that and don't continue to the next handler
 // if not found then continue to the next handler
@@ -140,10 +140,10 @@ func Prioritize(r *Route) context.Handler {
 //
 //
 // Usage:
-// app := iris.New()
+// app := siris.New()
 // ...
-// fileserver := iris.StaticHandler("./static_files", false, false)
-// h := iris.StripPrefix("/static", fileserver)
+// fileserver := siris.StaticHandler("./static_files", false, false)
+// h := siris.StripPrefix("/static", fileserver)
 // /* http://mydomain.com/static/css/style.css */
 // app.Get("/static", h)
 // ...
@@ -157,7 +157,7 @@ func StaticHandler(systemPath string, showList bool, enableGzip bool, exceptRout
 }
 
 // StaticHandlerBuilder is the web file system's Handler builder
-// use that or the iris.StaticHandler/StaticWeb methods
+// use that or the siris.StaticHandler/StaticWeb methods
 type StaticHandlerBuilder interface {
 	Gzip(enable bool) StaticHandlerBuilder
 	Listing(listDirectoriesOnOff bool) StaticHandlerBuilder
@@ -208,7 +208,7 @@ func Abs(path string) string {
 // Note that, this static builder returns a Handler
 // it doesn't cares about the rest of your iris configuration.
 //
-// Use the iris.StaticHandler/StaticWeb in order to serve static files on more automatic way
+// Use the siris.StaticHandler/StaticWeb in order to serve static files on more automatic way
 // this builder is used by people who have more complicated application
 // structure and want a fluent api to work on.
 func NewStaticHandlerBuilder(dir string) StaticHandlerBuilder {
@@ -346,8 +346,8 @@ func (w *fsHandler) Build() context.Handler {
 // replying with an HTTP 404 not found error.
 //
 // Usage:
-// fileserver := iris.StaticHandler("./static_files", false, false)
-// h := iris.StripPrefix("/static", fileserver)
+// fileserver := siris.StaticHandler("./static_files", false, false)
+// h := siris.StripPrefix("/static", fileserver)
 // app.Get("/static", h)
 //
 func StripPrefix(prefix string, h context.Handler) context.Handler {

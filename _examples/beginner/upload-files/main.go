@@ -8,13 +8,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.AttachView(view.HTML("./templates", ".html"))
 
@@ -42,7 +42,7 @@ func main() {
 			file, info, err := ctx.FormFile("uploadfile")
 
 			if err != nil {
-				ctx.StatusCode(iris.StatusInternalServerError)
+				ctx.StatusCode(siris.StatusInternalServerError)
 				ctx.HTML("Error while uploading: <b>" + err.Error() + "</b>")
 				return
 			}
@@ -56,7 +56,7 @@ func main() {
 				os.O_WRONLY|os.O_CREATE, 0666)
 
 			if err != nil {
-				ctx.StatusCode(iris.StatusInternalServerError)
+				ctx.StatusCode(siris.StatusInternalServerError)
 				ctx.HTML("Error while uploading: <b>" + err.Error() + "</b>")
 				return
 			}
@@ -66,5 +66,5 @@ func main() {
 		})
 
 	// start the server at http://localhost:8080
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

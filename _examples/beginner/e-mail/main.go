@@ -5,14 +5,14 @@ import (
 
 	"github.com/kataras/go-mailer"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 func main() {
 
-	app := iris.New()
+	app := siris.New()
 	app.AttachView(view.HTML("./templates", ".html"))
 
 	// change these to your own settings
@@ -31,13 +31,13 @@ func main() {
 
 	// standalone
 
-	//mailService.Send("iris e-mail test subject", "</h1>outside of context before server's listen!</h1>", to...)
+	//mailService.Send("siris e-mail test subject", "</h1>outside of context before server's listen!</h1>", to...)
 
 	//inside handler
 	app.Get("/send", func(ctx context.Context) {
 		content := `<h1>Hello From Iris web framework</h1> <br/><br/> <span style="color:blue"> This is the rich message body </span>`
 
-		err := mailService.Send("iris e-mail just t3st subject", content, to...)
+		err := mailService.Send("siris e-mail just t3st subject", content, to...)
 
 		if err != nil {
 			ctx.HTML("<b> Problem while sending the e-mail: " + err.Error())
@@ -73,15 +73,15 @@ func main() {
 		})
 		content := buff.String()
 
-		err := mailService.Send("iris e-mail just t3st subject", content, to...)
+		err := mailService.Send("siris e-mail just t3st subject", content, to...)
 
 		if err != nil {
-			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.StatusCode(siris.StatusBadRequest)
 			ctx.HTML("<b> Sent failed with error: " + err.Error())
 		} else {
 			ctx.HTML("<h1> SUCCESS </h1>")
 		}
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

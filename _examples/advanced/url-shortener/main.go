@@ -14,13 +14,13 @@ import (
 
 	"github.com/boltdb/bolt"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// assign a variable to the DB so we can use its features later
 	db := NewDB("shortener.db")
@@ -52,18 +52,18 @@ func main() {
 	// used on http://localhost:8080/u/dsaoj41u321dsa
 	execShortURL := func(ctx context.Context, key string) {
 		if key == "" {
-			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.StatusCode(siris.StatusBadRequest)
 			return
 		}
 
 		value := db.Get(key)
 		if value == "" {
-			ctx.StatusCode(iris.StatusNotFound)
+			ctx.StatusCode(siris.StatusNotFound)
 			ctx.Writef("Short URL for key: '%s' not found", key)
 			return
 		}
 
-		ctx.Redirect(value, iris.StatusTemporaryRedirect)
+		ctx.Redirect(value, siris.StatusTemporaryRedirect)
 	}
 	app.Get("/u/:shortkey", func(ctx context.Context) {
 		execShortURL(ctx, ctx.Params().Get("shortkey"))
@@ -82,7 +82,7 @@ func main() {
 					ctx.ViewData("form_result", "Internal error while saving the URL")
 					app.Log("while saving URL: " + err.Error())
 				} else {
-					ctx.StatusCode(iris.StatusOK)
+					ctx.StatusCode(siris.StatusOK)
 					shortenURL := "http://" + app.ConfigurationReadOnly().GetVHost() + "/u/" + key
 					ctx.ViewData("form_result",
 						template.HTML("<pre><a target='_new' href='"+shortenURL+"'>"+shortenURL+" </a></pre>"))
@@ -94,7 +94,7 @@ func main() {
 		ctx.View("index.html")
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 	db.Close()
 }

@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/websocket"
+	"github.com/go-siris/siris/websocket"
 )
 
 func handleConnection(c websocket.Connection) {
@@ -26,7 +26,7 @@ func handleConnection(c websocket.Connection) {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// create our echo websocket server
 	ws := websocket.New(websocket.Config{
@@ -48,5 +48,5 @@ func main() {
 	// http://localhost:8080
 	// http://localhost:8080
 	// write something, press submit, see the result.
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

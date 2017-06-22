@@ -3,12 +3,12 @@ package main
 import (
 	"net/http"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Get("/", func(ctx context.Context) {
 		ctx.Writef("Hello from the server")
@@ -44,5 +44,5 @@ func main() {
 	// you can just make a new http.Server instead.
 	// http://localhost:8080/
 	// http://localhost:8080/mypath
-	app.Run(iris.Addr(":8080")) // Block here.
+	app.Run(siris.Addr(":8080")) // Block here.
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kataras/iris/core/router/macro/interpreter/ast"
+	"github.com/go-siris/siris/core/router/macro/interpreter/ast"
 )
 
 func TestParseParamError(t *testing.T) {

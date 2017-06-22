@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/Unknwon/i18n"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/context"
 )
 
 type i18nMiddleware struct {
@@ -73,7 +73,7 @@ func New(c Config) context.Handler {
 		}
 		err := i18n.SetMessage(k, v)
 		if err != nil && err != i18n.ErrLangAlreadyExist {
-			panic("Iris i18n Middleware: Failed to set locale file" + k + " Error:" + err.Error())
+			panic("siris i18n Middleware: Failed to set locale file" + k + " Error:" + err.Error())
 		}
 		if firstlanguage == "" {
 			firstlanguage = k

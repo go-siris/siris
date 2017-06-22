@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/kataras/iris"
+	"github.com/go-siris/siris"
 
-	"github.com/kataras/iris/typescript" // optionally
-	"github.com/kataras/iris/typescript/editor"
+	"github.com/go-siris/siris/typescript" // optionally
+	"github.com/go-siris/siris/typescript/editor"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// adapt a router, order doesn't matters
 
 	// optionally but good to have, I didn't put inside editor or the editor in the typescript compiler adaptors
@@ -30,5 +30,5 @@ func main() {
 
 	app.StaticWeb("/", "./www") // serve the index.html
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

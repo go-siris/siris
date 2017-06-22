@@ -8,7 +8,7 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris/core/errors"
 )
 
 // View is responsible to

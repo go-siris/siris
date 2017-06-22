@@ -1,14 +1,14 @@
-# ![Logo created by @santoshanand](logo_white_35_24.png) Iris 
+# ![Logo](go-siris.jpg)
 
 A fast, cross-platform and efficient web framework with robust set of well-designed features, written entirely in Go.
 
-[![Build status](https://api.travis-ci.org/kataras/iris.svg?branch=master&style=flat-square)](https://travis-ci.org/kataras/iris)
+[![Build status](https://api.travis-ci.org/go-siris/siris.svg?branch=master&style=flat-square)](https://travis-ci.org/go-siris/siris)
 [![Report card](https://img.shields.io/badge/report%20card%20-a%2B-F44336.svg?style=flat-square)](http://goreportcard.com/report/kataras/iris)
 [![Support forum](https://img.shields.io/badge/support-page-ec2eb4.svg?style=flat-square)](http://support.iris-go.com)
-[![Examples](https://img.shields.io/badge/howto-examples-3362c2.svg?style=flat-square)](https://github.com/kataras/iris/tree/master/_examples#table-of-contents)
-[![Godocs](https://img.shields.io/badge/7.2.0-%20documentation-5272B4.svg?style=flat-square)](https://godoc.org/github.com/kataras/iris)
+[![Examples](https://img.shields.io/badge/howto-examples-3362c2.svg?style=flat-square)](https://github.com/go-siris/siris/tree/master/_examples#table-of-contents)
+[![Godocs](https://img.shields.io/badge/7.2.0-%20documentation-5272B4.svg?style=flat-square)](https://godoc.org/github.com/go-siris/siris)
 [![Chat](https://img.shields.io/badge/community-%20chat-00BCD4.svg?style=flat-square)](https://kataras.rocket.chat/channel/iris)
-[![Buy me a cup of coffee](https://img.shields.io/badge/support-%20open--source-F4A460.svg?logo=data:image%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDEwMDAiPjxwYXRoIGZpbGw9InJnYigyMjAsMjIwLDIyMCkiIGQ9Ik04ODYuNiwzMDUuM2MtNDUuNywyMDMuMS0xODcsMzEwLjMtNDA5LjYsMzEwLjNoLTc0LjFsLTUxLjUsMzI2LjloLTYybC0zLjIsMjEuMWMtMi4xLDE0LDguNiwyNi40LDIyLjYsMjYuNGgxNTguNWMxOC44LDAsMzQuNy0xMy42LDM3LjctMzIuMmwxLjUtOGwyOS45LTE4OS4zbDEuOS0xMC4zYzIuOS0xOC42LDE4LjktMzIuMiwzNy43LTMyLjJoMjMuNWMxNTMuNSwwLDI3My43LTYyLjQsMzA4LjktMjQyLjdDOTIxLjYsNDA2LjgsOTE2LjcsMzQ4LjYsODg2LjYsMzA1LjN6Ii8%2BPHBhdGggZmlsbD0icmdiKDIyMCwyMjAsMjIwKSIgZD0iTTc5MS45LDgzLjlDNzQ2LjUsMzIuMiw2NjQuNCwxMCw1NTkuNSwxMEgyNTVjLTIxLjQsMC0zOS44LDE1LjUtNDMuMSwzNi44TDg1LDg1MWMtMi41LDE1LjksOS44LDMwLjIsMjUuOCwzMC4ySDI5OWw0Ny4zLTI5OS42bC0xLjUsOS40YzMuMi0yMS4zLDIxLjQtMzYuOCw0Mi45LTM2LjhINDc3YzE3NS41LDAsMzEzLTcxLjIsMzUzLjItMjc3LjVjMS4yLTYuMSwyLjMtMTIuMSwzLjEtMTcuOEM4NDUuMSwxODIuOCw4MzMuMiwxMzAuOCw3OTEuOSw4My45TDc5MS45LDgzLjl6Ii8%2BPC9zdmc%2B)](https://github.com/kataras/iris#buy-me-a-cup-of-coffee)
+[![Buy me a cup of coffee](https://img.shields.io/badge/support-%20open--source-F4A460.svg?logo=data:image%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDEwMDAiPjxwYXRoIGZpbGw9InJnYigyMjAsMjIwLDIyMCkiIGQ9Ik04ODYuNiwzMDUuM2MtNDUuNywyMDMuMS0xODcsMzEwLjMtNDA5LjYsMzEwLjNoLTc0LjFsLTUxLjUsMzI2LjloLTYybC0zLjIsMjEuMWMtMi4xLDE0LDguNiwyNi40LDIyLjYsMjYuNGgxNTguNWMxOC44LDAsMzQuNy0xMy42LDM3LjctMzIuMmwxLjUtOGwyOS45LTE4OS4zbDEuOS0xMC4zYzIuOS0xOC42LDE4LjktMzIuMiwzNy43LTMyLjJoMjMuNWMxNTMuNSwwLDI3My43LTYyLjQsMzA4LjktMjQyLjdDOTIxLjYsNDA2LjgsOTE2LjcsMzQ4LjYsODg2LjYsMzA1LjN6Ii8%2BPHBhdGggZmlsbD0icmdiKDIyMCwyMjAsMjIwKSIgZD0iTTc5MS45LDgzLjlDNzQ2LjUsMzIuMiw2NjQuNCwxMCw1NTkuNSwxMEgyNTVjLTIxLjQsMC0zOS44LDE1LjUtNDMuMSwzNi44TDg1LDg1MWMtMi41LDE1LjksOS44LDMwLjIsMjUuOCwzMC4ySDI5OWw0Ny4zLTI5OS42bC0xLjUsOS40YzMuMi0yMS4zLDIxLjQtMzYuOCw0Mi45LTM2LjhINDc3YzE3NS41LDAsMzEzLTcxLjIsMzUzLjItMjc3LjVjMS4yLTYuMSwyLjMtMTIuMSwzLjEtMTcuOEM4NDUuMSwxODIuOCw4MzMuMiwxMzAuOCw3OTEuOSw4My45TDc5MS45LDgzLjl6Ii8%2BPC9zdmc%2B)](https://github.com/go-siris/siris#buy-me-a-cup-of-coffee)
  
 <p>
 <img src="https://raw.githubusercontent.com/smallnest/go-web-framework-benchmark/4db507a22c964c9bc9774c5b31afdc199a0fe8b7/benchmark.png" alt="This benchmark measures results from 'real-world' instead of 'hello-world' application source code. | Last Update At: July 21, 2016. | Shows: Processing Time Horizontal Graph. | Who did:  Third-party source. Transparent achievement." />
@@ -25,7 +25,7 @@ Table of contents
 * [Installation](#installation)
 * [Feature overview](#feature-overview)
 * [Documentation](#documentation)
-    * [Examples](https://github.com/kataras/iris/tree/master/_examples)
+    * [Examples](https://github.com/go-siris/siris/tree/master/_examples)
     * [Reload on source code changes](#reload-on-source-code-changes)
 * [Support](#support)
     * [Buy me a cup of coffee?](#buy-me-a-cup-of-coffee)
@@ -45,7 +45,7 @@ Installation
 The only requirement is the [Go Programming Language](https://golang.org/dl/), at least version 1.8
 
 ```sh
-$ go get -u github.com/kataras/iris
+$ go get -u github.com/go-siris/siris
 ```
 
 > Iris uses the [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) feature, so you get truly reproducible builds, as this method guards against upstream renames and deletes.
@@ -55,9 +55,9 @@ For further installation support, please navigate [here](http://support.iris-go.
 package main
 
 import (
-    "github.com/kataras/iris"
-    "github.com/kataras/iris/context"
-    "github.com/kataras/iris/view"
+    "github.com/go-siris/siris"
+    "github.com/go-siris/siris/context"
+    "github.com/go-siris/siris/view"
 )
 
 // User is just a bindable object structure.
@@ -70,7 +70,7 @@ type User struct {
 }
 
 func main() {
-    app := iris.New()
+    app := siris.New()
     
     // Define templates using the std html/template engine.
     // Parse and load all files inside "./views" folder with ".html" file extension.
@@ -78,7 +78,7 @@ func main() {
     app.AttachView(view.HTML("./views", ".html").Reload(true))
     
     // Regster custom handler for specific http errors.
-    app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
+    app.OnErrorCode(siris.StatusInternalServerError, func(ctx context.Context) {
     	// .Values are used to communicate between handlers, middleware.
     	errMessage := ctx.Values().GetString("error")
     	if errMessage != "" {
@@ -128,7 +128,7 @@ func main() {
     }
     
     // Listen for incoming HTTP/1.x & HTTP/2 clients on localhost port 8080.
-    app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"))
+    app.Run(siris.Addr(":8080"), siris.WithCharset("UTF-8"))
 }
 
 func logThisMiddleware(ctx context.Context) {
@@ -161,7 +161,7 @@ func createUser(ctx context.Context) {
     err := ctx.ReadForm(&user)
     if err != nil {
     	ctx.Values().Set("error", "creating user, read and parse form failed. "+err.Error())
-    	ctx.StatusCode(iris.StatusInternalServerError)
+    	ctx.StatusCode(siris.StatusInternalServerError)
     	return
     }
     // renders "./views/users/create_verification.html"
@@ -179,7 +179,7 @@ $ cd $GOPATH/src/mywebapp
 $ rizla main.go
 ```
 
-> Psst: Wanna go to [_examples](https://github.com/kataras/iris/tree/master/_examples) to see more code-snippets?
+> Psst: Wanna go to [_examples](https://github.com/go-siris/siris/tree/master/_examples) to see more code-snippets?
 
 Feature Overview
 -----------
@@ -227,21 +227,21 @@ Feature Overview
 Documentation
 -----------
 
- <a href="https://github.com/kataras/iris/tree/master/_examples#table-of-contents"><img width="155" src="https://raw.githubusercontent.com/iris-contrib/website/gh-pages/assets/book/cover_4.jpg"></a>
+ <a href="https://github.com/go-siris/siris/tree/master/_examples#table-of-contents"><img width="155" src="https://raw.githubusercontent.com/iris-contrib/website/gh-pages/assets/book/cover_4.jpg"></a>
 
-Small but practical [examples](https://github.com/kataras/iris/tree/master/_examples#table-of-contents) --they cover each feature.
+Small but practical [examples](https://github.com/go-siris/siris/tree/master/_examples#table-of-contents) --they cover each feature.
 
 Wanna create your own fast URL Shortener Service Using Iris? --click [here](https://medium.com/@kataras/a-url-shortener-service-using-go-iris-and-bolt-4182f0b00ae7) to learn how.
 
-[Godocs](https://godoc.org/github.com/kataras/iris) --for deep understanding.
+[Godocs](https://godoc.org/github.com/go-siris/siris) --for deep understanding.
 
 
 Support
 ------------
 
 - [Post](http://support.iris-go.com) a feature request or report a bug, will help to make the framework even better.
-- :star: and watch [the project](https://github.com/kataras/iris/stargazers), will notify you about updates.
-- :earth_americas: publish [an article](https://medium.com/) or share a [tweet](https://twitter.com/) about Iris.
+- :star: and watch [the project](https://github.com/go-siris/siris/stargazers), will notify you about updates.
+- :earth_americas: publish [an article](https://medium.com/) or share a [tweet](https://twitter.com/) about siris.
 - Donations, will help me to continue.
 
 I'll be glad to talk with you about **your awesome feature requests**, 
@@ -288,14 +288,14 @@ Thank you!
 Third Party Middleware
 ------------
 
-Iris has its own middleware form of `func(ctx context.Context)` but it's also compatible with all `net/http` middleware forms. See [here](https://github.com/kataras/iris/tree/master/_examples/beginner/convert-handlers).
+Iris has its own middleware form of `func(ctx context.Context)` but it's also compatible with all `net/http` middleware forms. See [here](https://github.com/go-siris/siris/tree/master/_examples/beginner/convert-handlers).
 
 I'm sure that each of you have, already, found his own favorite list but here's a small list of third-party handlers:
 
 | Middleware | Author | Description |
 | -----------|--------|-------------|
 | [tollbooth](https://github.com/didip/tollbooth) | [Didip Kerabat](https://github.com/didip) | Generic middleware to rate-limit HTTP requests. [Example](https://github.com/didip/tollbooth/pull/34) |
-| [goth](https://github.com/markbates/goth) | [Mark Bates](https://github.com/markbates) | OAuth, OAuth2 authentication. [Example](https://github.com/kataras/iris/tree/master/_examples/intermediate/oauth2) |
+| [goth](https://github.com/markbates/goth) | [Mark Bates](https://github.com/markbates) | OAuth, OAuth2 authentication. [Example](https://github.com/go-siris/siris/tree/master/_examples/intermediate/oauth2) |
 | [binding](https://github.com/mholt/binding) | [Matt Holt](https://github.com/mholt) | Data binding from HTTP requests into structs |
 | [cloudwatch](https://github.com/cvillecsteele/negroni-cloudwatch) | [Colin Steele](https://github.com/cvillecsteele) | AWS cloudwatch metrics middleware |
 | [csp](https://github.com/awakenetworks/csp) | [Awake Networks](https://github.com/awakenetworks) | [Content Security Policy](https://www.w3.org/TR/CSP2/) (CSP) support |
@@ -322,27 +322,27 @@ Testing
 
 The `httptest` package is your way for end-to-end HTTP testing, it uses the httpexpect library created by our friend, [gavv](https://github.com/gavv).
 
-A simple test is located to [./_examples/intermediate/httptest/main_test.go](https://github.com/kataras/iris/blob/master/_examples/intermediate/httptest/main_test.go)
+A simple test is located to [./_examples/intermediate/httptest/main_test.go](https://github.com/go-siris/siris/blob/master/_examples/intermediate/httptest/main_test.go)
 
 Philosophy
 ------------
 
-The Iris philosophy is to provide robust tooling for HTTP, making it a great solution for single page applications, web sites, hybrids, or public HTTP APIs. Keep note that, today, iris is faster than apache+nginx itself.
+The Siris philosophy is to provide robust tooling for HTTP, making it a great solution for single page applications, web sites, hybrids, or public HTTP APIs. Keep note that, today, siris is faster than apache+nginx itself.
 
-Iris does not force you to use any specific ORM or template engine. With support for the most popular template engines, you can quickly craft your perfect application.
+Siris does not force you to use any specific ORM or template engine. With support for the most popular template engines, you can quickly craft your perfect application.
 
 
 People
 ------------
 
-The author of Iris is [@kataras](https://github.com/kataras).
+The original author of Iris is [@kataras](https://github.com/kataras).
 
 However the real Success of Iris belongs to you with your bug reports and feature requests that made this Framework so Unique.
 
 
 ### Legends
 
-I really need to thank each one of them because they stood up[♡](https://github.com/kataras/iris#support) to keep this project alive and active.
+I really need to thank each one of them because they stood up[♡](https://github.com/go-siris/siris#support) to keep this project alive and active.
 
 [Juan Sebastián Suárez Valencia](https://github.com/Juanses) donated 20 EUR at September 11 of 2016
 
@@ -426,7 +426,7 @@ Testers should upgrade immediately, if you're willing to use Iris in production 
 
 Each Iris version is independent. Only bug fixes, Router's API and experience are kept.
 
-Previous versions can be found at [releases page](https://github.com/kataras/iris/releases).
+Previous versions can be found at [releases page](https://github.com/go-siris/siris/releases).
 
 License
 ------------

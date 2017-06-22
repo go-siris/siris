@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/context"
 )
 
 func getRequestLogs(ctx context.Context) string {

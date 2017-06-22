@@ -3,13 +3,13 @@ package main
 import (
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/middleware/basicauth"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/middleware/basicauth"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	authConfig := basicauth.Config{
 		Users:   map[string]string{"myusername": "mypassword", "mySecondusername": "mySecondpassword"},
@@ -41,7 +41,7 @@ func main() {
 	}
 
 	// open http://localhost:8080/admin
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 func h(ctx context.Context) {

@@ -3,11 +3,11 @@ package main
 import (
 	"fmt" // optional
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/view"
-	"github.com/kataras/iris/websocket"
+	"github.com/go-siris/siris/view"
+	"github.com/go-siris/siris/websocket"
 )
 
 type clientPage struct {
@@ -16,7 +16,7 @@ type clientPage struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	app.AttachView(view.HTML("./templates", ".html")) // select the html engine to serve templates
 
 	ws := websocket.New(websocket.Config{
@@ -24,7 +24,7 @@ func main() {
 		// the endpoint is like a route.
 		Endpoint: "/my_endpoint",
 		// the client-side javascript static file path
-		// which will be served by Iris.
+		// which will be served by siris.
 		// default is /iris-ws.js
 		// if you change that you have to change the bottom of templates/client.html
 		// script tag:
@@ -96,5 +96,5 @@ func main() {
 		})
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

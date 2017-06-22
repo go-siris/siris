@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// $ go get -u github.com/jteeuwen/go-bindata/...
 	// $ go-bindata ./templates/...
 	// $ go build
@@ -17,7 +17,7 @@ func main() {
 	app.Get("/", hi)
 
 	// http://localhost:8080
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 type page struct {
@@ -25,6 +25,6 @@ type page struct {
 }
 
 func hi(ctx context.Context) {
-	ctx.ViewData("", page{Title: "Hi Page", Name: "iris"})
+	ctx.ViewData("", page{Title: "Hi Page", Name: "siris"})
 	ctx.View("hi.html")
 }

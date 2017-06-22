@@ -7,15 +7,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kataras/iris/cache"
-	"github.com/kataras/iris/cache/client/rule"
+	"github.com/go-siris/siris/cache"
+	"github.com/go-siris/siris/cache/client/rule"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/errors"
 
 	"github.com/iris-contrib/httpexpect"
-	"github.com/kataras/iris/httptest"
+	"github.com/go-siris/siris/httptest"
 )
 
 var (
@@ -86,7 +86,7 @@ func runTest(e *httpexpect.Expect, counterPtr *uint32, expectedBodyStr string, n
 }
 
 func TestNoCache(t *testing.T) {
-	app := iris.New()
+	app := siris.New()
 	var n uint32
 
 	app.Get("/", cache.WrapHandler(func(ctx context.Context) {
@@ -108,7 +108,7 @@ func TestNoCache(t *testing.T) {
 }
 
 func TestCache(t *testing.T) {
-	app := iris.New()
+	app := siris.New()
 	var n uint32
 
 	app.Use(cache.Handler(cacheDuration))
@@ -131,7 +131,7 @@ func TestCacheHandlerParallel(t *testing.T) {
 }
 
 func TestCacheValidator(t *testing.T) {
-	app := iris.New()
+	app := siris.New()
 	var n uint32
 
 	h := func(ctx context.Context) {

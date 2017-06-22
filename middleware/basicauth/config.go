@@ -7,7 +7,7 @@ package basicauth
 import (
 	"time"
 
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/context"
 )
 
 const (

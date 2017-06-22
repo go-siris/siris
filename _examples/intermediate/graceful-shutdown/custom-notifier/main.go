@@ -7,12 +7,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// output startup banner and error logs on os.Stdout
 
 	app.Get("/", func(ctx context.Context) {
@@ -44,5 +44,5 @@ func main() {
 
 	// Start the server and disable the default interrupt handler in order to handle it clear and simple by our own, without
 	// any issues.
-	app.Run(iris.Addr(":8080"), iris.WithoutInterruptHandler)
+	app.Run(siris.Addr(":8080"), siris.WithoutInterruptHandler)
 }

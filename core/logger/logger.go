@@ -11,7 +11,7 @@ import (
 
 // writerFunc is just an "extended" io.Writer which provides
 // some "methods" which can help applications
-// to adapt their existing loggers inside Iris.
+// to adapt their existing loggers inside siris.
 type writerFunc func(p []byte) (n int, err error)
 
 func (w writerFunc) Write(p []byte) (int, error) {

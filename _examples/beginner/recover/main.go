@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/middleware/recover"
+	"github.com/go-siris/siris/middleware/recover"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// use this recover(y) middleware
 	app.Use(recover.New())
 
@@ -23,8 +23,8 @@ func main() {
 	})
 
 	// http://localhost:8080, refresh it 5-6 times.
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 // Note:
-// app := iris.Default() instead of iris.New() makes use of the recovery middleware automatically.
+// app := siris.Default() instead of siris.New() makes use of the recovery middleware automatically.

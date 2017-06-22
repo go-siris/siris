@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// subdomains works with all available routers, like other features too.
 
@@ -25,7 +25,7 @@ func main() {
 			// virtualize a fake error here, for the shake of the example
 			fail := true
 			if fail {
-				err.StatusCode = iris.StatusInternalServerError
+				err.StatusCode = siris.StatusInternalServerError
 				// NOTE: if empty reason then the default or the custom http error will be fired (like ctx.FireStatusCode)
 				err.Reason = "Error: Virtual failure!!"
 			}
@@ -50,5 +50,5 @@ func main() {
 			"not been shown. But it has a transient scope(default) so, it is visible as expected!</h1>")
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

@@ -1,18 +1,18 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Get("/", func(ctx context.Context) {
 		ctx.HTML("<h1>Index /</h1>")
 	})
 
-	if err := app.Run(iris.Addr(":8080")); err != nil {
+	if err := app.Run(siris.Addr(":8080")); err != nil {
 		panic(err)
 	}
 

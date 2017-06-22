@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package iris
+package siris
 
 import (
 	"io/ioutil"
@@ -11,8 +11,8 @@ import (
 	"github.com/BurntSushi/toml"
 	"gopkg.in/yaml.v2"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/errors"
 )
 
 var errConfigurationDecode = errors.New("error while trying to decode configuration")
@@ -24,7 +24,7 @@ var errConfigurationDecode = errors.New("error while trying to decode configurat
 // Error may occur when the configuration.yml doesn't exists or is not formatted correctly.
 //
 // Usage:
-// app := iris.Run(iris.Addr(":8080"), iris.WithConfiguration(iris.YAML("myconfig.yml")))
+// app := siris.Run(siris.Addr(":8080"), siris.WithConfiguration(siris.YAML("myconfig.yml")))
 func YAML(filename string) Configuration {
 	c := DefaultConfiguration()
 
@@ -59,7 +59,7 @@ func YAML(filename string) Configuration {
 // Error may occur when the file doesn't exists or is not formatted correctly.
 //
 // Usage:
-// app := iris.Run(iris.Addr(":8080"), iris.WithConfiguration(iris.YAML("myconfig.tml")))
+// app := siris.Run(siris.Addr(":8080"), siris.WithConfiguration(siris.YAML("myconfig.tml")))
 func TOML(filename string) Configuration {
 	c := DefaultConfiguration()
 
@@ -203,7 +203,7 @@ type Configuration struct {
 	DisablePathCorrection bool `yaml:"DisablePathCorrection" toml:"DisablePathCorrection"`
 
 	// EnablePathEscape when is true then its escapes the path, the named parameters (if any).
-	// Change to false it if you want something like this https://github.com/kataras/iris/issues/135 to work
+	// Change to false it if you want something like this https://github.com/go-siris/siris/issues/135 to work
 	//
 	// When do you need to Disable(false) it:
 	// accepts parameters with slash '/'
@@ -259,13 +259,13 @@ type Configuration struct {
 	// Context values' keys for various features.
 	//
 	// TranslateLanguageContextKey & TranslateFunctionContextKey are used by i18n handlers/middleware
-	// currently we have only one: https://github.com/kataras/iris/tree/master/middleware/i18n.
+	// currently we have only one: https://github.com/go-siris/siris/tree/master/middleware/i18n.
 	//
-	// Defaults to "iris.translate" and "iris.language"
+	// Defaults to "siris.translate" and "siris.language"
 	TranslateFunctionContextKey string `yaml:"TranslateFunctionContextKey" toml:"TranslateFunctionContextKey"`
 	// TranslateLanguageContextKey used for i18n.
 	//
-	// Defaults to "iris.language"
+	// Defaults to "siris.language"
 	TranslateLanguageContextKey string `yaml:"TranslateLanguageContextKey" toml:"TranslateLanguageContextKey"`
 
 	// GetViewLayoutContextKey is the key of the context's user values' key
@@ -273,13 +273,13 @@ type Configuration struct {
 	// layout from a middleware or the main handler.
 	// Overrides the parent's or the configuration's.
 	//
-	// Defaults to "iris.ViewLayout"
+	// Defaults to "siris.ViewLayout"
 	ViewLayoutContextKey string `yaml:"ViewLayoutContextKey" toml:"ViewLayoutContextKey"`
 	// GetViewDataContextKey is the key of the context's user values' key
 	// which is being used to set the template
 	// binding data from a middleware or the main handler.
 	//
-	// Defaults to "iris.viewData"
+	// Defaults to "siris.viewData"
 	ViewDataContextKey string `yaml:"ViewDataContextKey" toml:"ViewDataContextKey"`
 
 	// Other are the custom, dynamic options, can be empty.
@@ -387,11 +387,11 @@ func (c Configuration) GetOther() map[string]interface{} {
 // WithConfiguration sets the "c" values to the framework's configurations.
 //
 // Usage:
-// app.Run(iris.Addr(":8080"), iris.WithConfiguration(iris.Configuration{/* fields here */ }))
+// app.Run(siris.Addr(":8080"), siris.WithConfiguration(siris.Configuration{/* fields here */ }))
 // or
-// iris.WithConfiguration(iris.YAML("./cfg/iris.yml"))
+// siris.WithConfiguration(siris.YAML("./cfg/iris.yml"))
 // or
-// iris.WithConfiguration(iris.TOML("./cfg/iris.tml"))
+// siris.WithConfiguration(siris.TOML("./cfg/iris.tml"))
 func WithConfiguration(c Configuration) Configurator {
 	return func(app *Application) {
 		main := app.config
@@ -471,10 +471,10 @@ func DefaultConfiguration() Configuration {
 		DisableAutoFireStatusCode:         false,
 		TimeFormat:                        "Mon, Jan 02 2006 15:04:05 GMT",
 		Charset:                           "UTF-8",
-		TranslateFunctionContextKey:       "iris.translate",
-		TranslateLanguageContextKey:       "iris.language",
-		ViewLayoutContextKey:              "iris.viewLayout",
-		ViewDataContextKey:                "iris.viewData",
+		TranslateFunctionContextKey:       "siris.translate",
+		TranslateLanguageContextKey:       "siris.language",
+		ViewLayoutContextKey:              "siris.viewLayout",
+		ViewDataContextKey:                "siris.viewData",
 		Other:                             make(map[string]interface{}, 0),
 	}
 }

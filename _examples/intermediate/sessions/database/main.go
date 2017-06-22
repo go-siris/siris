@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/sessions/sessiondb/redis"
-	"github.com/kataras/iris/sessions/sessiondb/redis/service"
+	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/sessions/sessiondb/redis"
+	"github.com/go-siris/siris/sessions/sessiondb/redis/service"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 	mySessions.UseDatabase(db)
 
 	// the rest of the code stays the same.
-	app := iris.New()
+	app := siris.New()
 	// Attach the session manager we just created
 	app.AttachSessionManager(mySessions)
 
@@ -39,7 +39,7 @@ func main() {
 	app.Get("/set", func(ctx context.Context) {
 
 		//set session values
-		ctx.Session().Set("name", "iris")
+		ctx.Session().Set("name", "siris")
 
 		//test if setted here
 		ctx.Writef("All ok session setted to: %s", ctx.Session().GetString("name"))
@@ -67,5 +67,5 @@ func main() {
 		ctx.SessionDestroy()
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

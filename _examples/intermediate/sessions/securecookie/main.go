@@ -6,15 +6,15 @@ package main
 // $ go run main.go
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/sessions"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/sessions"
 
 	"github.com/gorilla/securecookie"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	cookieName := "mycustomsessionid"
 	// AES only supports key sizes of 16, 24 or 32 bytes.
@@ -30,7 +30,7 @@ func main() {
 	})
 
 	// OPTIONALLY:
-	// import "github.com/kataras/iris/sessions/sessiondb/redis"
+	// import "github.com/go-siris/siris/sessions/sessiondb/redis"
 	// or import "github.com/kataras/go-sessions/sessiondb/$any_available_community_database"
 	// mySessions.UseDatabase(redis.New(...))
 
@@ -42,7 +42,7 @@ func main() {
 	app.Get("/set", func(ctx context.Context) {
 
 		//set session values
-		ctx.Session().Set("name", "iris")
+		ctx.Session().Set("name", "siris")
 
 		//test if setted here
 		ctx.Writef("All ok session setted to: %s", ctx.Session().GetString("name"))
@@ -74,5 +74,5 @@ func main() {
 	// mySessions.DestroyByID
 	// mySessions.DestroyAll
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

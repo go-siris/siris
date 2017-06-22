@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// This will serve the ./static/favicons/iris_favicon_48_48.ico to: localhost:8080/favicon.ico
 	app.Favicon("./static/favicons/iris_favicon_48_48.ico")
@@ -21,5 +21,5 @@ func main() {
 		  so Iris serves your favicon in that path too (you can change it).`)
 	}) // if favicon doesn't show to you, try to clear your browser's cache.
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris/core/errors"
 	"golang.org/x/crypto/acme/autocert"
 )
 

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 // $ go get -u github.com/jteeuwen/go-bindata/...
@@ -15,8 +15,8 @@ var page = struct {
 	Title string
 }{"Welcome"}
 
-func newApp() *iris.Application {
-	app := iris.New()
+func newApp() *siris.Application {
+	app := siris.New()
 	app.AttachView(view.HTML("./public", ".html").Binary(Asset, AssetNames))
 
 	app.Get("/", func(ctx context.Context) {
@@ -37,7 +37,7 @@ func main() {
 	// http://localhost:8080/index.html
 	// http://localhost:8080/app.js
 	// http://localhost:8080/css/main.css
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 // Note that app.Use/UseGlobal/Done will be executed

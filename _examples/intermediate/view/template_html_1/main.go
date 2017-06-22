@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 type mypage struct {
@@ -12,7 +12,7 @@ type mypage struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.AttachView(view.HTML("./templates", ".html").Layout("layout.html"))
 	// TIP: append .Reload(true) to reload the templates on each request.
@@ -27,5 +27,5 @@ func main() {
 	})
 
 	// http://localhost:8080
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

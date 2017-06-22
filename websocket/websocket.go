@@ -7,7 +7,7 @@ package websocket
 import (
 	"strings"
 
-	"github.com/kataras/iris"
+	"github.com/go-siris/siris"
 )
 
 // New returns a new websocket server policy adaptor.
@@ -33,7 +33,7 @@ func fixPath(s string) string {
 }
 
 // Attach adapts the websocket server to one or more Iris instances.
-func (s *server) Attach(app *iris.Application) {
+func (s *server) Attach(app *siris.Application) {
 	wsPath := fixPath(s.config.Endpoint)
 	if wsPath == "" {
 		app.Log("websocket's configuration field 'Endpoint' cannot be empty, websocket server stops")
@@ -47,7 +47,7 @@ func (s *server) Attach(app *iris.Application) {
 	}
 
 	// set the routing for client-side source (javascript) (optional)
-	clientSideLookupName := "iris-websocket-client-side"
+	clientSideLookupName := "siris-websocket-client-side"
 	wsHandler := s.Handler()
 	app.Get(wsPath, wsHandler)
 	// check if client side doesn't already exists

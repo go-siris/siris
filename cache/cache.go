@@ -10,16 +10,16 @@ Example code:
 		 import (
 		 	"time"
 
-		 	"github.com/kataras/iris"
-		 	"github.com/kataras/iris/cache"
-		 	"github.com/kataras/iris/context"
+		 	"github.com/go-siris/siris"
+		 	"github.com/go-siris/siris/cache"
+		 	"github.com/go-siris/siris/context"
 		 )
 
 		 func main(){
-		 	app := iris.Default()
+		 	app := siris.Default()
 		 	cachedHandler := cache.WrapHandler(h, 2 *time.Minute)
 		 	app.Get("/hello", cachedHandler)
-		 	app.Run(iris.Addr(":8080"))
+		 	app.Run(siris.Addr(":8080"))
 		 }
 
 		 func h(ctx context.Context) {
@@ -32,8 +32,8 @@ package cache
 import (
 	"time"
 
-	"github.com/kataras/iris/cache/client"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/cache/client"
+	"github.com/go-siris/siris/context"
 )
 
 // Cache accepts two parameters

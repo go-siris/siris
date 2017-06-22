@@ -3,15 +3,15 @@ package main
 import (
 	"net/http"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/handlerconv"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/handlerconv"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	irisMiddleware := handlerconv.FromStdWithNext(negronilikeTestMiddleware)
-	app.Use(irisMiddleware)
+	app.Use(sirisMiddleware)
 
 	// Method GET: http://localhost:8080/
 	app.Get("/", func(ctx context.Context) {
@@ -28,7 +28,7 @@ func main() {
 
 	// http://localhost:8080
 	// http://localhost:8080/ok
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 func negronilikeTestMiddleware(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -38,6 +38,6 @@ func negronilikeTestMiddleware(w http.ResponseWriter, r *http.Request, next http
 		return
 	}
 	// else print an error and do not forward to the route's handler.
-	w.WriteHeader(iris.StatusBadRequest)
+	w.WriteHeader(siris.StatusBadRequest)
 	w.Write([]byte("Bad request"))
 }

@@ -24,10 +24,10 @@ import (
 	"os"
 	"sort"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/view"
 
 	"github.com/gorilla/securecookie" // optionally, used for session's encoder/decoder
 
@@ -109,12 +109,12 @@ See https://github.com/markbates/goth/examples/main.go to see this in action.
 func BeginAuthHandler(ctx context.Context) {
 	url, err := GetAuthURL(ctx)
 	if err != nil {
-		ctx.StatusCode(iris.StatusBadRequest)
+		ctx.StatusCode(siris.StatusBadRequest)
 		ctx.Writef("%v", err)
 		return
 	}
 
-	ctx.Redirect(url, iris.StatusTemporaryRedirect)
+	ctx.Redirect(url, siris.StatusTemporaryRedirect)
 }
 
 /*
@@ -338,7 +338,7 @@ func main() {
 	// set a view
 	// set sessions
 	// and setup the router for the showcase
-	app := iris.New()
+	app := siris.New()
 
 	// attach and build our templates
 	app.AttachView(view.HTML("./templates", ".html"))
@@ -363,7 +363,7 @@ func main() {
 
 		user, err := CompleteUserAuth(ctx)
 		if err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.StatusCode(siris.StatusInternalServerError)
 			ctx.Writef("%v", err)
 			return
 		}
@@ -375,7 +375,7 @@ func main() {
 
 	app.Get("/logout/{provider}", func(ctx context.Context) {
 		Logout(ctx)
-		ctx.Redirect("/", iris.StatusTemporaryRedirect)
+		ctx.Redirect("/", siris.StatusTemporaryRedirect)
 	})
 
 	app.Get("/auth/{provider}", func(ctx context.Context) {
@@ -400,7 +400,7 @@ func main() {
 	})
 
 	// http://localhost:3000
-	app.Run(iris.Addr("localhost:3000"))
+	app.Run(siris.Addr("localhost:3000"))
 }
 
 type ProviderIndex struct {

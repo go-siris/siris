@@ -6,11 +6,11 @@ import (
 	"os"        // optional
 	"time"      // optional
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/view"
-	"github.com/kataras/iris/websocket"
+	"github.com/go-siris/siris/view"
+	"github.com/go-siris/siris/websocket"
 )
 
 type clientPage struct {
@@ -19,7 +19,7 @@ type clientPage struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	app.AttachView(view.HTML("./templates", ".html")) // select the html engine to serve templates
 
 	ws := websocket.New(websocket.Config{
@@ -88,7 +88,7 @@ func main() {
 }
 
 // a test listenTLS for our localhost
-func listenTLS(app *iris.Application) {
+func listenTLS(app *siris.Application) {
 
 	const (
 		testTLSCert = `-----BEGIN CERTIFICATE-----

@@ -7,8 +7,8 @@ package handlerconv
 import (
 	"net/http"
 
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/errors"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/errors"
 )
 
 var errHandler = errors.New(`
@@ -78,12 +78,12 @@ func FromStd(handler interface{}) context.Handler {
 func FromStdWithNext(h func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)) context.Handler {
 	return func(ctx context.Context) {
 		// take the next handler in route's chain
-		nextIrisHandler := ctx.NextHandler()
-		if nextIrisHandler != nil {
+		nextSirisHandler := ctx.NextHandler()
+		if nextSirisHandler != nil {
 			executed := false // we need to watch this in order to StopExecution from all next handlers
 			// if this next handler is not executed by the third-party net/http next-style Handlers.
 			nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				nextIrisHandler(ctx)
+				nextSirisHandler(ctx)
 				executed = true
 			})
 

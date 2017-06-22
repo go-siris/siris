@@ -10,7 +10,7 @@ package host
 // supervisor.
 import (
 	"context"
-	"github.com/kataras/iris/core/nettools"
+	"github.com/go-siris/siris/core/nettools"
 	"net/http"
 )
 

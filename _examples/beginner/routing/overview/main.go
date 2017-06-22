@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// GET: http://localhost:8080
 	app.Get("/", info)
@@ -113,7 +113,7 @@ func main() {
 	// GET: http://admin.localhost:8080
 	// GET: http://admin.localhost:8080/settings
 	// GET: http://any_thing_here.localhost:8080
-	if err := app.Run(iris.Addr(":8080")); err != nil {
+	if err := app.Run(siris.Addr(":8080")); err != nil {
 		panic(err)
 	}
 }

@@ -2,13 +2,13 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	if err := app.AttachView(view.HTML("./templates", ".html").Reload(true)); err != nil {
 		panic(err)
 	}
@@ -66,7 +66,7 @@ func main() {
 
 	// http://localhost:8080
 	// http://localhost/redirect/my-page1
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 }
 

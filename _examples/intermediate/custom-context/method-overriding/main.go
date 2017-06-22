@@ -8,10 +8,10 @@ package main
 import (
 	"reflect"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/view"
 )
 
 // Create your own custom Context, put any fields you wanna need.
@@ -39,7 +39,7 @@ func (ctx *MyContext) HTML(htmlContents string) (int, error) {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// Register a view engine on .html files inside the ./view/** directory.
 	viewEngine := view.HTML("./view", ".html")
 	app.AttachView(viewEngine)
@@ -76,7 +76,7 @@ func main() {
 		ctx.View("hi.html")
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 // should always print "($PATH) Handler is executing from 'MyContext'"

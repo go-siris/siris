@@ -4,8 +4,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 // get a filename based on the date, file logs works that way the most times
@@ -30,7 +30,7 @@ func main() {
 	f := newLogFile()
 	defer f.Close()
 
-	app := iris.New()
+	app := siris.New()
 	// attach the file as logger, remember, iris' app logger is just an io.Writer.
 	app.AttachLogger(f)
 
@@ -42,7 +42,7 @@ func main() {
 
 	// navigate to http://localhost:8080
 	// and open the ./logs.txt file
-	if err := app.Run(iris.Addr(":8080"), iris.WithoutBanner); err != nil {
+	if err := app.Run(siris.Addr(":8080"), siris.WithoutBanner); err != nil {
 		app.Log("Shutdown with error: %v\n", err)
 
 	}

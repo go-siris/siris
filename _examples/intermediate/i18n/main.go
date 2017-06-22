@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/middleware/i18n"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/middleware/i18n"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Use(i18n.New(i18n.Config{
 		Default:      "en-US",
@@ -37,13 +37,13 @@ func main() {
 		language := ctx.Values().GetString(ctx.Application().ConfigurationReadOnly().GetTranslateLanguageContextKey()) // return is form of 'en-US'
 
 		// The first succeed language found saved at the cookie with name ("language"),
-		//  you can change that by changing the value of the:  iris.TranslateLanguageContextKey
+		//  you can change that by changing the value of the:  siris.TranslateLanguageContextKey
 		ctx.Writef("From the language %s translated output: %s", language, hi)
 	})
 
 	// go to http://localhost:8080/?lang=el-GR
 	// or http://localhost:8080
 	// or http://localhost:8080/?lang=zh-CN
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 }

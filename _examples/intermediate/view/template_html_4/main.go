@@ -2,10 +2,10 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/router"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/router"
+	"github.com/go-siris/siris/view"
 )
 
 const (
@@ -13,10 +13,10 @@ const (
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// create a custom path reverser, iris let you define your own host and scheme
-	// which is useful when you have nginx or caddy in front of iris.
+	// which is useful when you have nginx or caddy in front of siris.
 	rv := router.NewRoutePathReverser(app, router.WithHost(host), router.WithScheme("http"))
 	// locate and define our templates as usual.
 	templates := view.HTML("./templates", ".html")
@@ -62,7 +62,7 @@ func main() {
 	})
 
 	// http://127.0.0.1:8080
-	app.Run(iris.Addr(host))
+	app.Run(siris.Addr(host))
 }
 
 func emptyHandler(ctx context.Context) {

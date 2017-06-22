@@ -4,15 +4,15 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 // register a dynamic-wildcard subdomain to your server machine(dns/...) first, check ./hosts if you use windows.
 // run this file and try to redirect: http://username1.mydomain.com:8080/ , http://username2.mydomain.com:8080/ , http://username1.mydomain.com/something, http://username1.mydomain.com/something/sadsadsa
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	/* Keep note that you can use both type of subdomains (named and wildcard(*.) )
 	   admin.mydomain.com,  and for other the Party(*.) but this is not this example's purpose
@@ -55,7 +55,7 @@ func main() {
 	// http://username1.mydomain.com:8080
 	// http://username2.mydomain.com:8080/something
 	// http://username3.mydomain.com:8080/something/yourname
-	app.Run(iris.Addr("mydomain.com:8080")) // for beginners: look ../hosts file
+	app.Run(siris.Addr("mydomain.com:8080")) // for beginners: look ../hosts file
 }
 
 func dynamicSubdomainHandler(ctx context.Context) {

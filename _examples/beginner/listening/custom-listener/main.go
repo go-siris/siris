@@ -3,12 +3,12 @@ package main
 import (
 	"net"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Get("/", func(ctx context.Context) {
 		ctx.Writef("Hello from the server")
@@ -25,5 +25,5 @@ func main() {
 	}
 
 	// use of the custom listener
-	app.Run(iris.Listener(l))
+	app.Run(siris.Listener(l))
 }

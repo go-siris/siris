@@ -11,8 +11,8 @@ import (
 
 	xwebsocket "golang.org/x/net/websocket"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/websocket"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/websocket"
 )
 
 // WS is the current websocket connection
@@ -85,9 +85,9 @@ func SendMessage(serverID, to, method, message string) error {
 
 // SendtBytes broadcast a message to server
 func SendtBytes(serverID, to, method string, message []byte) error {
-	// look https://github.com/kataras/iris/tree/master/adaptors/websocket/message.go , client.go and client.js
+	// look https://github.com/go-siris/siris/tree/master/adaptors/websocket/message.go , client.go and client.js
 	// to understand the buffer line:
-	buffer := []byte(fmt.Sprintf("iris-websocket-message:%v;0;%v;%v;", method, serverID, to))
+	buffer := []byte(fmt.Sprintf("siris-websocket-message:%v;0;%v;%v;", method, serverID, to))
 	buffer = append(buffer, message...)
 	_, err := WS.Write(buffer)
 	if err != nil {
@@ -133,13 +133,13 @@ func OnConnect(c websocket.Connection) {
 
 // ServerLoop listen and serve websocket requests
 func ServerLoop() {
-	app := iris.New()
+	app := siris.New()
 
 	ws := websocket.New(websocket.Config{Endpoint: "/socket"})
 	ws.Attach(app)
 
 	ws.OnConnection(OnConnect)
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 }
 

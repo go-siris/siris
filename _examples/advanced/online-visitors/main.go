@@ -3,21 +3,21 @@ package main
 import (
 	"sync/atomic"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 
-	"github.com/kataras/iris/view"
-	"github.com/kataras/iris/websocket"
+	"github.com/go-siris/siris/view"
+	"github.com/go-siris/siris/websocket"
 )
 
 var (
-	app *iris.Application
+	app *siris.Application
 	ws  websocket.Server
 )
 
 func init() {
 	// init the server instance
-	app = iris.New()
+	app = siris.New()
 	// load templaes
 	app.AttachView(view.HTML("./templates", ".html").Reload(true))
 	// attach websocket server
@@ -49,7 +49,7 @@ func main() {
 	// Each page has its own online-visitors counter.
 	app.Get("/", h)
 	app.Get("/other", h2)
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 type pageView struct {

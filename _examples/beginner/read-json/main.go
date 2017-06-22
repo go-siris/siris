@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 type Company struct {
@@ -14,7 +14,7 @@ type Company struct {
 func MyHandler(ctx context.Context) {
 	c := &Company{}
 	if err := ctx.ReadJSON(c); err != nil {
-		ctx.StatusCode(iris.StatusBadRequest)
+		ctx.StatusCode(siris.StatusBadRequest)
 		ctx.WriteString(err.Error())
 		return
 	}
@@ -23,7 +23,7 @@ func MyHandler(ctx context.Context) {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Post("/", MyHandler)
 
@@ -31,7 +31,7 @@ func main() {
 	// to the http://localhost:8080 with RAW BODY:
 	/*
 		{
-			"Name": "Iris-Go",
+			"Name": "siris-Go",
 			"City": "New York",
 			"Other": "Something here"
 		}
@@ -39,6 +39,6 @@ func main() {
 	// and Content-Type to application/json
 	//
 	// The response should be:
-	// Received: &main.Company{Name:"Iris-Go", City:"New York", Other:"Something here"}
-	app.Run(iris.Addr(":8080"))
+	// Received: &main.Company{Name:"siris-Go", City:"New York", Other:"Something here"}
+	app.Run(siris.Addr(":8080"))
 }

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	none, _ := app.None("/invisible/{username}", func(ctx context.Context) {
 		ctx.Writef("Hello %s with method: %s", ctx.Values().GetString("username"), ctx.Method())
@@ -19,9 +19,9 @@ func main() {
 	app.Get("/change", func(ctx context.Context) {
 
 		if none.IsOnline() {
-			none.Method = iris.MethodNone
+			none.Method = siris.MethodNone
 		} else {
-			none.Method = iris.MethodGet
+			none.Method = siris.MethodGet
 		}
 
 		// refresh re-builds the router at serve-time in order to be notified for its new routes.
@@ -35,5 +35,5 @@ func main() {
 		ctx.Exec("GET", "/invisible/kataras")
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

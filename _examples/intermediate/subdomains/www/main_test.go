@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/httptest"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/httptest"
 )
 
 type testRoute struct {
@@ -52,7 +52,7 @@ func TestSubdomainWWW(t *testing.T) {
 		}
 
 		req.Expect().
-			Status(iris.StatusOK).
+			Status(siris.StatusOK).
 			Body().Equal(test.response())
 	}
 

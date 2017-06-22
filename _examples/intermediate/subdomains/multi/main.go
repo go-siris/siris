@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	/*
 	 * Setup static files
@@ -36,6 +36,6 @@ func main() {
 	// http://system.local
 	// Make sure you prepend the "http" in your browser
 	// because .local is a virtual domain we think to show case you
-	// that you can declare any syntactical correct name as a subdomain in Iris.
-	app.Run(iris.Addr("domain.local:80")) // for beginners: look ../hosts file
+	// that you can declare any syntactical correct name as a subdomain in siris.
+	app.Run(siris.Addr("domain.local:80")) // for beginners: look ../hosts file
 }

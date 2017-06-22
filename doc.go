@@ -27,17 +27,17 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
-Package iris is a fully-featured HTTP/2 backend web framework written entirely in Google’s Go Language.
+package siris is a fully-featured HTTP/2 backend web framework written entirely in Google’s Go Language.
 
 Source code and other details for the project are available at GitHub:
 
-   https://github.com/kataras/iris
+   https://github.com/go-siris/siris
 
 Installation
 
 The only requirement is the Go Programming Language, at least version 1.8
 
-    $ go get -u github.com/kataras/iris
+    $ go get -u github.com/go-siris/siris
 
 
 Example code:
@@ -46,9 +46,9 @@ Example code:
     package main
 
     import (
-        "github.com/kataras/iris"
-        "github.com/kataras/iris/context"
-        "github.com/kataras/iris/view"
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
+        "github.com/go-siris/siris/view"
     )
 
     // User is just a bindable object structure.
@@ -61,7 +61,7 @@ Example code:
     }
 
     func main() {
-        app := iris.New()
+        app := siris.New()
 
         // Define templates using the std html/template engine.
         // Parse and load all files inside "./views" folder with ".html" file extension.
@@ -69,7 +69,7 @@ Example code:
         app.AttachView(view.HTML("./views", ".html").Reload(true))
 
         // Regster custom handler for specific http errors.
-        app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
+        app.OnErrorCode(siris.StatusInternalServerError, func(ctx context.Context) {
             // .Values are used to communicate between handlers, middleware.
             errMessage := ctx.Values().GetString("error")
             if errMessage != "" {
@@ -119,7 +119,7 @@ Example code:
         }
 
         // Listen for incoming HTTP/1.x & HTTP/2 clients on localhost port 8080.
-        app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"))
+        app.Run(siris.Addr(":8080"), siris.WithCharset("UTF-8"))
     }
 
     func logThisMiddleware(ctx context.Context) {
@@ -152,7 +152,7 @@ Example code:
         err := ctx.ReadForm(&user)
         if err != nil {
             ctx.Values().Set("error", "creating user, read and parse form failed. "+err.Error())
-            ctx.StatusCode(iris.StatusInternalServerError)
+            ctx.StatusCode(siris.StatusInternalServerError)
             return
         }
         // renders "./views/users/create_verification.html"
@@ -173,7 +173,7 @@ by the registered order when a user requests for that specific resouce path from
 Example code:
 
 
-    app := iris.New()
+    app := siris.New()
 
     app.Handle("GET", "/contact", func(ctx context.Context){
         ctx.HTML("<h1> Hello from /contact </h1>")
@@ -188,7 +188,7 @@ by the registered order when a user requests for that specific resouce path from
 Example code:
 
 
-    app := iris.New()
+    app := siris.New()
 
     // Method: "GET"
     app.Get("/", handler)
@@ -245,7 +245,7 @@ Example code:
     // http://myhost.com/users/messages/1
     users.Get("/inbox/{messageid:int}", userMessageHandler)
 
-    app.Run(iris.Addr("myhost.com:80"))
+    app.Run(siris.Addr("myhost.com:80"))
 
 
 
@@ -258,7 +258,7 @@ Example code:
 
 
     // when 404 then render the template $templatedir/errors/404.html
-    app.OnErrorCode(iris.StatusNotFound, func(ctx context.Context){
+    app.OnErrorCode(siris.StatusNotFound, func(ctx context.Context){
         ctx.View("errors/404.html")
     })
 
@@ -277,16 +277,16 @@ Example code:
     package main
 
     import (
-        "github.com/kataras/iris"
-        "github.com/kataras/iris/context"
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
     )
 
     func main() {
-        app := iris.New()
+        app := siris.New()
 
         // registers a custom handler for 404 not found http (error) status code,
-        // fires when route not found or manually by ctx.StatusCode(iris.StatusNotFound).
-        app.OnErrorCode(iris.StatusNotFound, notFoundHandler)
+        // fires when route not found or manually by ctx.StatusCode(siris.StatusNotFound).
+        app.OnErrorCode(siris.StatusNotFound, notFoundHandler)
 
         // GET -> HTTP Method
         // / -> Path
@@ -294,7 +294,7 @@ Example code:
         //
         // Third receiver should contains the route's handler(s), they are executed by order.
         app.Handle("GET", "/", func(ctx context.Context) {
-            // navigate to the middle of $GOPATH/src/github.com/kataras/iris/context/context.go
+            // navigate to the middle of $GOPATH/src/github.com/go-siris/siris/context/context.go
             // to overview all context's method (there a lot of them, read that and you will learn how iris works too)
             ctx.HTML("Hello from " + ctx.Path()) // Hello from /
         })
@@ -312,7 +312,7 @@ Example code:
             if err != nil {
                 ctx.Writef("error while trying to parse userid parameter," +
                     "this will never happen if :int is being used because if it's not integer it will fire Not Found automatically.")
-                ctx.StatusCode(iris.StatusBadRequest)
+                ctx.StatusCode(siris.StatusBadRequest)
                 return
             }
 
@@ -348,7 +348,7 @@ Example code:
         // GET: http://localhost:8080/admin
         adminRoutes.Get("/", func(ctx context.Context) {
             // [...]
-            ctx.StatusCode(iris.StatusOK) // default is 200 == iris.StatusOK
+            ctx.StatusCode(siris.StatusOK) // default is 200 == siris.StatusOK
             ctx.HTML("<h1>Hello from admin/</h1>")
 
             ctx.Next() // in order to execute the party's "Done" Handler(s)
@@ -410,7 +410,7 @@ Example code:
         //  http://v1.localhost:8080/api/users
         //  http://v1.localhost:8080/api/users/42
         //  http://anything.localhost:8080
-        app.Run(iris.Addr(":8080"))
+        app.Run(siris.Addr(":8080"))
     }
 
     func adminMiddleware(ctx context.Context) {
@@ -424,7 +424,7 @@ Example code:
 
         // let's pass a value to the next handler
         // Values is the way handlers(or middleware) are communicating between each other.
-        ctx.Values().Set("donate_url", "https://github.com/kataras/iris#buy-me-a-cup-of-coffee")
+        ctx.Values().Set("donate_url", "https://github.com/go-siris/siris#buy-me-a-cup-of-coffee")
         ctx.Next() // in order to execute the next handler in the chain, look donate route.
     }
 
@@ -449,7 +449,7 @@ with a single known paramete and custom http errors, now it's time to see wildca
 
 Iris, like net/http std package registers route's handlers
 by a Handler, the Iris' type of handler is just a func(ctx context.Context)
-where context comes from github.com/kataras/iris/context.
+where context comes from github.com/go-siris/siris/context.
 Until go 1.9 you will have to import that package too, after go 1.9 this will be not be necessary.
 
 Iris has the easiest and the most powerful routing process you have ever meet.
@@ -524,7 +524,7 @@ Register a named path parameter function:
 at the func(argument ...) you can have any standard type, it will be validated before the server starts
 so don't care about performance here, the only thing it runs at serve time is the returning func(paramValue string) bool.
 
-    {param:string equal(iris)} , "iris" will be the argument here:
+    {param:string equal(siris)} , "siris" will be the argument here:
     app.Macros().String.RegisterFunc("equal", func(argument string) func(paramValue string) bool {
         return func(paramValue string){ return argument == paramValue }
     })
@@ -604,7 +604,7 @@ Example code:
 	// alternatives -> ":param" for single path parameter and "*paramPath" for wildcard path parameter
 	// acquire them by ctx.Params().Get as always.
 
-	if err := app.Run(iris.Addr(":8080")); err != nil {
+	if err := app.Run(siris.Addr(":8080")); err != nil {
 		panic(err)
 	}
 }
@@ -654,7 +654,7 @@ Static Files
     //
     // Returns the GET *Route.
     //
-    // Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/serve-embedded-files
+    // Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/serve-embedded-files
     StaticEmbedded(requestPath string, vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string) (*Route, error)
 
     // Favicon serves static favicon
@@ -697,12 +697,12 @@ Example code:
     package main
 
     import (
-        "github.com/kataras/iris"
-        "github.com/kataras/iris/context"
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
     )
 
     func main() {
-        app := iris.New()
+        app := siris.New()
 
         // This will serve the ./static/favicons/iris_32_32.ico to: localhost:8080/favicon.ico
         app.Favicon("./static/favicons/iris_32_32.ico")
@@ -717,10 +717,10 @@ Example code:
             so Iris serves your favicon in that path too (you can change it).`)
         }) // if favicon doesn't show to you, try to clear your browser's cache.
 
-        app.Run(iris.Addr(":8080"))
+        app.Run(siris.Addr(":8080"))
     }
 
-More examples can be found here: https://github.com/kataras/iris/tree/master/_examples/beginner/file-server
+More examples can be found here: https://github.com/go-siris/siris/tree/master/_examples/beginner/file-server
 
 
 Middleware Ecosystem
@@ -775,13 +775,13 @@ Example code:
     import (
         "github.com/rs/cors"
 
-        "github.com/kataras/iris"
-        "github.com/kataras/iris/context"
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
     )
 
     func main() {
 
-        app := iris.New()
+        app := siris.New()
         corsOptions := cors.Options{
             AllowedOrigins:   []string{"*"},
             AllowCredentials: true,
@@ -798,7 +798,7 @@ Example code:
             v1.Post("/post", h)
         }
 
-        app.Run(iris.Addr(":8080"))
+        app.Run(siris.Addr(":8080"))
     }
 
     func h(ctx context.Context) {
@@ -837,13 +837,13 @@ Example code:
     package main
 
     import (
-        "github.com/kataras/iris"
-        "github.com/kataras/iris/context"
-        "github.com/kataras/iris/view"
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
+        "github.com/go-siris/siris/view"
     )
 
     func main() {
-        app := iris.New() // defaults to these
+        app := siris.New() // defaults to these
 
         // - standard html  | view.HTML(...)
         // - django         | view.Django(...)
@@ -868,12 +868,12 @@ Example code:
         app.Get("/", hi)
 
         // http://localhost:8080
-        app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8")) // defaults to that but you can change it.
+        app.Run(siris.Addr(":8080"), siris.WithCharset("UTF-8")) // defaults to that but you can change it.
     }
 
     func hi(ctx context.Context) {
         ctx.ViewData("Title", "Hi Page")
-        ctx.ViewData("Name", "Iris") // {{.Name}} will render: Iris
+        ctx.ViewData("Name", "siris") // {{.Name}} will render: Iris
         // ctx.ViewData("", myCcustomStruct{})
         ctx.View("hi.html")
     }
@@ -889,13 +889,13 @@ Example code:
     package main
 
     import (
-        "github.com/kataras/iris"
-        "github.com/kataras/iris/context"
-        "github.com/kataras/iris/view"
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
+        "github.com/go-siris/siris/view"
     )
 
     func main() {
-        app := iris.New()
+        app := siris.New()
         // $ go get -u github.com/jteeuwen/go-bindata/...
         // $ go-bindata ./templates/...
         // $ go build
@@ -905,7 +905,7 @@ Example code:
         app.Get("/", hi)
 
         // http://localhost:8080
-        app.Run(iris.Addr(":8080"))
+        app.Run(siris.Addr(":8080"))
     }
 
     type page struct {
@@ -913,12 +913,12 @@ Example code:
     }
 
     func hi(ctx context.Context) {
-        ctx.ViewData("", page{Title: "Hi Page", Name: "iris"})
+        ctx.ViewData("", page{Title: "Hi Page", Name: "siris"})
         ctx.View("hi.html")
     }
 
 
-A real example can be found here: https://github.com/kataras/iris/tree/master/_examples/intermediate/view/embedding-templates-into-app.
+A real example can be found here: https://github.com/go-siris/siris/tree/master/_examples/intermediate/view/embedding-templates-into-app.
 
 Enable auto-reloading of templates on each request. Useful while developers are in dev mode
 as they no neeed to restart their app on every template edit.
@@ -931,7 +931,7 @@ Example code:
     app.AttachView(pugEngine)
 
 
-Each one of these template engines has different options located here: https://github.com/kataras/iris/tree/master/view .
+Each one of these template engines has different options located here: https://github.com/go-siris/siris/tree/master/view .
 
 
 Sessions
@@ -954,9 +954,9 @@ Example code:
     package main
 
     import (
-        "github.com/kataras/iris"
-        "github.com/kataras/iris/context"
-        "github.com/kataras/iris/sessions"
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
+        "github.com/go-siris/siris/sessions"
     )
 
     var (
@@ -967,7 +967,7 @@ Example code:
 
         // Check if user is authenticated
         if auth, _ := ctx.Session().GetBoolean("authenticated"); !auth {
-            ctx.StatusCode(iris.StatusForbidden)
+            ctx.StatusCode(siris.StatusForbidden)
             return
         }
 
@@ -993,7 +993,7 @@ Example code:
     }
 
     func main() {
-        app := iris.New()
+        app := siris.New()
 
         sess := sessions.New(sessions.Config{Cookie: key})
         app.AttachSessionManager(sess)
@@ -1002,7 +1002,7 @@ Example code:
         app.Get("/login", login)
         app.Get("/logout", logout)
 
-        app.Run(iris.Addr(":8080"))
+        app.Run(siris.Addr(":8080"))
     }
 
 Running the example:
@@ -1027,11 +1027,11 @@ If you enjoy what you just saw and want to learn more, please follow the below l
 
 Examples:
 
-    https://github.com/kataras/iris/tree/master/_examples
+    https://github.com/go-siris/siris/tree/master/_examples
 
 Built'n Middleware:
 
-    https://github.com/kataras/iris/tree/master/middleware
+    https://github.com/go-siris/siris/tree/master/middleware
 
 Community Middleware:
 
@@ -1042,4 +1042,4 @@ Home Page:
     http://iris-go.com
 
 */
-package iris
+package siris

@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	tmpl := view.HTML("./templates", ".html")
 	tmpl.Layout("layouts/layout.html")
@@ -19,7 +19,7 @@ func main() {
 
 	app.Get("/", func(ctx context.Context) {
 		if err := ctx.View("page1.html"); err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.StatusCode(siris.StatusInternalServerError)
 			ctx.Writef(err.Error())
 		}
 	})
@@ -28,7 +28,7 @@ func main() {
 	app.Get("/nolayout", func(ctx context.Context) {
 		ctx.ViewLayout(view.NoLayout)
 		if err := ctx.View("page1.html"); err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.StatusCode(siris.StatusInternalServerError)
 			ctx.Writef(err.Error())
 		}
 	})
@@ -48,5 +48,5 @@ func main() {
 	// http://localhost:8080/nolayout
 	// http://localhost:8080/my
 	// http://localhost:8080/my/other
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

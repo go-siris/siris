@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/handlerconv"
-	"github.com/kataras/iris/httptest"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/handlerconv"
+	"github.com/go-siris/siris/httptest"
 )
 
 func TestFromStd(t *testing.T) {
@@ -21,17 +21,17 @@ func TestFromStd(t *testing.T) {
 
 	hFunc := handlerconv.FromStd(std)
 
-	app := iris.New()
+	app := siris.New()
 	app.Get("/handler", h)
 	app.Get("/func", hFunc)
 
 	e := httptest.New(t, app)
 
 	e.GET("/handler").
-		Expect().Status(iris.StatusOK).Body().Equal(expected)
+		Expect().Status(siris.StatusOK).Body().Equal(expected)
 
 	e.GET("/func").
-		Expect().Status(iris.StatusOK).Body().Equal(expected)
+		Expect().Status(siris.StatusOK).Body().Equal(expected)
 }
 
 func TestFromStdWithNext(t *testing.T) {
@@ -45,7 +45,7 @@ func TestFromStdWithNext(t *testing.T) {
 			next.ServeHTTP(w, r)
 			return
 		}
-		w.WriteHeader(iris.StatusForbidden)
+		w.WriteHeader(siris.StatusForbidden)
 	}
 
 	h := handlerconv.FromStdWithNext(stdWNext)
@@ -53,14 +53,14 @@ func TestFromStdWithNext(t *testing.T) {
 		ctx.WriteString(passed)
 	}
 
-	app := iris.New()
+	app := siris.New()
 	app.Get("/handlerwithnext", h, next)
 
 	e := httptest.New(t, app)
 
 	e.GET("/handlerwithnext").
-		Expect().Status(iris.StatusForbidden)
+		Expect().Status(siris.StatusForbidden)
 
 	e.GET("/handlerwithnext").WithBasicAuth(basicauth, basicauth).
-		Expect().Status(iris.StatusOK).Body().Equal(passed)
+		Expect().Status(siris.StatusOK).Body().Equal(passed)
 }

@@ -4,9 +4,9 @@ import (
 	stdContext "context"
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/host"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/host"
 )
 
 // Before continue, please read the below notes:
@@ -20,7 +20,7 @@ import (
 //
 // At this example, we will disable the interrupt handler and set our own interrupt handler.
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// output startup banner and error logs on os.Stdout
 
 	app.Get("/", func(ctx context.Context) {
@@ -40,7 +40,7 @@ func main() {
 	}))
 
 	// Start the server and disable the default interrupt handler in order to use our scheduled interrupt task.
-	app.Run(iris.Addr(":8080"), iris.WithoutInterruptHandler)
+	app.Run(siris.Addr(":8080"), siris.WithoutInterruptHandler)
 }
 
 // Note:

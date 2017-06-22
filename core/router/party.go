@@ -5,7 +5,7 @@
 package router
 
 import (
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/context"
 ) // Party is here to separate the concept of
 // api builder and the sub api builder.
 
@@ -88,7 +88,7 @@ type Party interface {
 	// is appended to the party's relative path and stripped here.
 	//
 	// Usage:
-	// app := iris.New()
+	// app := siris.New()
 	// ...
 	// mySubdomainFsServer := app.Party("mysubdomain.")
 	// h := mySubdomainFsServer.StaticHandler("./static_files", false, false)
@@ -122,7 +122,7 @@ type Party interface {
 	//
 	// Returns the GET *Route.
 	//
-	// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/serve-embedded-files
+	// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/serve-embedded-files
 	StaticEmbedded(requestPath string, vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string) (*Route, error)
 
 	// Favicon serves static favicon
@@ -160,7 +160,7 @@ type Party interface {
 	// Layout oerrides the parent template layout with a more specific layout for this Party
 	// returns this Party, to continue as normal
 	// Usage:
-	// app := iris.New()
+	// app := siris.New()
 	// my := app.Party("/my").Layout("layouts/mylayout.html")
 	// 	{
 	// 		my.Get("/", func(ctx context.Context) {

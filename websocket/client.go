@@ -16,7 +16,7 @@ var websocketIntMessageType = 1;
 var websocketBoolMessageType = 2;
 // bytes is missing here for reasons I will explain somewhen
 var websocketJSONMessageType = 4;
-var websocketMessagePrefix = "iris-websocket-message:";
+var websocketMessagePrefix = "siris-websocket-message:";
 var websocketMessageSeparator = ";";
 var websocketMessagePrefixLen = websocketMessagePrefix.length;
 var websocketMessageSeparatorLen = websocketMessageSeparator.length;

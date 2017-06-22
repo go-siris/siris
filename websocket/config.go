@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris/context"
 )
 
 const (

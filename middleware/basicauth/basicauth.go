@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 type (
@@ -96,7 +96,7 @@ func (b *basicAuthMiddleware) findAuth(headerValue string) (auth *encodedUser, f
 
 func (b *basicAuthMiddleware) askForCredentials(ctx context.Context) {
 	ctx.Header("WWW-Authenticate", b.realmHeaderValue)
-	ctx.StatusCode(iris.StatusUnauthorized)
+	ctx.StatusCode(siris.StatusUnauthorized)
 }
 
 // Serve the actual middleware

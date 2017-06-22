@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/httptest"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/httptest"
 )
 
 type resource string
@@ -55,7 +55,7 @@ func TestSPA(t *testing.T) {
 		contents = strings.Replace(contents, "{{ .Page.Title }}", page.Title, 1)
 
 		e.GET(url).Expect().
-			Status(iris.StatusOK).
+			Status(siris.StatusOK).
 			Body().Equal(contents)
 	}
 }

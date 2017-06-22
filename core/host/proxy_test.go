@@ -6,10 +6,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/core/host"
-	"github.com/kataras/iris/httptest"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/host"
+	"github.com/go-siris/siris/httptest"
 )
 
 func TestProxy(t *testing.T) {
@@ -17,7 +17,7 @@ func TestProxy(t *testing.T) {
 	expectedAbout := "ok /about"
 	unexpectedRoute := "unexpected"
 
-	// proxySrv := iris.New()
+	// proxySrv := siris.New()
 	u, err := url.Parse("https://localhost:4444")
 	if err != nil {
 		t.Fatalf("%v while parsing url", err)
@@ -29,11 +29,11 @@ func TestProxy(t *testing.T) {
 	// }
 	// p.Transport = transport
 	// proxySrv.Downgrade(p.ServeHTTP)
-	// go proxySrv.Run(iris.Addr(":80"), iris.WithoutBanner, iris.WithoutInterruptHandler)
+	// go proxySrv.Run(siris.Addr(":80"), siris.WithoutBanner, siris.WithoutInterruptHandler)
 
 	go host.NewProxy("localhost:2017", u).ListenAndServe() // should be localhost/127.0.0.1:80 but travis throws permission denied.
 
-	app := iris.New()
+	app := siris.New()
 	app.Get("/", func(ctx context.Context) {
 		ctx.WriteString(expectedIndex)
 	})
@@ -42,7 +42,7 @@ func TestProxy(t *testing.T) {
 		ctx.WriteString(expectedAbout)
 	})
 
-	app.OnErrorCode(iris.StatusNotFound, func(ctx context.Context) {
+	app.OnErrorCode(siris.StatusNotFound, func(ctx context.Context) {
 		ctx.WriteString(unexpectedRoute)
 	})
 
@@ -51,10 +51,10 @@ func TestProxy(t *testing.T) {
 		t.Fatalf("%v while creating tcp4 listener for new tls local test listener", err)
 	}
 	// main server
-	go app.Run(iris.Listener(httptest.NewLocalTLSListener(l)), iris.WithoutBanner)
+	go app.Run(siris.Listener(httptest.NewLocalTLSListener(l)), siris.WithoutBanner)
 
 	e := httptest.NewInsecure(t, httptest.URL("http://localhost:2017"))
-	e.GET("/").Expect().Status(iris.StatusOK).Body().Equal(expectedIndex)
-	e.GET("/about").Expect().Status(iris.StatusOK).Body().Equal(expectedAbout)
-	e.GET("/notfound").Expect().Status(iris.StatusNotFound).Body().Equal(unexpectedRoute)
+	e.GET("/").Expect().Status(siris.StatusOK).Body().Equal(expectedIndex)
+	e.GET("/about").Expect().Status(siris.StatusOK).Body().Equal(expectedAbout)
+	e.GET("/notfound").Expect().Status(siris.StatusNotFound).Body().Equal(unexpectedRoute)
 }

@@ -4,14 +4,14 @@ package basicauth_test
 import (
 	"testing"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/httptest"
-	"github.com/kataras/iris/middleware/basicauth"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/httptest"
+	"github.com/go-siris/siris/middleware/basicauth"
 )
 
-func buildApp() *iris.Application {
-	app := iris.New()
+func buildApp() *siris.Application {
+	app := siris.New()
 
 	authConfig := basicauth.Config{
 		Users: map[string]string{"myusername": "mypassword"},
@@ -49,19 +49,19 @@ func TestBasicAuth(t *testing.T) {
 	e := httptest.New(t, app)
 
 	// redirects to /admin without basic auth
-	e.GET("/").Expect().Status(iris.StatusUnauthorized)
+	e.GET("/").Expect().Status(siris.StatusUnauthorized)
 	// without basic auth
-	e.GET("/admin").Expect().Status(iris.StatusUnauthorized)
+	e.GET("/admin").Expect().Status(siris.StatusUnauthorized)
 
 	// with valid basic auth
 	e.GET("/admin").WithBasicAuth("myusername", "mypassword").Expect().
-		Status(iris.StatusOK).Body().Equal("/admin myusername:mypassword")
+		Status(siris.StatusOK).Body().Equal("/admin myusername:mypassword")
 	e.GET("/admin/profile").WithBasicAuth("myusername", "mypassword").Expect().
-		Status(iris.StatusOK).Body().Equal("/admin/profile myusername:mypassword")
+		Status(siris.StatusOK).Body().Equal("/admin/profile myusername:mypassword")
 	e.GET("/admin/settings").WithBasicAuth("myusername", "mypassword").Expect().
-		Status(iris.StatusOK).Body().Equal("/admin/settings myusername:mypassword")
+		Status(siris.StatusOK).Body().Equal("/admin/settings myusername:mypassword")
 
 	// with invalid basic auth
 	e.GET("/admin/settings").WithBasicAuth("invalidusername", "invalidpassword").
-		Expect().Status(iris.StatusUnauthorized)
+		Expect().Status(siris.StatusUnauthorized)
 }

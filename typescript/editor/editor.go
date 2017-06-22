@@ -8,15 +8,15 @@ package editor
 //  | Editor usage                                               |
 //  +------------------------------------------------------------+
 //
-// 	import "github.com/kataras/iris/typescript/editor"
+// 	import "github.com/go-siris/siris/typescript/editor"
 //  [...]
 //
-//  app := iris.New()
+//  app := siris.New()
 // 	e := editor.New(editor.Config{})
 // 	e.Attach(app)
 //
 //  [...]
-// 	app.Run(iris.Addr(":8080"))
+// 	app.Run(siris.Addr(":8080"))
 
 //
 //  +------------------------------------------------------------+
@@ -34,9 +34,9 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/core/host"
-	"github.com/kataras/iris/typescript/npm"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/core/host"
+	"github.com/go-siris/siris/typescript/npm"
 )
 
 type (
@@ -121,7 +121,7 @@ type editorWriter struct {
 }
 
 // build runs before the server's listens,  creates the listener ( use of port parent hostname:DefaultPort if not exist)
-func (e *Editor) build(s *iris.Application) {
+func (e *Editor) build(s *siris.Application) {
 	e.log = s.Log
 	if e.config.Hostname == "" {
 		e.config.Hostname = "0.0.0.0"
@@ -139,7 +139,7 @@ func (e *Editor) build(s *iris.Application) {
 }
 
 // close kills the editor's server when Iris is closed
-func (e *Editor) close(s *iris.Application) {
+func (e *Editor) close(s *siris.Application) {
 	if e.process != nil {
 		err := e.process.Kill()
 		if err != nil {
@@ -212,7 +212,7 @@ func (e *Editor) start() {
 }
 
 // Attach adapts the editor to one or more Iris instance(s).
-func (e *Editor) Attach(app *iris.Application) {
+func (e *Editor) Attach(app *siris.Application) {
 
 	e.build(app)
 

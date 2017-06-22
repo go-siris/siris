@@ -30,9 +30,9 @@ import (
 	"github.com/monoculum/formam"
 	"github.com/russross/blackfriday"
 
-	"github.com/kataras/iris/core/errors"
-	"github.com/kataras/iris/core/memstore"
-	"github.com/kataras/iris/sessions"
+	"github.com/go-siris/siris/core/errors"
+	"github.com/go-siris/siris/core/memstore"
+	"github.com/go-siris/siris/sessions"
 )
 
 type (
@@ -249,7 +249,7 @@ type Context interface {
 	// Translate is the i18n (localization) middleware's function,
 	// it calls the Get("translate") to return the translated value.
 	//
-	// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/i18n
+	// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/i18n
 	Translate(format string, args ...interface{}) string
 
 	//  +------------------------------------------------------------+
@@ -411,7 +411,7 @@ type Context interface {
 	//
 	// This function may be used in the following cases:
 	//
-	//     * if response body is too big (more than iris.LimitRequestBodySize(if setted)).
+	//     * if response body is too big (more than siris.LimitRequestBodySize(if setted)).
 	//     * if response body is streamed from slow external sources.
 	//     * if response body must be streamed to the client in chunks.
 	//     (aka `http server push`).
@@ -453,13 +453,13 @@ type Context interface {
 	// is being called afterwards, in the same request.
 	// Useful when need to set or/and change a layout based on the previous handlers in the chain.
 	//
-	// Note that the 'layoutTmplFile' argument can be setted to iris.NoLayout || view.NoLayout
+	// Note that the 'layoutTmplFile' argument can be setted to siris.NoLayout || view.NoLayout
 	// to disable the layout for a specific view render action,
 	// it disables the engine's configuration's layout property.
 	//
 	// Look .ViewData and .View too.
 	//
-	// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/view/context-view-data/
+	// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/view/context-view-data/
 	ViewLayout(layoutTmplFile string)
 
 	// ViewData saves one or more key-value pair in order to be passed if and when .View
@@ -479,7 +479,7 @@ type Context interface {
 	//
 	// Look .ViewLayout and .View too.
 	//
-	// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/view/context-view-data/
+	// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/view/context-view-data/
 	ViewData(key string, value interface{})
 
 	// View renders templates based on the adapted view engines.
@@ -489,7 +489,7 @@ type Context interface {
 	//
 	// Look: .ViewData and .ViewLayout too.
 	//
-	// Examples: https://github.com/kataras/iris/tree/master/_examples/intermediate/view/
+	// Examples: https://github.com/go-siris/siris/tree/master/_examples/intermediate/view/
 	View(filename string) error
 
 	// Binary writes out the raw bytes as binary data.
@@ -587,9 +587,9 @@ type Context interface {
 	// it's not covers all paths,
 	// such as databases, this should be managed by the libraries you use to make your database connection,
 	// this transaction scope is only for context's response.
-	// Transactions have their own middleware ecosystem also, look iris.go:UseTransaction.
+	// Transactions have their own middleware ecosystem also, look siris.go:UseTransaction.
 	//
-	// See https://github.com/kataras/iris/tree/master/_examples/advanced/transactions for more
+	// See https://github.com/go-siris/siris/tree/master/_examples/advanced/transactions for more
 	BeginTransaction(pipe func(t *Transaction))
 	// SkipTransactions if called then skip the rest of the transactions
 	// or all of them if called before the first transaction
@@ -613,7 +613,7 @@ type Context interface {
 	//
 	// app.None(...) and app.Routes().Offline(route)/.Online(route, method)
 	//
-	// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/route-state
+	// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/route-state
 	//
 	// User can get the response by simple using rec := ctx.Recorder(); rec.Body()/rec.StatusCode()/rec.Header().
 	//
@@ -961,7 +961,7 @@ func (ctx *context) Values() *memstore.Store {
 // Translate is the i18n (localization) middleware's function,
 // it calls the Get("translate") to return the translated value.
 //
-// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/i18n
+// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/i18n
 func (ctx *context) Translate(format string, args ...interface{}) string {
 	if cb, ok := ctx.values.Get(ctx.Application().ConfigurationReadOnly().GetTranslateFunctionContextKey()).(func(format string, args ...interface{}) string); ok {
 		return cb(format, args...)
@@ -1274,7 +1274,7 @@ func (ctx *context) Redirect(urlToRedirect string, statusHeader ...int) {
 	// // the
 	// // Fixes: http: //support.iris-go.com/d/21-wrong-warning-message-while-redirecting
 	// shouldCheckForCycle := urlToRedirect == ctx.Path() && ctx.Method() == http.MethodGet
-	// // from POST to GET on the same path will give a warning message but developers don't use the iris.DevLogger
+	// // from POST to GET on the same path will give a warning message but developers don't use the siris.DevLogger
 	// // for production, so I assume it's OK to let it logs it
 	// // (it can solve issues when developer redirects to the same handler over and over again)
 	// // Note: it doesn't stops the redirect, the developer gets what he/she expected.
@@ -1451,7 +1451,7 @@ func (ctx *context) WriteWithExpiration(bodyContent []byte, cType string, modtim
 //
 // This function may be used in the following cases:
 //
-//     * if response body is too big (more than iris.LimitRequestBodySize(if setted)).
+//     * if response body is too big (more than siris.LimitRequestBodySize(if setted)).
 //     * if response body is streamed from slow external sources.
 //     * if response body must be streamed to the client in chunks.
 //     (aka `http server push`).
@@ -1571,20 +1571,20 @@ func (ctx *context) Gzip(enable bool) {
 
 const (
 	// NoLayout to disable layout for a particular template file
-	NoLayout = "iris.nolayout"
+	NoLayout = "siris.nolayout"
 )
 
 // ViewLayout sets the "layout" option if and when .View
 // is being called afterwards, in the same request.
 // Useful when need to set or/and change a layout based on the previous handlers in the chain.
 //
-// Note that the 'layoutTmplFile' argument can be setted to iris.NoLayout || view.NoLayout || context.NoLayout
+// Note that the 'layoutTmplFile' argument can be setted to siris.NoLayout || view.NoLayout || context.NoLayout
 // to disable the layout for a specific view render action,
 // it disables the engine's configuration's layout property.
 //
 // Look .ViewData and .View too.
 //
-// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/view/context-view-data/
+// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/view/context-view-data/
 func (ctx *context) ViewLayout(layoutTmplFile string) {
 	ctx.values.Set(ctx.Application().ConfigurationReadOnly().GetViewLayoutContextKey(), layoutTmplFile)
 }
@@ -1606,7 +1606,7 @@ func (ctx *context) ViewLayout(layoutTmplFile string) {
 //
 // Look .ViewLayout and .View too.
 //
-// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/view/context-view-data/
+// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/view/context-view-data/
 func (ctx *context) ViewData(key string, value interface{}) {
 	viewDataContextKey := ctx.Application().ConfigurationReadOnly().GetViewDataContextKey()
 	if key == "" {
@@ -1632,7 +1632,7 @@ func (ctx *context) ViewData(key string, value interface{}) {
 //
 // Look: .ViewData and .ViewLayout too.
 //
-// Examples: https://github.com/kataras/iris/tree/master/_examples/intermediate/view/
+// Examples: https://github.com/go-siris/siris/tree/master/_examples/intermediate/view/
 func (ctx *context) View(filename string) error {
 	ctx.ContentType(contentHTMLHeaderValue)
 	layout := ctx.values.GetString(ctx.Application().ConfigurationReadOnly().GetViewLayoutContextKey())
@@ -2113,9 +2113,9 @@ var errTransactionInterrupted = errors.New("transaction interrupted, recovery fr
 // it's not covers all paths,
 // such as databases, this should be managed by the libraries you use to make your database connection,
 // this transaction scope is only for context's response.
-// Transactions have their own middleware ecosystem also, look iris.go:UseTransaction.
+// Transactions have their own middleware ecosystem also, look siris.go:UseTransaction.
 //
-// See https://github.com/kataras/iris/tree/master/_examples/advanced/transactions for more
+// See https://github.com/go-siris/siris/tree/master/_examples/advanced/transactions for more
 func (ctx *context) BeginTransaction(pipe func(t *Transaction)) {
 	// do NOT begin a transaction when the previous transaction has been failed
 	// and it was requested scoped or SkipTransactions called manually.
@@ -2181,7 +2181,7 @@ func (ctx *context) TransactionsSkipped() bool {
 //
 // app.None(...) and app.Routes().Offline(route)/.Online(route, method)
 //
-// Example: https://github.com/kataras/iris/tree/master/_examples/intermediate/route-state
+// Example: https://github.com/go-siris/siris/tree/master/_examples/intermediate/route-state
 //
 // User can get the response by simple using rec := ctx.Recorder(); rec.Body()/rec.StatusCode()/rec.Header().
 //

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kataras/iris"
+	"github.com/go-siris/siris"
 )
 
 // Follow these steps first:
@@ -11,8 +11,8 @@ import (
 // $ ./embedding-files-into-app
 // "physical" files are not used, you can delete the "assets" folder and run the example.
 
-func newApp() *iris.Application {
-	app := iris.New()
+func newApp() *siris.Application {
+	app := siris.New()
 
 	app.StaticEmbedded("/static", "./assets", Asset, AssetNames)
 
@@ -25,5 +25,5 @@ func main() {
 	// http://localhost:8080/static/css/bootstrap.min.css
 	// http://localhost:8080/static/js/jquery-2.1.1.js
 	// http://localhost:8080/static/favicon.ico
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

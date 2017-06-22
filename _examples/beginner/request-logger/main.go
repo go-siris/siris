@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/middleware/logger"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/middleware/logger"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	customLogger := logger.New(logger.Config{
 		// Status displays status code
@@ -37,7 +37,7 @@ func main() {
 	// log http errors should be done manually
 	errorLogger := logger.New()
 
-	app.OnErrorCode(iris.StatusNotFound, func(ctx context.Context) {
+	app.OnErrorCode(siris.StatusNotFound, func(ctx context.Context) {
 		errorLogger(ctx)
 		ctx.Writef("My Custom 404 error page ")
 	})
@@ -47,6 +47,6 @@ func main() {
 	// http://localhost:8080/2
 	// http://lcoalhost:8080/notfoundhere
 	// see the output on the console.
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 }

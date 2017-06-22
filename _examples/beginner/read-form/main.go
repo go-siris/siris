@@ -2,9 +2,9 @@
 package main
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 type Visitor struct {
@@ -14,14 +14,14 @@ type Visitor struct {
 }
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	// set the view html template engine
 	app.AttachView(view.HTML("./templates", ".html").Reload(true))
 
 	app.Get("/", func(ctx context.Context) {
 		if err := ctx.View("form.html"); err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.StatusCode(siris.StatusInternalServerError)
 			ctx.WriteString(err.Error())
 		}
 	})
@@ -30,12 +30,12 @@ func main() {
 		visitor := Visitor{}
 		err := ctx.ReadForm(&visitor)
 		if err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.StatusCode(siris.StatusInternalServerError)
 			ctx.WriteString(err.Error())
 		}
 
 		ctx.Writef("Visitor: %#v", visitor)
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }

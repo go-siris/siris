@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/kataras/iris"
+	"github.com/go-siris/siris"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Favicon("./assets/favicon.ico")
 
@@ -20,7 +20,7 @@ func main() {
 	// http://localhost:8080/static/css/main.css
 	// http://localhost:8080/static/js/jquery-2.1.1.js
 	// http://localhost:8080/static/favicon.ico
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 
 	// Note:
 	// Routing doesn't allows something .StaticWeb("/", "./assets")

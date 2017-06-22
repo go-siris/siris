@@ -7,9 +7,9 @@ package main
 import (
 	"time"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
-	"github.com/kataras/iris/view"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/view"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 	// output startup banner and error logs on os.Stdout
 
 	// set the view engine target to ./templates folder
@@ -53,7 +53,7 @@ func main() {
 
 	// http://localhost:8080
 	// http://localhost:8080/about
-	app.Run(iris.Addr(":8080"))
+	app.Run(siris.Addr(":8080"))
 }
 
 // Notes: ViewData("", myCustomStruct{}) will set this myCustomStruct value as a root binding data,

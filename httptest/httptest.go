@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/iris-contrib/httpexpect"
-	"github.com/kataras/iris"
+	"github.com/go-siris/siris"
 )
 
 type (
@@ -67,8 +67,8 @@ func DefaultConfiguration() *Configuration {
 }
 
 // New Prepares and returns a new test framework based on the "app".
-// You can find example on the https://github.com/kataras/iris/tree/master/_examples/intermediate/httptest
-func New(t *testing.T, app *iris.Application, setters ...OptionSetter) *httpexpect.Expect {
+// You can find example on the https://github.com/go-siris/siris/tree/master/_examples/intermediate/httptest
+func New(t *testing.T, app *siris.Application, setters ...OptionSetter) *httpexpect.Expect {
 	conf := DefaultConfiguration()
 	for _, setter := range setters {
 		setter.Set(conf)

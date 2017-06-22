@@ -3,12 +3,12 @@ package main
 import (
 	"net/http"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/go-siris/siris"
+	"github.com/go-siris/siris/context"
 )
 
 func main() {
-	app := iris.New()
+	app := siris.New()
 
 	app.Get("/", func(ctx context.Context) {
 		ctx.Writef("Hello from the server")
@@ -24,11 +24,11 @@ func main() {
 	}
 
 	// create our custom server and assign the Handler/Router
-	srv := &http.Server{Handler: app, Addr: ":8080"} // you have to set Handler:app and Addr, see "iris-way" which does this automatically.
+	srv := &http.Server{Handler: app, Addr: ":8080"} // you have to set Handler:app and Addr, see "siris-way" which does this automatically.
 	// http://localhost:8080/
 	// http://localhost:8080/mypath
 	println("Start a server listening on http://localhost:8080")
-	srv.ListenAndServe() // same as app.Run(iris.Addr(":8080"))
+	srv.ListenAndServe() // same as app.Run(siris.Addr(":8080"))
 
 	// Notes:
 	// Banner is not shown at all. Same for the Interrupt Handler, even if app's configuration allows them.
@@ -38,6 +38,6 @@ func main() {
 	// More:
 	// see "multi" if you need to use more than one server at the same app.
 	//
-	// for a custom listener use: iris.Listener(net.Listener) or
-	// iris.TLS(cert,key) or iris.AutoTLS(), see "custom-listener" example for those.
+	// for a custom listener use: siris.Listener(net.Listener) or
+	// siris.TLS(cert,key) or siris.AutoTLS(), see "custom-listener" example for those.
 }
