@@ -222,6 +222,7 @@ Feature Overview
 - Checks for updates at startup
 - Highly customizable
 - Feels like you used siris forever, thanks to its Fluent API
+- Reuseport feature
 - And many others...
 
 Documentation
@@ -235,6 +236,21 @@ Wanna create your own fast URL Shortener Service Using Siris? --click [here](htt
 
 [Godocs](https://godoc.org/github.com/go-siris/siris) --for deep understanding.
 
+
+## Performance optimization tips for multi-core systems
+
+### enable Reuseport feature:
+```GO
+app.Run(siris.Addr(":8080"), siris.EnableReuseport)
+// or before run:
+app.Configure(siris.EnableReuseport)
+```
+
+- Enable the Reuseport feature like abdove
+- Run a separate server instance per CPU core with GOMAXPROCS=1.
+- Pin each server instance to a separate CPU core using [taskset](http://linux.die.net/man/1/taskset).
+- Ensure the interrupts of multiqueue network card are evenly distributed between CPU cores. See [this article](https://blog.cloudflare.com/how-to-achieve-low-latency/) for details.
+- Use Go 1.6+ as it provides some considerable performance improvements.
 
 Support
 ------------

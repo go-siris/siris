@@ -9,7 +9,7 @@ import (
 )
 
 func TaskHostError() {
-	su := New(&http.Server{Addr: ":8273", Handler: http.DefaultServeMux})
+	su := New(&http.Server{Addr: ":8273", Handler: http.DefaultServeMux}, false)
 
 	su.ScheduleFunc(func(proc TaskProcess) {
 		select {

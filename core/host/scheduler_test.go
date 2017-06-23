@@ -45,7 +45,7 @@ func SchedulerSchedule() {
 	h := New(&http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		}),
-	})
+	}, false)
 	logger := log.New(os.Stdout, "Supervisor: ", 0)
 
 	delaySeconds := 2
