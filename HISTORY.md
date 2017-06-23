@@ -29,6 +29,27 @@ Thanks to [Santosh Anand](https://github.com/santoshanand) the http://iris-go.co
 
 The amount of the next two or three donations you'll send they will be immediately transferred to his own account balance, so be generous please!
 
+# Th, 15 June 2017 | v7.3.0
+
+### SIRIS the community fork of Iris
+
+Since the announcement that Iris was aquired, we createt a new fork "SIRIS". All Iris 7.x apps will be compatible the only change you need to do is use `import iris "gopkg.in/go-siris/siris.v7"`
+
+Feel free, to report issues or create pull-requests. We'll be happy to integrate the community to go forward with this web framework.
+
+### Reuseport
+
+[Reuseport feature](https://github.com/go-siris/siris#performance-optimization-tips-for-multi-core-systems)
+
+To use the new reuseport feature enable it via:
+
+```GO
+app.Run(siris.Addr(":8080"), siris.EnableReuseport)
+// or before run:
+app.Configure(siris.EnableReuseport)
+```
+
+
 
 # Th, 15 June 2017 | v7.2.0
 

@@ -339,7 +339,7 @@ Besides the fact that we have a [community chat][Chat] for questions or reports 
 Version
 ------------
 
-Current: **7.2.0**
+Current: **7.3.0**
 
 Each new release is pushed to the master. It stays there until the next version. When a next version is released then the previous version goes to its own branch with `gopkg.in` as its import path (and its own vendor folder), in order to keep it working "for-ever".
 

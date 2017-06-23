@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
-Package Siris is a fully-featured HTTP/2 backend web framework written entirely in Google’s Go Language.
+Package siris is a fully-featured HTTP/2 backend web framework written entirely in Google’s Go Language.
 
 Source code and other details for the project are available at GitHub:
 
