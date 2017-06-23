@@ -27,6 +27,7 @@ import (
 type Supervisor struct {
 	Scheduler
 	server         *http.Server
+	useReuseport   bool  // is by default: false
 	closedManually int32 // future use, accessed atomically (non-zero means we've called the Shutdown)
 
 	shouldWait   int32 // non-zero means that the host should wait for unblocking
@@ -44,9 +45,10 @@ type Supervisor struct {
 // Plus you can add tasks on specific events.
 // It has its own flow, which means that you can prevent
 // to return and exit and restore the flow too.
-func New(srv *http.Server) *Supervisor {
+func New(srv *http.Server, reuseport bool) *Supervisor {
 	return &Supervisor{
 		server:       srv,
+		useReuseport: reuseport,
 		unblockChan:  make(chan struct{}, 1),
 		shutdownChan: make(chan struct{}),
 		errChan:      make(chan error),
@@ -178,7 +180,7 @@ func (su *Supervisor) newListener() (net.Listener, error) {
 	// restarts we may want for the server.
 	//
 	// User still be able to call .Serve instead.
-	l, err := nettools.TCPKeepAlive(su.server.Addr)
+	l, err := nettools.TCPKeepAlive(su.server.Addr, su.useReuseport)
 	if err != nil {
 		return nil, err
 	}

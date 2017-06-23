@@ -75,7 +75,7 @@ func NewProxy(hostAddr string, target *url.URL) *Supervisor {
 	proxy := New(&http.Server{
 		Addr:    hostAddr,
 		Handler: proxyHandler,
-	})
+	}, false)
 
 	return proxy
 }

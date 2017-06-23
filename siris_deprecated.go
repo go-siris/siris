@@ -99,7 +99,7 @@ func (app *Application) ListenTLS(addr string, certFile, keyFile string) {
 //
 // Deprecated. Use `Run` instead.
 func (app *Application) ListenLETSENCRYPT(addr string, cacheDirOptional ...string) {
-	l, err := nettools.LETSENCRYPT(addr, addr, cacheDirOptional...)
+	l, err := nettools.LETSENCRYPT(addr, addr, app.config.EnableReuseport, cacheDirOptional...)
 	CheckErr(err)
 	// create the redirect server to redirect http://... to https://...
 	hostname := nettools.ResolveHostname(addr)

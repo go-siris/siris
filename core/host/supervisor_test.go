@@ -100,7 +100,7 @@ func testSupervisor(t *testing.T, creator func(*http.Server, []TaskRunner) *Supe
 }
 func TestSupervisor(t *testing.T) {
 	testSupervisor(t, func(srv *http.Server, tasks []TaskRunner) *Supervisor {
-		su := New(srv)
+		su := New(srv, false)
 		for _, t := range tasks {
 			su.Schedule(t)
 		}

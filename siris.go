@@ -31,12 +31,15 @@ import (
 )
 
 const (
-	banner = `         _____      _
-        |_   _|    (_)
-          | |  ____ _  ___
-          | | | __|| |/ __|
-         _| |_| |  | |\__ \
-        |_____|_|  |_||___/ `
+	banner = `
+  _________.___ __________ .___   _________
+ /   _____/|   |\______   \|   | /   _____/
+ \_____  \ |   | |       _/|   | \_____  \ 
+ /        \|   | |    |   \|   | /        \
+/_______  /|___| |____|_  /|___|/_______  /
+        \/              \/              \/ 
+         the fastest webframework
+`
 
 	// Version is the current version number of the Siris Web framework.
 	//
@@ -192,7 +195,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 
 	// create the new host supervisor
 	// bind the constructed server and return it
-	su := host.New(srv)
+	su := host.New(srv, app.config.EnableReuseport)
 
 	if app.config.vhost == "" { // vhost now is useful for router subdomain on wildcard subdomains,
 		// in order to correct decide what to do on:

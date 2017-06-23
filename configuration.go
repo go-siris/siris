@@ -99,6 +99,11 @@ type Configurator func(*Application)
 // variables for configurators don't need any receivers, functions
 // for them that need (helps code editors to recognise as variables without parenthesis completion).
 
+// EnableReuseport turns on the Reuseport feature.
+var EnableReuseport = func(app *Application) {
+	app.config.EnableReuseport = true
+}
+
 // WithoutBanner turns off the write banner on server startup.
 var WithoutBanner = func(app *Application) {
 	app.config.DisableBanner = true
@@ -183,10 +188,16 @@ type Configuration struct {
 	// It can be retrieved by the context if needed (i.e router for subdomains)
 	vhost string
 
+	// EnableReuseport if setted to true then it turns on the Reuseport feature.
+	//
+	// Defaults to false.
+	EnableReuseport bool `yaml:"EnableReuseport" toml:"EnableReuseport"`
+
 	// DisableBanner if setted to true then it turns off the write banner on server startup.
 	//
 	// Defaults to false.
 	DisableBanner bool `yaml:"DisableBanner" toml:"DisableBanner"`
+
 	// DisableInterruptHandler if setted to true then it disables the automatic graceful server shutdown
 	// when control/cmd+C pressed.
 	// Turn this to true if you're planning to handle this by your own via a custom host.Task.
@@ -263,6 +274,7 @@ type Configuration struct {
 	//
 	// Defaults to "siris.translate" and "siris.language"
 	TranslateFunctionContextKey string `yaml:"TranslateFunctionContextKey" toml:"TranslateFunctionContextKey"`
+
 	// TranslateLanguageContextKey used for i18n.
 	//
 	// Defaults to "siris.language"
@@ -313,6 +325,12 @@ func (c Configuration) GetDisablePathCorrection() bool {
 // returns true when its escapes the path, the named parameters (if any).
 func (c Configuration) GetEnablePathEscape() bool {
 	return c.EnablePathEscape
+}
+
+// GetEnableReuseport is the configuration.EnableReuseport,
+// returns true when its use the feature of the Reusepost listener.
+func (c Configuration) GetEnableReuseport() bool {
+	return c.EnableReuseport
 }
 
 // GetFireMethodNotAllowed returns the configuration.FireMethodNotAllowed.
@@ -396,6 +414,10 @@ func WithConfiguration(c Configuration) Configurator {
 	return func(app *Application) {
 		main := app.config
 
+		if v := c.EnableReuseport; v {
+			main.EnableReuseport = v
+		}
+
 		if v := c.DisableBanner; v {
 			main.DisableBanner = v
 		}
@@ -462,6 +484,7 @@ func WithConfiguration(c Configuration) Configurator {
 // DefaultConfiguration returns the default configuration for an Siris station, fills the main Configuration
 func DefaultConfiguration() Configuration {
 	return Configuration{
+		EnableReuseport:                   false,
 		DisableBanner:                     false,
 		DisableInterruptHandler:           false,
 		DisablePathCorrection:             false,

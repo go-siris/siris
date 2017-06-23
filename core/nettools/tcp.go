@@ -6,12 +6,14 @@ package nettools
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/go-siris/siris/core/errors"
+	"github.com/valyala/tcplisten"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -45,8 +47,16 @@ var (
 )
 
 // TCP returns a new tcp(ipv6 if supported by network) and an error on failure.
-func TCP(addr string) (net.Listener, error) {
-	l, err := net.Listen("tcp", addr)
+func TCP(addr string, reuseport bool) (net.Listener, error) {
+	var l net.Listener
+	var err error
+
+	if reuseport == true {
+		l, err = Listen("tcp", addr)
+	} else {
+		l, err = net.Listen("tcp", addr)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +64,7 @@ func TCP(addr string) (net.Listener, error) {
 }
 
 // TCPKeepAlive returns a new tcp keep alive Listener and an error on failure.
-func TCPKeepAlive(addr string) (ln net.Listener, err error) {
+func TCPKeepAlive(addr string, reuseport bool) (ln net.Listener, err error) {
 	// if strings.HasPrefix(addr, "127.0.0.1") {
 	// 	// it's ipv4, use ipv4 tcp listener instead of the default ipv6. Don't.
 	// 	ln, err = net.Listen("tcp4", addr)
@@ -62,7 +72,7 @@ func TCPKeepAlive(addr string) (ln net.Listener, err error) {
 	// 	ln, err = TCP(addr)
 	// }
 
-	ln, err = TCP(addr)
+	ln, err = TCP(addr, reuseport)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +98,7 @@ func UNIX(socketFile string, mode os.FileMode) (net.Listener, error) {
 }
 
 // TLS returns a new TLS Listener and an error on failure.
-func TLS(addr, certFile, keyFile string) (net.Listener, error) {
+func TLS(addr, certFile, keyFile string, reuseport bool) (net.Listener, error) {
 
 	if certFile == "" || keyFile == "" {
 		return nil, errCertKeyMissing
@@ -99,12 +109,12 @@ func TLS(addr, certFile, keyFile string) (net.Listener, error) {
 		return nil, errParseTLS.Format(certFile, keyFile, err)
 	}
 
-	return CERT(addr, cert)
+	return CERT(addr, cert, reuseport)
 }
 
 // CERT returns a listener which contans tls.Config with the provided certificate, use for ssl.
-func CERT(addr string, cert tls.Certificate) (net.Listener, error) {
-	l, err := net.Listen("tcp", addr)
+func CERT(addr string, cert tls.Certificate, reuseport bool) (net.Listener, error) {
+	l, err := TCP(addr, reuseport)
 	if err != nil {
 		return nil, err
 	}
@@ -125,12 +135,12 @@ func CERT(addr string, cert tls.Certificate) (net.Listener, error) {
 // does NOT supports localhost domains for testing.
 //
 // this is the recommended function to use when you're ready for production state.
-func LETSENCRYPT(addr string, serverName string, cacheDirOptional ...string) (net.Listener, error) {
+func LETSENCRYPT(addr string, serverName string, reuseport bool, cacheDirOptional ...string) (net.Listener, error) {
 	if portIdx := strings.IndexByte(addr, ':'); portIdx == -1 {
 		addr += ":443"
 	}
 
-	l, err := TCP(addr)
+	l, err := TCP(addr, reuseport)
 	if err != nil {
 		return nil, err
 	}
@@ -160,4 +170,44 @@ func LETSENCRYPT(addr string, serverName string, cacheDirOptional ...string) (ne
 	}
 
 	return tls.NewListener(l, tlsConfig), nil
+}
+
+// ErrNoReusePort is returned if the OS doesn't support SO_REUSEPORT.
+type ErrNoReusePort struct {
+	err error
+}
+
+// Error implements error interface.
+func (e *ErrNoReusePort) Error() string {
+	return fmt.Sprintf("The OS doesn't support SO_REUSEPORT: %s", e.err)
+}
+
+// Listen returns TCP listener with SO_REUSEPORT option set.
+//
+// The returned listener tries enabling the following TCP options, which usually
+// have positive impact on performance:
+//
+// - TCP_DEFER_ACCEPT. This option expects that the server reads from accepted
+//   connections before writing to them.
+//
+// - TCP_FASTOPEN. See https://lwn.net/Articles/508865/ for details.
+//
+// Use https://github.com/valyala/tcplisten if you want customizing
+// these options.
+//
+// Only tcp4 and tcp6 networks are supported.
+//
+// ErrNoReusePort error is returned if the system doesn't support SO_REUSEPORT.
+func Listen(network, addr string) (net.Listener, error) {
+	ln, err := cfg.NewListener(network, addr)
+	if err != nil && strings.Contains(err.Error(), "SO_REUSEPORT") {
+		return nil, &ErrNoReusePort{err}
+	}
+	return ln, err
+}
+
+var cfg = &tcplisten.Config{
+	ReusePort:   true,
+	DeferAccept: true,
+	FastOpen:    true,
 }
