@@ -2,3 +2,4 @@
 .vscode
 # turn off these for now
 specs
+vendor/**/examples
