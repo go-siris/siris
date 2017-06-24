@@ -44,7 +44,7 @@ const (
 	// Version is the current version number of the Siris Web framework.
 	//
 	// Look https://github.com/go-siris/siris#where-can-i-find-older-versions for older versions.
-	Version = "7.3.0"
+	Version = "7.3.4"
 )
 
 const (
