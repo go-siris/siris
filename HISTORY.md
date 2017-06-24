@@ -29,7 +29,13 @@ Thanks to [Santosh Anand](https://github.com/santoshanand) the http://go-siris.c
 
 The amount of the next two or three donations you'll send they will be immediately transferred to his own account balance, so be generous please!
 
-# Th, 15 June 2017 | v7.3.0
+# Sa, 24 June 2017 | v7.3.4
+
+- bugfix in router for a bug that occurs under crazy conditions
+- bugfix with vendors build
+- bugfix reuseport not compatible with windows (yet - maybe ever)
+
+# Th, 22 June 2017 | v7.3.0
 
 ### SIRIS the community fork of Iris
 
