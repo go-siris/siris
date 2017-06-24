@@ -1056,8 +1056,8 @@ func (ctx *context) Subdomain() (subdomain string) {
 		subdomain = host[0:index]
 	}
 
-	// listening on iris-go.com:80
-	// subdomain = iris-go, but it's wrong, it should return ""
+	// listening on go-siris.com:80
+	// subdomain = go-siris, but it's wrong, it should return ""
 	vhost := ctx.Application().ConfigurationReadOnly().GetVHost()
 	if strings.Contains(vhost, subdomain) { // then it's not subdomain
 		return ""
@@ -1272,7 +1272,7 @@ func (ctx *context) Redirect(urlToRedirect string, statusHeader ...int) {
 	// // but it will take too much time for a simple redirect, it doesn't worth it.
 	// // So we are checking the CURRENT Method for GET, HEAD,  CONNECT and TRACE.
 	// // the
-	// // Fixes: http: //support.iris-go.com/d/21-wrong-warning-message-while-redirecting
+	// // Fixes: http: //support.go-siris.com/d/21-wrong-warning-message-while-redirecting
 	// shouldCheckForCycle := urlToRedirect == ctx.Path() && ctx.Method() == http.MethodGet
 	// // from POST to GET on the same path will give a warning message but developers don't use the siris.DevLogger
 	// // for production, so I assume it's OK to let it logs it

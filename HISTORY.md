@@ -16,7 +16,6 @@ Developers are not forced to upgrade if they don't really need it. Upgrade whene
 
 **How to upgrade**: Open your command-line and execute this command: `go get -u github.com/go-siris/siris`.
 
-
 # Th, 15 June 2017 | v7.3.0
 
 ### SIRIS the community fork of Iris

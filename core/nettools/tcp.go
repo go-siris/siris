@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/go-siris/siris/core/errors"
-	"github.com/valyala/tcplisten"
 	"golang.org/x/crypto/acme/autocert"
+	"gopkg.in/go-siris/tcplisten.v1"
 )
 
 // tcpKeepAliveListener sets TCP keep-alive timeouts on accepted
@@ -52,7 +52,7 @@ func TCP(addr string, reuseport bool) (net.Listener, error) {
 	var err error
 
 	if reuseport == true {
-		l, err = Listen("tcp", addr)
+		l, err = reuseport.Listen("tcp", addr)
 	} else {
 		l, err = net.Listen("tcp", addr)
 	}

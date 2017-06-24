@@ -39,18 +39,18 @@ func newApp() *siris.Application {
 
 func main() {
 	app := newApp()
-	// http://iris-go.com
-	// http://iris-go.com/about
-	// http://iris-go.com/contact
-	// http://iris-go.com/api/users
-	// http://iris-go.com/api/users/42
+	// http://go-siris.com
+	// http://go-siris.com/about
+	// http://go-siris.com/contact
+	// http://go-siris.com/api/users
+	// http://go-siris.com/api/users/42
 
-	// http://www.iris-go.com
-	// http://www.iris-go.com/about
-	// http://www.iris-go.com/contact
-	// http://www.iris-go.com/api/users
-	// http://www.iris-go.com/api/users/42
-	if err := app.Run(siris.Addr("siris-go.com:80")); err != nil {
+	// http://www.go-siris.com
+	// http://www.go-siris.com/about
+	// http://www.go-siris.com/contact
+	// http://www.go-siris.com/api/users
+	// http://www.go-siris.com/api/users/42
+	if err := app.Run(siris.Addr("go-siris.com:80")); err != nil {
 		panic(err)
 	}
 }

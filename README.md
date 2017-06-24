@@ -4,7 +4,7 @@ A fast, cross-platform and efficient web framework with robust set of well-desig
 
 [![Build status](https://api.travis-ci.org/go-siris/siris.svg?branch=master&style=flat-square)](https://travis-ci.org/go-siris/siris)
 [![Report card](https://img.shields.io/badge/report%20card%20-a%2B-F44336.svg?style=flat-square)](https://goreportcard.com/report/github.com/go-siris/siris)
-[![Support forum](https://img.shields.io/badge/support-page-ec2eb4.svg?style=flat-square)](http://support.iris-go.com)
+[![Support forum](https://img.shields.io/badge/support-page-ec2eb4.svg?style=flat-square)](http://support.go-siris.com)
 [![Examples](https://img.shields.io/badge/howto-examples-3362c2.svg?style=flat-square)](https://github.com/go-siris/siris/tree/master/_examples#table-of-contents)
 [![Godocs](https://img.shields.io/badge/7.3.0-%20documentation-5272B4.svg?style=flat-square)](https://godoc.org/github.com/go-siris/siris)
 [![Chat](https://img.shields.io/badge/community-%20chat-00BCD4.svg?style=flat-square)](https://gitter.im/gosiris/siris)
@@ -217,13 +217,11 @@ The Siris philosophy is to provide robust tooling for HTTP, making it a great so
 
 Siris does not force you to use any specific ORM or template engine. With support for the most popular template engines, you can quickly craft your perfect application.
 
-
 # People
 
 The original author of Iris is [@kataras](https://github.com/kataras). Before we forked to Siris.
 
 However the real Success of Siris belongs to you with your bug reports and feature requests that made this Framework so Unique.
-
 
 # Version
 
