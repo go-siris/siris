@@ -75,54 +75,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/getlantern/context"
-  packages = ["."]
-  revision = "624d99b1798d7c5375ea1d3ca4c5b04d58f7c775"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/errors"
-  packages = ["."]
-  revision = "99fa440517e8f3d1e4cd8d6dbed6b41f4c1ed3d6"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/filepersist"
-  packages = ["."]
-  revision = "c5f0cd24e7991579ba6f5f1bd20a1ad2c9f06cd4"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/golog"
-  packages = ["."]
-  revision = "cca714f7feb5df8e455f409b549d384441ac4578"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/hex"
-  packages = ["."]
-  revision = "083fba3033ad473db3dd31c9bb368473d37581a7"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/hidden"
-  packages = ["."]
-  revision = "d52a649ab33af200943bb599898dbdcfdbc94cb7"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/ops"
-  packages = ["."]
-  revision = "b70875f5d689a9438bca72aefd7142a2af889b18"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/stack"
-  packages = ["."]
-  revision = "02f928aad224fbccd50d66edd776fc9d1e9f2f2b"
-
-[[projects]]
-  branch = "master"
   name = "github.com/google/go-querystring"
   packages = ["query"]
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
@@ -278,6 +230,12 @@
   revision = "ccbd3f7822129ff389f8ca4858a9b9d4d910531c"
 
 [[projects]]
+  name = "gopkg.in/go-siris/tcplisten.v1"
+  packages = ["."]
+  revision = "998f48b955db7bc781d592cf77866feaed2e2638"
+  version = "v1.0.2"
+
+[[projects]]
   name = "gopkg.in/ini.v1"
   packages = ["."]
   revision = "d3de07a94d22b4a0972deb4b96d790c2c0ce8333"
@@ -289,15 +247,9 @@
   packages = ["."]
   revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
 
-[[projects]]
-  branch = "master"
-  name = "github.com/PuerkitoBio/goquery"
-  packages = ["."]
-  revision = "2dc93891ab3bcc1dbc2cbf9bc6376c37f6e6f289"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "415eba3367a3b497ce9c74414ba802d5902d5b7fefc7dfc99cff6af102ec40fe"
+  inputs-digest = "121203493604a084bd70c06e089f42038d75ca1101f569fa4c781bc82939dbb0"
   solver-name = "gps-cdcl"
   solver-version = 1
