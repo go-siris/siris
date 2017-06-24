@@ -4,7 +4,7 @@ A fast, cross-platform and efficient web framework with robust set of well-desig
 
 [![Build status](https://api.travis-ci.org/go-siris/siris.svg?branch=master&style=flat-square)](https://travis-ci.org/go-siris/siris)
 [![Report card](https://img.shields.io/badge/report%20card%20-a%2B-F44336.svg?style=flat-square)](https://goreportcard.com/report/github.com/go-siris/siris)
-[![Support forum](https://img.shields.io/badge/support-page-ec2eb4.svg?style=flat-square)](http://support.iris-go.com)
+[![Support forum](https://img.shields.io/badge/support-page-ec2eb4.svg?style=flat-square)](http://support.go-siris.com)
 [![Examples](https://img.shields.io/badge/howto-examples-3362c2.svg?style=flat-square)](https://github.com/go-siris/siris/tree/master/_examples#table-of-contents)
 [![Godocs](https://img.shields.io/badge/7.3.0-%20documentation-5272B4.svg?style=flat-square)](https://godoc.org/github.com/go-siris/siris)
 [![Chat](https://img.shields.io/badge/community-%20chat-00BCD4.svg?style=flat-square)](https://gitter.im/gosiris/siris)
@@ -49,7 +49,7 @@ $ go get -u github.com/go-siris/siris
 ```
 
 > Siris uses the [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) feature, so you get truly reproducible builds, as this method guards against upstream renames and deletes.
-For further installation support, please navigate [here](http://support.iris-go.com/d/16-how-to-install-iris-web-framework).
+For further installation support, please navigate [here](http://support.go-siris.com/d/16-how-to-install-iris-web-framework).
 
 ```go
 package main
@@ -255,13 +255,13 @@ app.Configure(siris.EnableReuseport)
 Support
 ------------
 
-- [Post](http://support.iris-go.com) a feature request or report a bug, will help to make the framework even better.
+- [Post](http://support.go-siris.com) a feature request or report a bug, will help to make the framework even better.
 - :star: and watch [the project](https://github.com/go-siris/siris/stargazers), will notify you about updates.
 - :earth_americas: publish [an article](https://medium.com/) or share a [tweet](https://twitter.com/) about siris.
 - Donations, will help me to continue.
 
 I'll be glad to talk with you about **your awesome feature requests**, 
-open a new [discussion](http://support.iris-go.com), you will be heard!
+open a new [discussion](http://support.go-siris.com), you will be heard!
 
 Thanks in advance!
 <!-- 
@@ -293,7 +293,7 @@ Some of the benefits are listed here:
 
 ### Become An Siris Sponsor
 
-Want to add your company's logo to our [website](http://iris-go.com)?
+Want to add your company's logo to our [website](http://go-siris.com)?
 
 Please contact me via email: kataras2006@hotmail.com
 
@@ -330,7 +330,7 @@ However the real Success of Siris belongs to you with your bug reports and featu
 
 ### Contact
 
-Besides the fact that we have a [community chat][Chat] for questions or reports and ideas, [stackoverflow](http://stackoverflow.com/) section for generic go+iris questions and the [iris support](http://support.iris-go.com) for bug reports and feature requests, you can also contact with me, as a person who is always open to help you:
+Besides the fact that we have a [community chat][Chat] for questions or reports and ideas, [stackoverflow](http://stackoverflow.com/) section for generic go+iris questions and the [iris support](http://support.go-siris.com) for bug reports and feature requests, you can also contact with me, as a person who is always open to help you:
 
 - [Twitter](https://twitter.com/MakisMaropoulos)
 - [Facebook](https://facebook.com/kataras.gopher)

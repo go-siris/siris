@@ -2,8 +2,8 @@
 
 ### Looking for free support?
 
-	http://support.iris-go.com
-    https://kataras.rocket.chat/channel/iris
+	http://support.go-siris.com
+    https://gitter.im/gosiris/siris
 
 ### Looking for previous versions?
 
@@ -16,13 +16,13 @@ Developers are not forced to upgrade if they don't really need it. Upgrade whene
 > Siris uses the [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) feature, so you get truly reproducible builds, as this method guards against upstream renames and deletes.
 
 **How to upgrade**: Open your command-line and execute this command: `go get -u github.com/go-siris/siris`. 
-For further installation support, please click [here](http://support.iris-go.com/d/16-how-to-install-iris-web-framework).
+For further installation support, please click [here](http://support.go-siris.com/d/16-how-to-install-iris-web-framework).
 
 
 ### About our new home page
-    http://iris-go.com
+    http://go-siris.com
 
-Thanks to [Santosh Anand](https://github.com/santoshanand) the http://iris-go.com has been upgraded and it's really awesome!
+Thanks to [Santosh Anand](https://github.com/santoshanand) the http://go-siris.com has been upgraded and it's really awesome!
 
 [Santosh](https://github.com/santoshanand) is a freelancer, he has a great knowledge of nodejs and express js, Android, iOS, React Native, Vue.js etc, if you need a developer to find or create a solution for your problem or task, please contact with him.
 

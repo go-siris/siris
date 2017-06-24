@@ -20,6 +20,6 @@
 127.0.0.1       localhost
 ::1             localhost
 #-SIRIS-For development machine, you have to configure your dns also for online, search google how to do it if you don't know
-127.0.0.1		iris-go.com
-127.0.0.1		www.iris-go.com
+127.0.0.1		go-siris.com
+127.0.0.1		www.go-siris.com
 #-END SIRIS-

@@ -1039,7 +1039,7 @@ Community Middleware:
 
 Home Page:
 
-    http://iris-go.com
+    http://go-siris.com
 
 */
 package siris
