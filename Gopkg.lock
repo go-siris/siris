@@ -53,7 +53,7 @@
   name = "github.com/fatih/structs"
   packages = ["."]
   revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
-  version = "v1.0.0"
+  version = "v1.0"
 
 [[projects]]
   branch = "master"
@@ -232,8 +232,8 @@
 [[projects]]
   name = "gopkg.in/go-siris/tcplisten.v1"
   packages = ["."]
-  revision = "20eae3d4dedbaadad6e44203291b3fd06228dc31"
-  version = "v1.0.3"
+  revision = "5e007ba2ce3590d49eb170597c65b0b5e3149873"
+  version = "v1.0.4"
 
 [[projects]]
   name = "gopkg.in/ini.v1"
@@ -250,6 +250,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "121203493604a084bd70c06e089f42038d75ca1101f569fa4c781bc82939dbb0"
+  inputs-digest = "23e02c453b87f0b38409a0bc6a0c4a2287200db051b05669b003d778c238d17e"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -179,5 +179,5 @@
   name = "github.com/PuerkitoBio/goquery"
 
 [[constraint]]
-  branch = "v1"
-  name = "gopkg.in/go-siris/tcplisten.v1.0.3"
+  version = "v1"
+  name = "gopkg.in/go-siris/tcplisten.v1"
