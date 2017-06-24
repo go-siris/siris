@@ -3,3 +3,4 @@
 # turn off these for now
 specs
 vendor/**/examples
+vendor/**/*_test.go
