@@ -6,41 +6,41 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"gopkg.in/kataras/iris.v6"
-	"gopkg.in/kataras/iris.v6/adaptors/httprouter"
-	"gopkg.in/kataras/iris.v6/middleware/basicauth"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/middleware/basicauth"
+	"github.com/kataras/iris/sessions"
 )
 
 // IrisHandler tests iris v6's handler
 func IrisHandler() http.Handler {
 	api := iris.New()
-	
-	api.Adapt(httprouter.New())
+	api.AttachSessionManager(sessions.New(sessions.Config{Cookie: "irissessionid"}))
 
-	api.Get("/things", func(c *iris.Context) {
-		c.JSON(iris.StatusOK, []interface{}{
-			iris.Map{
+	api.Get("/things", func(ctx context.Context) {
+		ctx.JSON([]interface{}{
+			context.Map{
 				"name":        "foo",
 				"description": "foo thing",
 			},
-			iris.Map{
+			context.Map{
 				"name":        "bar",
 				"description": "bar thing",
 			},
 		})
 	})
 
-	api.Post("/redirect", func(c *iris.Context) {
-		c.Redirect("/things", iris.StatusFound)
+	api.Post("/redirect", func(ctx context.Context) {
+		ctx.Redirect("/things", iris.StatusFound)
 	})
 
-	api.Post("/params/:x/:y", func(c *iris.Context) {
-		c.JSON(iris.StatusOK, iris.Map{
-			"x":  c.Param("x"),
-			"y":  c.Param("y"),
-			"q":  c.URLParam("q"),
-			"p1": c.FormValue("p1"),
-			"p2": c.FormValue("p2"),
+	api.Post("/params/{x}/{y}", func(ctx context.Context) {
+		ctx.JSON(context.Map{
+			"x":  ctx.Params().Get("x"),
+			"y":  ctx.Params().Get("y"),
+			"q":  ctx.URLParam("q"),
+			"p1": ctx.FormValue("p1"),
+			"p2": ctx.FormValue("p2"),
 		})
 	})
 
@@ -48,30 +48,30 @@ func IrisHandler() http.Handler {
 		"ford": "betelgeuse7",
 	})
 
-	api.Get("/auth", auth, func(c *iris.Context) {
-		c.Writef("authenticated!")
+	api.Get("/auth", auth, func(ctx context.Context) {
+		ctx.Writef("authenticated!")
 	})
 
-	api.Post("/session/set", func(c *iris.Context) {
-		sess := iris.Map{}
+	api.Post("/session/set", func(ctx context.Context) {
+		sess := context.Map{}
 
-		if err := c.ReadJSON(&sess); err != nil {
+		if err := ctx.ReadJSON(&sess); err != nil {
 			panic(err.Error())
 		}
 
-		c.Session().Set("name", sess["name"])
+		ctx.Session().Set("name", sess["name"])
 	})
 
-	api.Get("/session/get", func(c *iris.Context) {
-		name := c.Session().GetString("name")
+	api.Get("/session/get", func(ctx context.Context) {
+		name := ctx.Session().GetString("name")
 
-		c.JSON(iris.StatusOK, iris.Map{
+		ctx.JSON(context.Map{
 			"name": name,
 		})
 	})
 
-	api.Get("/stream", func(c *iris.Context) {
-		c.StreamWriter(func(w io.Writer) bool {
+	api.Get("/stream", func(ctx context.Context) {
+		ctx.StreamWriter(func(w io.Writer) bool {
 			for i := 0; i < 10; i++ {
 				fmt.Fprintf(w, "%d", i)
 			}
@@ -82,25 +82,26 @@ func IrisHandler() http.Handler {
 		// return true
 	})
 
-	api.Post("/stream", func(c *iris.Context) {
-		body, err := ioutil.ReadAll(c.Request.Body)
+	api.Post("/stream", func(ctx context.Context) {
+		body, err := ioutil.ReadAll(ctx.Request().Body)
 		if err != nil {
-			c.EmitError(iris.StatusBadRequest)
+			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.StopExecution()
 			return
 		}
-		c.Write(body)
+		ctx.Write(body)
 	})
 
 	sub := api.Party("subdomain.")
 
-	sub.Post("/set", func(c *iris.Context) {
-		c.Session().Set("message", "hello from subdomain")
+	sub.Post("/set", func(ctx context.Context) {
+		ctx.Session().Set("message", "hello from subdomain")
 	})
 
-	sub.Get("/get", func(c *iris.Context) {
-		c.Writef(c.Session().GetString("message"))
+	sub.Get("/get", func(ctx context.Context) {
+		ctx.Writef(ctx.Session().GetString("message"))
 	})
 
-	api.Boot()
-	return api.Router
+	api.Build()
+	return api
 }

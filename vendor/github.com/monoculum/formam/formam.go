@@ -424,12 +424,11 @@ func (dec *Decoder) decode() error {
 		}
 	case reflect.Bool:
 		switch dec.values[0] {
-		case "true", "on", "1":
+		case "true", "on", "1", "checked":
 			dec.curr.SetBool(true)
-		case "false", "off", "0":
-			dec.curr.SetBool(false)
 		default:
-			return newError(fmt.Errorf("the value of field \"%v\" in path \"%v\" is not a valid boolean", dec.field, dec.path))
+			dec.curr.SetBool(false)
+			return nil
 		}
 	case reflect.Interface:
 		dec.curr.Set(reflect.ValueOf(dec.values[0]))
@@ -445,9 +444,14 @@ func (dec *Decoder) decode() error {
 	case reflect.Struct:
 		switch dec.curr.Interface().(type) {
 		case time.Time:
-			t, err := time.Parse("2006-01-02", dec.values[0])
-			if err != nil {
-				return newError(fmt.Errorf("the value of field \"%v\" in path \"%v\" is not a valid datetime", dec.field, dec.path))
+			var t time.Time
+			// if the value is empty then no to try to parse it and leave "t" as a zero value to set it in the field
+			if dec.values[0] != "" {
+				var err error
+				t, err = time.Parse("2006-01-02", dec.values[0])
+				if err != nil {
+					return newError(fmt.Errorf("the value of field \"%v\" in path \"%v\" is not a valid datetime", dec.field, dec.path))
+				}
 			}
 			dec.curr.Set(reflect.ValueOf(t))
 		case url.URL:
@@ -460,17 +464,15 @@ func (dec *Decoder) decode() error {
 			if dec.opts.IgnoreUnknownKeys {
 				return nil
 			}
-			/*
-				if dec.isKey {
-					tmp := dec.curr
-					dec.field = dec.value
-					if err := dec.begin(); err != nil {
-						return err
-					}
-					dec.curr = tmp
+			num := dec.curr.NumField()
+			for i := 0; i < num; i++ {
+				field := dec.curr.Type().Field(i)
+				tag := field.Tag.Get(dec.opts.TagName)
+				if tag == "-" {
+					// skip this field
 					return nil
 				}
-			*/
+			}
 			return newError(fmt.Errorf("not supported type for field \"%v\" in path \"%v\". Maybe you should to include it the UnmarshalText interface or register it using custom type?", dec.field, dec.path))
 		}
 	default:
@@ -488,6 +490,11 @@ func (dec *Decoder) findStructField() error {
 	num := dec.curr.NumField()
 	for i := 0; i < num; i++ {
 		field := dec.curr.Type().Field(i)
+		tag := field.Tag.Get(dec.opts.TagName)
+		if tag == "-" {
+			// skip this field
+			return nil
+		}
 		if field.Name == dec.field {
 			// check if the field's name is equal
 			dec.curr = dec.curr.Field(i)
