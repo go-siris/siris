@@ -39,7 +39,7 @@ On branches with more than a couple commits, it's usually best to squash the com
 To rebase:
 
 ```sh
-git remote add haraka https://github.com/go-siris/siris.git
+git remote add siris https://github.com/go-siris/siris.git
 git remote update siris
 git rebase -i siris/master
 ```
