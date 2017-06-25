@@ -2,32 +2,19 @@
 
 ### Looking for free support?
 
-	http://support.go-siris.com
-    https://gitter.im/gosiris/siris
+	[Chat](https://gitter.im/gosiris/siris)
 
 ### Looking for previous versions?
 
     https://github.com/go-siris/siris#version
 
 
-### Should I upgrade my Iris?
+### Should I upgrade my Siris?
 
 Developers are not forced to upgrade if they don't really need it. Upgrade whenever you feel ready.
 > Siris uses the [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) feature, so you get truly reproducible builds, as this method guards against upstream renames and deletes.
 
-**How to upgrade**: Open your command-line and execute this command: `go get -u github.com/go-siris/siris`. 
-For further installation support, please click [here](http://support.go-siris.com/d/16-how-to-install-iris-web-framework).
-
-
-### About our new home page
-    http://go-siris.com
-
-Thanks to [Santosh Anand](https://github.com/santoshanand) the http://go-siris.com has been upgraded and it's really awesome!
-
-[Santosh](https://github.com/santoshanand) is a freelancer, he has a great knowledge of nodejs and express js, Android, iOS, React Native, Vue.js etc, if you need a developer to find or create a solution for your problem or task, please contact with him.
-
-
-The amount of the next two or three donations you'll send they will be immediately transferred to his own account balance, so be generous please!
+**How to upgrade**: Open your command-line and execute this command: `go get -u github.com/go-siris/siris`.
 
 # Sa, 24 June 2017 | v7.3.4
 
@@ -63,7 +50,7 @@ app.Configure(siris.EnableReuseport)
 
 Declare the `Siris.Cache alias` to the new, improved and most-suited for common usage, `cache.Handler function`.
 
-`Siris.Cache` be used as middleware in the chain now, example [here](_examples/intermediate/cache-markdown/main.go). However [you can still use the cache as a wrapper](cache/cache_test.go) by importing the `github.com/go-siris/siris/cache` package. 
+`Siris.Cache` be used as middleware in the chain now, example [here](_examples/intermediate/cache-markdown/main.go). However [you can still use the cache as a wrapper](cache/cache_test.go) by importing the `github.com/go-siris/siris/cache` package.
 
 
 ### File server
@@ -78,7 +65,7 @@ Declare the `Siris.Cache alias` to the new, improved and most-suited for common 
 
 - **Fix** `app.StaticEmbedded(requestPath string, vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string)`.
 
-Examples: 
+Examples:
 - [Embedding Files Into Executable App](_examples/beginner/file-server/embedding-files-into-app)
 - [Single Page Application](_examples/beginner/file-server/single-page-application)
 - [Embedding Single Page Application](_examples/beginner/file-server/embedding-single-page-application)
@@ -92,7 +79,7 @@ Examples:
 
 ### Wrapping the Router
 
-- [Example](_examples/beginner/routing/custom-wrapper/main.go) added to show you how you can use the `app.WrapRouter` 
+- [Example](_examples/beginner/routing/custom-wrapper/main.go) added to show you how you can use the `app.WrapRouter`
 to implement a similar to `app.SPA` functionality, don't panic, it's easier than it sounds.
 
 
@@ -103,13 +90,13 @@ to implement a similar to `app.SPA` functionality, don't panic, it's easier than
 - **New** `httptest.NewLocalListener() net.Listener` added.
 - **New** `httptest.NewLocalTLSListener(tcpListener net.Listener) net.Listener` added.
 
-Useful for testing tls-enabled servers: 
+Useful for testing tls-enabled servers:
 
 Proxies are trying to understand local addresses in order to allow `InsecureSkipVerify`.
 
 -  `host.ProxyHandler(target *url.URL) *httputil.ReverseProxy`.
 -  `host.NewProxy(hostAddr string, target *url.URL) *Supervisor`.
-        
+
     Tests [here](core/host/proxy_test.go).
 
 # Tu, 13 June 2017 | v7.1.1
@@ -135,7 +122,7 @@ The rest of the special Siris' routing features, including static & wildcard sub
 # Sa, 10 June 2017 | v7.0.4
 
 - Simplify and add a test for the [basicauth middleware](https://github.com/go-siris/siris/tree/master/middleware/basicauth), no need to be
-stored inside the Context anymore, developers can get the validated user(username and password) via `context.Request().BasicAuth()`. `basicauth.Config.ContextKey` was removed, just remove that field from your configuration, it's useless now. 
+stored inside the Context anymore, developers can get the validated user(username and password) via `context.Request().BasicAuth()`. `basicauth.Config.ContextKey` was removed, just remove that field from your configuration, it's useless now.
 
 # Sa, 10 June 2017 | v7.0.3
 
@@ -155,10 +142,10 @@ stored inside the Context anymore, developers can get the validated user(usernam
 
 # We, 07 June 2017 | v7.0.1
 
-- Proof of concept of an internal release generator, navigate [here](https://github.com/iris-contrib/community-board/issues/2) to read more. 
+- Proof of concept of an internal release generator, navigate [here](https://github.com/iris-contrib/community-board/issues/2) to read more.
 - Remove tray icon "feature", click [here](https://github.com/iris-contrib/community-board/issues/1) to learn why.
 
-# Sa, 03 June 2017 
+# Sa, 03 June 2017
 
 After 2+ months of hard work and collaborations, Siris [version 7](https://github.com/go-siris/siris) was published earlier today.
 
@@ -172,7 +159,7 @@ cover the internal changes, the difference is so big that anybody can see them w
 
 The whole framework was re-written from zero but I tried to keep the most common public API that iris developers use.
 
-Vendoring /w update 
+Vendoring /w update
 
 The previous vendor action for v6 was done by-hand, now I'm using the [go dep](https://github.com/golang/dep) tool, I had to do
 some small steps:
@@ -198,8 +185,8 @@ General
 - `HandlerFunc` removed, just `Handler` of `func(context.Context)` where context.Context derives from `import "github.com/go-siris/siris/context"` (on August this import path will be optional)
     - Simplify API, i.e: instead of `Handle,HandleFunc,Use,UseFunc,Done,DoneFunc,UseGlobal,UseGlobalFunc` use `Handle,Use,Done,UseGlobal`.
 - Response time decreased even more (9-35%, depends on the application)
-- The `Adaptors` idea replaced with a more structural design pattern, but you have to apply these changes: 
-    - `app.Adapt(view.HTML/Pug/Amber/Django/Handlebars...)` -> `app.AttachView(view.HTML/Pug/Amber/Django/Handlebars...)` 
+- The `Adaptors` idea replaced with a more structural design pattern, but you have to apply these changes:
+    - `app.Adapt(view.HTML/Pug/Amber/Django/Handlebars...)` -> `app.AttachView(view.HTML/Pug/Amber/Django/Handlebars...)`
     - `app.Adapt(sessions.New(...))` -> `app.AttachSessionManager(sessions.New(...))`
     - `app.Adapt(siris.LoggerPolicy(...))` -> `app.AttachLogger(io.Writer)`
     - `app.Adapt(siris.RenderPolicy(...))` -> removed and replaced with the ability to replace the whole context with a custom one or override some methods of it, see below.
@@ -208,7 +195,7 @@ Routing
 - Remove of multiple routers, now we have the fresh Siris router which is based on top of the julien's [httprouter](https://github.com/julienschmidt/httprouter).
     > Update 11 June 2017: As of 7.0.5 this is changed, read [here](https://github.com/go-siris/siris/blob/master/HISTORY.md#su-11-june-2017--v705).
 - Subdomains routing algorithm has been improved.
-- Siris router is using a custom interpreter with parser and path evaluator to achieve the best expressiveness, with zero performance loss, you ever seen so far, i.e: 
+- Siris router is using a custom interpreter with parser and path evaluator to achieve the best expressiveness, with zero performance loss, you ever seen so far, i.e:
     - `app.Get("/", "/users/{userid:int min(1)}", handler)`,
         - `{username:string}` or just `{username}`
         - `{asset:path}`,
@@ -233,10 +220,10 @@ Context
         - if status code >=400 given can automatically fire a custom http error handler if response wasn't written already.
     - `context.StatusCode()` -> `context.GetStatusCode()`
     - `app.OnError` -> `app.OnErrorCode`
-    - Errors per party are removed by-default, you can just use one global error handler with logic like "if path starts with 'prefix' fire this error handler, else...". 
+    - Errors per party are removed by-default, you can just use one global error handler with logic like "if path starts with 'prefix' fire this error handler, else...".
 - Easy way to change Siris' default `Context` with a custom one, see [here](https://github.com/go-siris/siris/tree/master/_examples/intermediate/custom-context)
 - `context.ResponseWriter().SetBeforeFlush(...)` works for Flush and HTTP/2 Push, respectfully
-- Several improvements under the `Request transactions` 
+- Several improvements under the `Request transactions`
 - Remember that you had to set a status code on each of the render-relative methods? Now it's not required, it just renders
 with the status code that user gave with `context.StatusCode` or with `200 OK`, i.e:
     -`context.JSON(siris.StatusOK, myJSON{})` -> `context.JSON(myJSON{})`.
@@ -244,7 +231,7 @@ with the status code that user gave with `context.StatusCode` or with `200 OK`, 
     - **the new API is even more easier to read, understand and use.**
 
 Server
-- Able to set custom underline *http.Server(s) with new Host (aka Server Supervisor) feature 
+- Able to set custom underline *http.Server(s) with new Host (aka Server Supervisor) feature
     - `Done` and `Err` channels to catch shutdown or any errors on custom hosts,
     - Schedule custom tasks(with cancelation) when server is running, see [here](https://github.com/go-siris/siris/tree/master/_examples/intermediate/graceful-shutdown)
 - Interrupt handler task for gracefully shutdown (when `CTRL/CMD+C`) are enabled by-default, you can disable its via configuration: `app.Run(siris.Addr(":8080"), siris.WithoutInterruptHandler)`
