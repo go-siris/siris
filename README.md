@@ -6,7 +6,7 @@ A fast, cross-platform and efficient web framework with robust set of well-desig
 [![Report card](https://img.shields.io/badge/report%20card%20-a%2B-F44336.svg?style=flat-square)](https://goreportcard.com/report/github.com/go-siris/siris)
 [![Support forum](https://img.shields.io/badge/support-page-ec2eb4.svg?style=flat-square)](http://support.go-siris.com)
 [![Examples](https://img.shields.io/badge/howto-examples-3362c2.svg?style=flat-square)](https://github.com/go-siris/siris/tree/master/_examples#table-of-contents)
-[![Godocs](https://img.shields.io/badge/7.3.0-%20documentation-5272B4.svg?style=flat-square)](https://godoc.org/github.com/go-siris/siris)
+[![Godocs](https://img.shields.io/badge/7.3.4-%20documentation-5272B4.svg?style=flat-square)](https://godoc.org/github.com/go-siris/siris)
 [![Chat](https://img.shields.io/badge/community-%20chat-00BCD4.svg?style=flat-square)](https://gitter.im/gosiris/siris)
 
 Build your own web applications and portable APIs with the highest performance and countless potentials.
@@ -224,7 +224,7 @@ However the real Success of Siris belongs to you with your bug reports and featu
 
 # Version
 
-Current: **7.3.0**
+Current: **7.3.4**
 
 Each new release is pushed to the master. It stays there until the next version. When a next version is released then the previous version goes to its own branch with `gopkg.in` as its import path (and its own vendor folder), in order to keep it working "for-ever".
 

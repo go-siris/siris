@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/go-siris/siris/context"
+	"github.com/gorilla/websocket"
 )
 
 type (

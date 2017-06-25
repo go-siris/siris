@@ -14,8 +14,8 @@ import (
 	"github.com/go-siris/siris/context"
 	"github.com/go-siris/siris/core/errors"
 
-	"github.com/iris-contrib/httpexpect"
 	"github.com/go-siris/siris/httptest"
+	"github.com/iris-contrib/httpexpect"
 )
 
 var (

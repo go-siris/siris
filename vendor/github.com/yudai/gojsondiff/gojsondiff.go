@@ -408,7 +408,7 @@ func stringToInterfaceSlice(str string) []interface{} {
 
 func sortedKeys(m map[string]interface{}) (keys []string) {
 	keys = make([]string, 0, len(m))
-	for key := range m {
+	for key, _ := range m {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)

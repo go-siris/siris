@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/iris-contrib/httpexpect"
 	"github.com/go-siris/siris"
+	"github.com/iris-contrib/httpexpect"
 )
 
 type (

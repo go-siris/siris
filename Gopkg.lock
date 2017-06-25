@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/BurntSushi/toml"
   packages = ["."]
-  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
+  revision = "8b58b6030fce084b58a61e2bc3fdf183d5881ab4"
 
 [[projects]]
   branch = "master"
@@ -20,10 +20,10 @@
   revision = "8372b908b5876d26cfa46a85fc4851b981dad102"
 
 [[projects]]
-  branch = "master"
   name = "github.com/ajg/form"
   packages = ["."]
-  revision = "523a5da1a92f01b01f840b61689c0340a0243532"
+  revision = "cc2954064ec9ea8d93917f0f87456e11d7b881ad"
+  version = "v1.5"
 
 [[projects]]
   branch = "master"
@@ -41,7 +41,7 @@
   branch = "master"
   name = "github.com/eknkc/amber"
   packages = [".","parser"]
-  revision = "f0d8fdb67f9f4a2c0d02fb6ce4830b8b6754de10"
+  revision = "5fa7895500976542b0e28bb266f42ff1c7ce07f5"
 
 [[projects]]
   branch = "master"
@@ -50,10 +50,10 @@
   revision = "6e30ed034e8cb31227b24057d030fdd0261bcfc6"
 
 [[projects]]
-  branch = "master"
   name = "github.com/fatih/structs"
   packages = ["."]
-  revision = "74a29b9fac7397d933f47e33eba94d2d83a464a2"
+  revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
+  version = "v1.0"
 
 [[projects]]
   branch = "master"
@@ -75,54 +75,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/getlantern/context"
-  packages = ["."]
-  revision = "624d99b1798d7c5375ea1d3ca4c5b04d58f7c775"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/errors"
-  packages = ["."]
-  revision = "99fa440517e8f3d1e4cd8d6dbed6b41f4c1ed3d6"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/filepersist"
-  packages = ["."]
-  revision = "c5f0cd24e7991579ba6f5f1bd20a1ad2c9f06cd4"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/golog"
-  packages = ["."]
-  revision = "cca714f7feb5df8e455f409b549d384441ac4578"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/hex"
-  packages = ["."]
-  revision = "083fba3033ad473db3dd31c9bb368473d37581a7"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/hidden"
-  packages = ["."]
-  revision = "d52a649ab33af200943bb599898dbdcfdbc94cb7"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/ops"
-  packages = ["."]
-  revision = "b70875f5d689a9438bca72aefd7142a2af889b18"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getlantern/stack"
-  packages = ["."]
-  revision = "02f928aad224fbccd50d66edd776fc9d1e9f2f2b"
-
-[[projects]]
-  branch = "master"
   name = "github.com/google/go-querystring"
   packages = ["query"]
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
@@ -140,22 +92,22 @@
   version = "0.2.2"
 
 [[projects]]
-  branch = "master"
   name = "github.com/imkira/go-interpol"
   packages = ["."]
   revision = "5accad8134979a6ac504d456a6c7f1c53da237ca"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/iris-contrib/httpexpect"
   packages = ["."]
-  revision = "ed44d3c477393b96a598a38730f128dffee33068"
+  revision = "b6aa3332b2c006510bd4f4978f1c28354a61bb4d"
 
 [[projects]]
   branch = "master"
   name = "github.com/juju/errors"
   packages = ["."]
-  revision = "8234c829496aaeae67c5c71235a2cbcc289e960a"
+  revision = "a3edbf48b75d756b79f3abb22bfc8a56e349081f"
 
 [[projects]]
   branch = "master"
@@ -164,10 +116,10 @@
   revision = "f3dce52e0576655d55fd69e74b63da96ad1108f3"
 
 [[projects]]
-  branch = "master"
   name = "github.com/klauspost/cpuid"
   packages = ["."]
   revision = "09cded8978dc9e80714c4d85b0322337b0a1e5e0"
+  version = "v1.0"
 
 [[projects]]
   branch = "master"
@@ -179,7 +131,7 @@
   branch = "master"
   name = "github.com/monoculum/formam"
   packages = ["."]
-  revision = "334e05a3c7f95d500715d7c0405937ac933b28cb"
+  revision = "99ca9dcbaca6d91e9665f817d0da23af6184ced3"
 
 [[projects]]
   branch = "master"
@@ -197,7 +149,7 @@
   branch = "master"
   name = "github.com/russross/blackfriday"
   packages = ["."]
-  revision = "0ba0f2b6ed7c475a92e4df8641825cb7a11d1fa3"
+  revision = "067529f716f4c3f5e37c8c95ddd59df1007290ae"
 
 [[projects]]
   branch = "master"
@@ -212,10 +164,10 @@
   revision = "feef008d51ad2b3778f85d387ccf91735543008d"
 
 [[projects]]
-  branch = "master"
   name = "github.com/stretchr/testify"
   packages = ["assert","require"]
-  revision = "f6abca593680b2315d2075e0f5e2a9751e3f431a"
+  revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
+  version = "v1.1.4"
 
 [[projects]]
   branch = "master"
@@ -263,19 +215,25 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "e1a4589e7d3ea14a3352255d04b6f1a418845e5e"
+  revision = "adbae1b6b6fb4b02448a0fc0dbbc9ba2b95b294d"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","idna","publicsuffix"]
-  revision = "e4fa1c5465ad6111f206fc92186b8c83d64adbe1"
+  revision = "5f8847ae0d0e90b6a9dc8148e7ad616874625171"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "ccbd3f7822129ff389f8ca4858a9b9d4d910531c"
+  revision = "4e9ab9ee170f2a39bd66c92b3e0a47ff47a4bc77"
+
+[[projects]]
+  name = "gopkg.in/go-siris/tcplisten.v1"
+  packages = ["."]
+  revision = "5e007ba2ce3590d49eb170597c65b0b5e3149873"
+  version = "v1.0.4"
 
 [[projects]]
   name = "gopkg.in/ini.v1"
@@ -289,15 +247,9 @@
   packages = ["."]
   revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
 
-[[projects]]
-  branch = "master"
-  name = "github.com/PuerkitoBio/goquery"
-  packages = ["."]
-  revision = "2dc93891ab3bcc1dbc2cbf9bc6376c37f6e6f289"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "415eba3367a3b497ce9c74414ba802d5902d5b7fefc7dfc99cff6af102ec40fe"
+  inputs-digest = "23e02c453b87f0b38409a0bc6a0c4a2287200db051b05669b003d778c238d17e"
   solver-name = "gps-cdcl"
   solver-version = 1

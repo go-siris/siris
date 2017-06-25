@@ -52,7 +52,7 @@ func TCP(addr string, reuseport bool) (net.Listener, error) {
 	var err error
 
 	if reuseport == true {
-		l, err = reuseport.Listen("tcp", addr)
+		l, err = Listen("tcp", addr)
 	} else {
 		l, err = net.Listen("tcp", addr)
 	}
