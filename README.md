@@ -163,7 +163,7 @@ func createUser(ctx context.Context) {
 
 | Feature | More Information |
 | --------|------------------|
-| high performance | [speedtest](https://github.com/smallnest/go-web-framework-benchmark) |
+| high performance | [benchmark](https://github.com/smallnest/go-web-framework-benchmark) |
 | Authentication | [basicauth](_examples/beginner/basicauth) [oauth2](_examples/intermediate/oauth2) TODO JWT|
 | Cache | [cache-markdown](_examples/intermediate/cache-markdown)  |
 | Certificates | [letsencrypt](/_examples/beginner/listening/listen-letsencrypt/main.go) [custom](/_examples/beginner/listening/listen-tls/main.go) |
