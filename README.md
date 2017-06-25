@@ -163,7 +163,7 @@ func createUser(ctx context.Context) {
 
 | Feature | More Information |
 | --------|------------------|
-| high performance | TODO add to [speedtest](https://github.com/smallnest/go-web-framework-benchmark) |
+| high performance | [speedtest](https://github.com/smallnest/go-web-framework-benchmark) |
 | Authentication | [basicauth](_examples/beginner/basicauth) [oauth2](_examples/intermediate/oauth2) TODO JWT|
 | Cache | [cache-markdown](_examples/intermediate/cache-markdown)  |
 | Certificates | [letsencrypt](/_examples/beginner/listening/listen-letsencrypt/main.go) [custom](/_examples/beginner/listening/listen-tls/main.go) |
@@ -181,7 +181,6 @@ func createUser(ctx context.Context) {
 | Subdomains and Grouping | [subdomains](_examples/intermediate/subdomains) |
 | Tempalte HTML, django, pug(jade), handlebars, amber | [views](_examples/intermediate/view) |
 | Tooling | Typescript integration + Web IDE |
-| Updates | Checks for Updates |
 | Websockets | [websockets](_examples/intermediate/websockets) |
 
 # Documentation
