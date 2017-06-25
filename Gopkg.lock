@@ -82,8 +82,8 @@
 [[projects]]
   name = "github.com/gorilla/websocket"
   packages = ["."]
-  revision = "3ab3a8b8831546bd18fd182c20687ca853b2bb13"
-  version = "v1.1.0"
+  revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
+  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/imdario/mergo"
@@ -202,8 +202,8 @@
 [[projects]]
   name = "github.com/yudai/gojsondiff"
   packages = [".","formatter"]
-  revision = "7b1b7adf999dab73a6eb02669c3d82dbb27a3dd6"
-  version = "1.0.0"
+  revision = "d53dddaf16b9f5b19737f4722943e7e1f289af13"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
