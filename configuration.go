@@ -117,42 +117,49 @@ var WithoutInterruptHandler = func(app *Application) {
 
 // WithoutPathCorrection disables the PathCorrection setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 var WithoutPathCorrection = func(app *Application) {
 	app.config.DisablePathCorrection = true
 }
 
 // WithoutBodyConsumptionOnUnmarshal disables BodyConsumptionOnUnmarshal setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 var WithoutBodyConsumptionOnUnmarshal = func(app *Application) {
 	app.config.DisableBodyConsumptionOnUnmarshal = true
 }
 
+// WithJSONInteratorReplacement enables JSONInteratorReplacement setting.
+//
+// See `Configuration`.
+var WithJSONInteratorReplacement = func(app *Application) {
+	app.config.JSONInteratorReplacement = true
+}
+
 // WithoutAutoFireStatusCode disables the AutoFireStatusCode setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 var WithoutAutoFireStatusCode = func(app *Application) {
 	app.config.DisableAutoFireStatusCode = true
 }
 
 // WithPathEscape enanbles the PathEscape setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 var WithPathEscape = func(app *Application) {
 	app.config.EnablePathEscape = true
 }
 
 // WithFireMethodNotAllowed enanbles the FireMethodNotAllowed setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 var WithFireMethodNotAllowed = func(app *Application) {
 	app.config.FireMethodNotAllowed = true
 }
 
 // WithTimeFormat sets the TimeFormat setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 func WithTimeFormat(timeformat string) Configurator {
 	return func(app *Application) {
 		app.config.TimeFormat = timeformat
@@ -161,7 +168,7 @@ func WithTimeFormat(timeformat string) Configurator {
 
 // WithCharset sets the Charset setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 func WithCharset(charset string) Configurator {
 	return func(app *Application) {
 		app.config.Charset = charset
@@ -206,7 +213,7 @@ func WithoutRemoteAddrHeader(headerName string) Configurator {
 
 // WithOtherValue adds a value based on a key to the Other setting.
 //
-// See` Configuration`.
+// See `Configuration`.
 func WithOtherValue(key string, val interface{}) Configurator {
 	return func(app *Application) {
 		if app.config.Other == nil {
@@ -276,6 +283,13 @@ type Configuration struct {
 	// The body will not be changed and existing data before the
 	// context.UnmarshalBody/ReadJSON/ReadXML will be not consumed.
 	DisableBodyConsumptionOnUnmarshal bool `yaml:"DisableBodyConsumptionOnUnmarshal" toml:"DisableBodyConsumptionOnUnmarshal"`
+
+	// JSONInteratorReplacement manages the reading behavior of the context's body readers/binders.
+	// If set to true, it replaces the "encoding / json" libery with jsoniter (JSON-Interator) for
+	// `context.UnmarshalBody/ReadJSON/JSON/JSONP`.
+	// If returns true then the JSON body is Marshal and Unmarshal by JSON-Interator a dropin replacment
+	// for encoding/json.
+	JSONInteratorReplacement bool `yaml:"JSONInteratorReplacement" toml:"JSONInteratorReplacement"`
 
 	// DisableAutoFireStatusCode if true then it turns off the http error status code handler automatic execution
 	// from "context.StatusCode(>=400)" and instead app should manually call the "context.FireStatusCode(>=400)".
@@ -396,6 +410,14 @@ func (c Configuration) GetFireMethodNotAllowed() bool {
 // context.UnmarshalBody/ReadJSON/ReadXML will be not consumed.
 func (c Configuration) GetDisableBodyConsumptionOnUnmarshal() bool {
 	return c.DisableBodyConsumptionOnUnmarshal
+}
+
+// GetJSONInteratorReplacementUnmarshal returns the configuration.GetJSONInteratorReplacementUnmarshal,
+// manages the reading behavior of the context's body readers/binders.
+// If returns true then the JSON body is Marshal and Unmarshal by JSON-Interator a dropin replacment
+// for encoding/json.
+func (c Configuration) GetJSONInteratorReplacement() bool {
+	return c.JSONInteratorReplacement
 }
 
 // GetDisableAutoFireStatusCode returns the configuration.DisableAutoFireStatusCode.
