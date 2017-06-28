@@ -30,6 +30,7 @@ type ConfigurationReadOnly interface {
 
 	// GetFireMethodNotAllowed returns the configuration.FireMethodNotAllowed.
 	GetFireMethodNotAllowed() bool
+
 	// GetDisableBodyConsumptionOnUnmarshal returns the configuration.GetDisableBodyConsumptionOnUnmarshal,
 	// manages the reading behavior of the context's body readers/binders.
 	// If returns true then the body consumption by the `context.UnmarshalBody/ReadJSON/ReadXML`
@@ -40,6 +41,12 @@ type ConfigurationReadOnly interface {
 	// The body will not be changed and existing data before the
 	// context.UnmarshalBody/ReadJSON/ReadXML will be not consumed.
 	GetDisableBodyConsumptionOnUnmarshal() bool
+
+	// GetJSONInteratorReplacement returns the configuration.GetJSONInteratorReplacement,
+	// manages the reading behavior of the context's body readers/binders.
+	// If returns true then the JSON body is Marshal and Unmarshal by JSON-Interator a dropin replacment
+	// for encoding/json.
+	GetJSONInteratorReplacement() bool
 
 	// GetDisableAutoFireStatusCode returns the configuration.DisableAutoFireStatusCode.
 	// Returns true when the http error status code handler automatic execution turned off.
