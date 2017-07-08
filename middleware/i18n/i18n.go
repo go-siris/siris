@@ -79,7 +79,7 @@ func New(c Config) context.Handler {
 			firstlanguage = k
 		}
 	}
-	// if not default language setted then set to the first of the i.options.Languages
+	// if not default language set then set to the first of the i.options.Languages
 	if c.Default == "" {
 		c.Default = firstlanguage
 	}

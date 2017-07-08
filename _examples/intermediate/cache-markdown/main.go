@@ -11,7 +11,7 @@ var markdownContents = []byte(`## Hello Markdown
 
 This is a sample of Markdown contents
 
- 
+
 
 Features
 --------
@@ -60,7 +60,7 @@ func main() {
 
 	app.Get("/", siris.Cache(10*time.Second), writeMarkdown)
 	// saves its content on the first request and serves it instead of re-calculating the content.
-	// After 10 seconds it will be cleared and resetted.
+	// After 10 seconds it will be cleared and reset.
 
 	app.Run(siris.Addr(":8080"))
 }

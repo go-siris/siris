@@ -34,10 +34,10 @@ const (
 	banner = `
   _________.___ __________ .___   _________
  /   _____/|   |\______   \|   | /   _____/
- \_____  \ |   | |       _/|   | \_____  \ 
+ \_____  \ |   | |       _/|   | \_____  \
  /        \|   | |    |   \|   | /        \
 /_______  /|___| |____|_  /|___|/_______  /
-        \/              \/              \/ 
+        \/              \/              \/
          the fastest webframework
 `
 
@@ -206,7 +206,8 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 		// we need the host (without port if 80 or 443) in order to validate these, so:
 		app.config.vhost = nettools.ResolveVHost(srv.Addr)
 	}
-	// the below schedules some tasks that will run among the server
+
+	// Schedule some tasks that will run among the server:
 
 	// I was thinking to have them on Default or here and if user not wanted these, could use a custom core/host
 	// but that's too much for someone to just disable the banner for example,

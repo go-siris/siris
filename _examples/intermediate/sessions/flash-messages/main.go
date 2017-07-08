@@ -15,7 +15,7 @@ func main() {
 
 	app.Get("/set", func(ctx context.Context) {
 		ctx.Session().SetFlash("name", "siris")
-		ctx.Writef("Message setted, is available for the next request")
+		ctx.Writef("Message set, is available for the next request")
 	})
 
 	app.Get("/get", func(ctx context.Context) {

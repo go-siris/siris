@@ -35,7 +35,7 @@ type (
 // respects the immutable.
 func (e Entry) Value() interface{} {
 	if e.immutable {
-		// take its value, no pointer even if setted with a rreference.
+		// take its value, no pointer even if set with a rreference.
 		vv := reflect.Indirect(reflect.ValueOf(e.value))
 
 		// return copy of that slice

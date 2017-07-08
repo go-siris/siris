@@ -92,7 +92,7 @@ func (res *ResponseRecorder) Header() http.Header {
 // by all HTTP/2 clients. Handlers should read before writing if
 // possible to maximize compatibility.
 func (res *ResponseRecorder) Write(contents []byte) (int, error) {
-	if res.statusCode == 0 { // if not setted set it here
+	if res.statusCode == 0 { // if not set set it here
 		res.WriteHeader(http.StatusOK)
 	}
 	res.chunks = append(res.chunks, contents)
@@ -105,7 +105,7 @@ func (res *ResponseRecorder) Write(contents []byte) (int, error) {
 // Thus explicit calls to WriteHeader are mainly used to
 // send error codes.
 func (res *ResponseRecorder) WriteHeader(statusCode int) {
-	if res.statusCode == 0 { // set it only if not setted already, we don't want logs about multiple sends
+	if res.statusCode == 0 { // set it only if not set already, we don't want logs about multiple sends
 		res.statusCode = statusCode
 		res.underline.WriteHeader(statusCode)
 	}
