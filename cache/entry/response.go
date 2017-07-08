@@ -5,7 +5,7 @@
 package entry
 
 // Response is the cached response will be send to the clients
-// its fields setted at runtime on each of the non-cached executions
+// its fields set at runtime on each of the non-cached executions
 // non-cached executions = first execution, and each time after
 // cache expiration datetime passed
 type Response struct {

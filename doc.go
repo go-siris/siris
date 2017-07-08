@@ -882,7 +882,7 @@ Example code:
 
 View engine supports bundled(https://github.com/jteeuwen/go-bindata) template files too.
 go-bindata gives you two functions, asset and assetNames,
-these can be setted to each of the template engines using the `.Binary` func.
+these can be set to each of the template engines using the `.Binary` func.
 
 Example code:
 

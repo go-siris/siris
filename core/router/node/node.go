@@ -152,7 +152,7 @@ loop:
 		if len(handlers) == 0 { // missing handlers
 			return nil
 		}
-		if len(n.handlers) > 0 { // n.handlers already setted
+		if len(n.handlers) > 0 { // n.handlers already set
 			return ErrDublicate.Append("for: %s", n.s)
 		}
 		n.paramNames = paramNames

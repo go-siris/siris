@@ -20,7 +20,7 @@ type Server interface {
 	Attach(app *siris.Application)
 
 	// Handler returns the siris.Handler
-	// which is setted to the 'Websocket Endpoint path',
+	// which is set to the 'Websocket Endpoint path',
 	// the client should target to this handler's developer's custom path
 	// ex: app.Any("/myendpoint", mywebsocket.Handler())
 	Handler() context.Handler
