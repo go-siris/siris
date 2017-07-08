@@ -324,6 +324,18 @@ func (rb *APIBuilder) Any(registeredPath string, handlers ...context.Handler) er
 	return nil
 }
 
+// Many registers a route for multiple http methods
+// Posibilities: Get,Post,Put,Head,Patch,Options,Connect,Delete
+func (rb *APIBuilder) Many(registeredPath string, methods []string, handlers ...context.Handler) error {
+	for _, k := range methods {
+		if _, err := rb.Handle(k, registeredPath, handlers...); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // StaticCacheDuration expiration duration for INACTIVE file handlers, it's the only one global configuration
 // which can be changed.
 var StaticCacheDuration = 20 * time.Second
