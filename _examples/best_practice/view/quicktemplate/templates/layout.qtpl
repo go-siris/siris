@@ -1,0 +1,41 @@
+{% interface
+Page {
+    Title()
+    Menu()
+    Content()
+    Stylesheets()
+    Javascripts()
+}
+%}
+
+{% code
+type BasePage struct {
+    IsLoggedIn bool
+}
+%}
+
+{% func PageTemplate(p Page) %}{% stripspace %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>{%= p.Title() %}</title>
+        {%= p.Stylesheets() %}
+    </head>
+    <body>{% stripspace %}
+        {%= p.Menu() %}
+        {%= p.Content() %}
+        {%= p.Javascripts() %}
+    {% endstripspace %}</body>
+</html>
+{% endstripspace %}{% endfunc %}
+
+{% func (p *BasePage) Title() %}{% endfunc %}
+{% func (p *BasePage) Menu() %}{% stripspace %}
+    <a href="/">Home</a>
+    {% if !p.IsLoggedIn %}<a href="/login">Login</a>{% endif %}
+    {% if p.IsLoggedIn %}<a href="/logout">Logout</a>{% endif %}
+{% endstripspace %}{% endfunc %}
+{% func (p *BasePage) Content() %}{% endfunc %}
+{% func (p *BasePage) Stylesheets() %}{% endfunc %}
+{% func (p *BasePage) Javascripts() %}{% endfunc %}

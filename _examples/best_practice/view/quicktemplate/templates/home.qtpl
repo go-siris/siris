@@ -1,0 +1,16 @@
+{% import "github.com/go-siris/siris/context" %}%}
+
+{% code
+type HomePage struct {
+    BasePage
+    Context context.Context
+}
+%}
+
+{% func (p *HomePage) Title() %}Home{% endfunc%}
+{% func (p *HomePage) Content() %}{% stripspace %}
+    <p>Welcome home</p>
+    <div>
+        {%s= p.Context.Method() %}
+    </div>
+{% endstripspace %}{% endfunc%}
