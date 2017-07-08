@@ -41,8 +41,8 @@ func main() {
 		//set session values
 		ctx.Session().Set("name", "siris")
 
-		//test if setted here
-		ctx.Writef("All ok session setted to: %s", ctx.Session().GetString("name"))
+		//test if set here
+		ctx.Writef("All ok session set to: %s", ctx.Session().GetString("name"))
 	})
 
 	app.Get("/get", func(ctx context.Context) {

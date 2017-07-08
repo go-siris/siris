@@ -18,7 +18,7 @@ func main() {
 		ctx.Writef("Hello from %s", ctx.Path())
 	})
 
-	srv := &http.Server{Addr: ":8080" /* Any custom fields here: Handler and ErrorLog are setted to the server automatically */}
+	srv := &http.Server{Addr: ":8080" /* Any custom fields here: Handler and ErrorLog are set to the server automatically */}
 	// http://localhost:8080/
 	// http://localhost:8080/mypath
 	app.Run(siris.Server(srv)) // same as app.Run(siris.Addr(":8080"))
