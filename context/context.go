@@ -75,7 +75,7 @@ func (u UnmarshalerFunc) Unmarshal(data []byte, v interface{}) error {
 }
 
 // RequestParams is a key string - value string storage which context's request params should implement.
-// RequestValues is for communication between middleware, RequestParams cannot be changed, are setted at the routing
+// RequestValues is for communication between middleware, RequestParams cannot be changed, are set at the routing
 // time, stores the dynamic named parameters, can be empty if the route is static.
 type RequestParams struct {
 	store memstore.Store
@@ -289,7 +289,7 @@ type Context interface {
 	// ContentType sets the response writer's header key "Content-Type" to the 'cType'.
 	ContentType(cType string)
 	// GetContentType returns the response writer's header value of "Content-Type"
-	// which may, setted before with the 'ContentType'.
+	// which may, set before with the 'ContentType'.
 	GetContentType() string
 
 	// StatusCode sets the status code header to the response.
@@ -411,7 +411,7 @@ type Context interface {
 	//
 	// This function may be used in the following cases:
 	//
-	//     * if response body is too big (more than siris.LimitRequestBodySize(if setted)).
+	//     * if response body is too big (more than siris.LimitRequestBodySize(if set)).
 	//     * if response body is streamed from slow external sources.
 	//     * if response body must be streamed to the client in chunks.
 	//     (aka `http server push`).
@@ -453,7 +453,7 @@ type Context interface {
 	// is being called afterwards, in the same request.
 	// Useful when need to set or/and change a layout based on the previous handlers in the chain.
 	//
-	// Note that the 'layoutTmplFile' argument can be setted to siris.NoLayout || view.NoLayout
+	// Note that the 'layoutTmplFile' argument can be set to siris.NoLayout || view.NoLayout
 	// to disable the layout for a specific view render action,
 	// it disables the engine's configuration's layout property.
 	//
@@ -1145,7 +1145,7 @@ func (ctx *context) ContentType(cType string) {
 }
 
 // GetContentType returns the response writer's header value of "Content-Type"
-// which may, setted before with the 'ContentType'.
+// which may, set before with the 'ContentType'.
 func (ctx *context) GetContentType() string {
 	return ctx.writer.Header().Get(contentTypeHeaderKey)
 }
@@ -1451,7 +1451,7 @@ func (ctx *context) WriteWithExpiration(bodyContent []byte, cType string, modtim
 //
 // This function may be used in the following cases:
 //
-//     * if response body is too big (more than siris.LimitRequestBodySize(if setted)).
+//     * if response body is too big (more than siris.LimitRequestBodySize(if set)).
 //     * if response body is streamed from slow external sources.
 //     * if response body must be streamed to the client in chunks.
 //     (aka `http server push`).
@@ -1578,7 +1578,7 @@ const (
 // is being called afterwards, in the same request.
 // Useful when need to set or/and change a layout based on the previous handlers in the chain.
 //
-// Note that the 'layoutTmplFile' argument can be setted to siris.NoLayout || view.NoLayout || context.NoLayout
+// Note that the 'layoutTmplFile' argument can be set to siris.NoLayout || view.NoLayout || context.NoLayout
 // to disable the layout for a specific view render action,
 // it disables the engine's configuration's layout property.
 //
