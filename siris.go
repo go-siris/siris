@@ -58,6 +58,24 @@ const (
 	NoLayout = view.NoLayout
 )
 
+var (
+	// HTML view engine.
+	// Conversion for the view.HTML.
+	HTML = view.HTML
+	// Django view engine.
+	// Conversion for the view.Django.
+	Django = view.Django
+	// Handlebars view engine.
+	// Conversion for the view.Handlebars.
+	Handlebars = view.Handlebars
+	// Pug view engine.
+	// Conversion for the view.Pug.
+	Pug = view.Pug
+	// Amber view engine.
+	// Conversion for the view.Amber.
+	Amber = view.Amber
+)
+
 // Application is responsible to manage the state of the application.
 // It contains and handles all the necessary parts to create a fast web server.
 type Application struct {
