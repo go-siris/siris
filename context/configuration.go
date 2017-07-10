@@ -72,6 +72,17 @@ type ConfigurationReadOnly interface {
 	// binding data from a middleware or the main handler.
 	GetViewDataContextKey() string
 
+	// GetRemoteAddrHeaders returns the allowed request headers names
+	// that can be valid to parse the client's IP based on.
+	//
+	// Defaults to:
+	// "X-Real-Ip":             false,
+	// "X-Forwarded-For":       false,
+	// "CF-Connecting-IP":      false
+	//
+	// Look `context.RemoteAddr()` for more.
+	GetRemoteAddrHeaders() map[string]bool
+
 	// GetOther returns the configuration.Other map.
 	GetOther() map[string]interface{}
 }
