@@ -1066,30 +1066,46 @@ func (ctx *context) Subdomain() (subdomain string) {
 	return
 }
 
-// RemoteAddr tries to return the real client's request IP.
+// RemoteAddr tries to parse and return the real client's request IP.
+//
+// Based on allowed headers names that can be modified from Configuration.RemoteAddrHeaders.
+//
+// If parse based on these headers fail then it will return the Request's `RemoteAddr` field
+// which is filled by the server before the HTTP handler.
+//
+// Look `Configuration.RemoteAddrHeaders`,
+//      `Configuration.WithRemoteAddrHeader(...)`,
+//      `Configuration.WithoutRemoteAddrHeader(...)` for more.
 func (ctx *context) RemoteAddr() string {
-	header := ctx.GetHeader("X-Real-Ip")
-	realIP := strings.TrimSpace(header)
-	if realIP != "" {
-		return realIP
+
+	remoteHeaders := ctx.Application().ConfigurationReadOnly().GetRemoteAddrHeaders()
+
+	for headerName, enabled := range remoteHeaders {
+		if enabled {
+			headerValue := ctx.GetHeader(headerName)
+			// exception needed for 'X-Forwarded-For' only , if enabled.
+			if headerName == "X-Forwarded-For" {
+				idx := strings.IndexByte(headerValue, ',')
+				if idx >= 0 {
+					headerValue = headerValue[0:idx]
+				}
+			}
+
+			realIP := strings.TrimSpace(headerValue)
+			if realIP != "" {
+				return realIP
+			}
+		}
 	}
-	realIP = ctx.GetHeader("X-Forwarded-For")
-	idx := strings.IndexByte(realIP, ',')
-	if idx >= 0 {
-		realIP = realIP[0:idx]
-	}
-	realIP = strings.TrimSpace(realIP)
-	if realIP != "" {
-		return realIP
-	}
+
 	addr := strings.TrimSpace(ctx.request.RemoteAddr)
-	if len(addr) == 0 {
-		return ""
+	if addr != "" {
+		// if addr has port use the net.SplitHostPort otherwise(error occurs) take as it is
+		if ip, _, err := net.SplitHostPort(addr); err == nil {
+			return ip
+		}
 	}
-	// if addr has port use the net.SplitHostPort otherwise(error occurs) take as it is
-	if ip, _, err := net.SplitHostPort(addr); err == nil {
-		return ip
-	}
+
 	return addr
 }
 

@@ -168,6 +168,42 @@ func WithCharset(charset string) Configurator {
 	}
 }
 
+// WithRemoteAddrHeader enables or adds a new or existing request header name
+// that can be used to validate the client's real IP.
+//
+// Existing values are:
+// "X-Real-Ip":             false,
+// "X-Forwarded-For":       false,
+// "CF-Connecting-IP":      false
+//
+// Look `context.RemoteAddr()` for more.
+func WithRemoteAddrHeader(headerName string) Configurator {
+	return func(app *Application) {
+		if app.config.RemoteAddrHeaders == nil {
+			app.config.RemoteAddrHeaders = make(map[string]bool, 0)
+		}
+		app.config.RemoteAddrHeaders[headerName] = true
+	}
+}
+
+// WithoutRemoteAddrHeader disables an existing request header name
+// that can be used to validate the client's real IP.
+//
+// Existing values are:
+// "X-Real-Ip":             false,
+// "X-Forwarded-For":       false,
+// "CF-Connecting-IP": 	    false
+//
+// Look `context.RemoteAddr()` for more.
+func WithoutRemoteAddrHeader(headerName string) Configurator {
+	return func(app *Application) {
+		if app.config.RemoteAddrHeaders == nil {
+			app.config.RemoteAddrHeaders = make(map[string]bool, 0)
+		}
+		app.config.RemoteAddrHeaders[headerName] = false
+	}
+}
+
 // WithOtherValue adds a value based on a key to the Other setting.
 //
 // See` Configuration`.
@@ -294,6 +330,17 @@ type Configuration struct {
 	// Defaults to "siris.viewData"
 	ViewDataContextKey string `yaml:"ViewDataContextKey" toml:"ViewDataContextKey"`
 
+	// RemoteAddrHeaders returns the allowed request headers names
+	// that can be valid to parse the client's IP based on.
+	//
+	// Defaults to:
+	// "X-Real-Ip":             false,
+	// "X-Forwarded-For":       false,
+	// "CF-Connecting-IP":      false
+	//
+	// Look `context.RemoteAddr()` for more.
+	RemoteAddrHeaders map[string]bool `yaml:"RemoteAddrHeaders" toml:"RemoteAddrHeaders"`
+
 	// Other are the custom, dynamic options, can be empty.
 	// This field used only by you to set any app's options you want
 	// or by custom adaptors, it's a way to simple communicate between your adaptors (if any)
@@ -397,6 +444,19 @@ func (c Configuration) GetViewDataContextKey() string {
 	return c.ViewDataContextKey
 }
 
+// GetRemoteAddrHeaders returns the allowed request headers names
+// that can be valid to parse the client's IP based on.
+//
+// Defaults to:
+// "X-Real-Ip":             false,
+// "X-Forwarded-For":       false,
+// "CF-Connecting-IP":      false
+//
+// Look `context.RemoteAddr()` for more.
+func (c Configuration) GetRemoteAddrHeaders() map[string]bool {
+	return c.RemoteAddrHeaders
+}
+
 // GetOther returns the configuration.Other map.
 func (c Configuration) GetOther() map[string]interface{} {
 	return c.Other
@@ -470,6 +530,15 @@ func WithConfiguration(c Configuration) Configurator {
 			main.ViewDataContextKey = v
 		}
 
+		if v := c.RemoteAddrHeaders; len(v) > 0 {
+			if main.RemoteAddrHeaders == nil {
+				main.RemoteAddrHeaders = make(map[string]bool, 0)
+			}
+			for key, value := range v {
+				main.RemoteAddrHeaders[key] = value
+			}
+		}
+
 		if v := c.Other; len(v) > 0 {
 			if main.Other == nil {
 				main.Other = make(map[string]interface{}, 0)
@@ -498,6 +567,11 @@ func DefaultConfiguration() Configuration {
 		TranslateLanguageContextKey:       "siris.language",
 		ViewLayoutContextKey:              "siris.viewLayout",
 		ViewDataContextKey:                "siris.viewData",
-		Other:                             make(map[string]interface{}, 0),
+		RemoteAddrHeaders: map[string]bool{
+			"X-Real-Ip":        false,
+			"X-Forwarded-For":  false,
+			"CF-Connecting-IP": false,
+		},
+		Other: make(map[string]interface{}, 0),
 	}
 }
