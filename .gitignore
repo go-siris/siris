@@ -5,3 +5,6 @@ specs
 # vendor examples need to be removed, otherwise go build builds all examples 
 vendor/**/examples
 #vendor/**/*_test.go
+
+# Jetbrains
+.idea
