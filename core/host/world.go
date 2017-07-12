@@ -35,7 +35,6 @@ func notifyInterrupt() {
 
 func tryStartInterruptNotifier() {
 	w.mu.Lock()
-	defer w.mu.Unlock()
 	if len(w.onInterrupt) > 0 {
 		// this can't be moved to the task interrupt's `Run` function
 		// because it will not catch more than one ctrl/cmd+c, so
@@ -58,4 +57,5 @@ func tryStartInterruptNotifier() {
 			}
 		}()
 	}
+	w.mu.Unlock()
 }
