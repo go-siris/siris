@@ -13,7 +13,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/iris-contrib/httpexpect"
+	"gopkg.in/gavv/httpexpect.v1"
 )
 
 const (

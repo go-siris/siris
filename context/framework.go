@@ -33,7 +33,7 @@ type Application interface {
 	// used inside the context.Session().
 	//
 	// It's ready to use after the RegisterSessions.
-	SessionManager() (sessions.Sessions, error)
+	SessionManager() (*sessions.Manager, error)
 
 	// ServeHTTPC is the internal router, it's visible because it can be used for advanced use cases,
 	// i.e: routing within a foreign context.

@@ -1,355 +1,365 @@
-// Copyright 2017 Gerasimos Maropoulos, ΓΜ. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Copyright 2014 beego Author. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
+// Package session provider
+//
+// Usage:
+// import(
+//   "github.com/go-siris/siris/sessions"
+// )
+//
+//	func init() {
+//      globalSessions, _ = sessions.NewManager("memory", `{"cookieName":"gosessionid", "enableSetCookie,omitempty": true, "gclifetime":3600, "maxLifetime": 3600, "secure": false, "cookieLifeTime": 3600, "providerConfig": ""}`)
+//		go globalSessions.GC()
+//	}
+//
+// more docs: http://beego.me/docs/module/session.md
 package sessions
 
 import (
-	"strconv"
-	"sync"
+	"crypto/rand"
+	"encoding/hex"
+	"errors"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"net/textproto"
+	"net/url"
+	"os"
 	"time"
-
-	"github.com/go-siris/siris/core/errors"
-	"github.com/go-siris/siris/core/memstore"
 )
 
-type (
+// Store contains all data for one session process with specific id.
+type Store interface {
+	Set(key, value interface{}) error     //set session value
+	Get(key interface{}) interface{}      //get session value
+	Delete(key interface{}) error         //delete session value
+	SessionID() string                    //back current sessionID
+	SessionRelease(w http.ResponseWriter) // release the resource & save data to provider & return the data
+	Flush() error                         //delete all data
+}
 
-	// session is an 'object' which wraps the session provider with its session databases, only frontend user has access to this session object.
-	// implements the context.Session interface
-	session struct {
-		sid    string
-		values memstore.Store // here are the real values
-		// we could set the flash messages inside values but this will bring us more problems
-		// because of session databases and because of
-		// users may want to get all sessions and save them or display them
-		// but without temp values (flash messages) which are removed after fetching.
-		// so introduce a new field here.
-		// NOTE: flashes are not managed by third-party, only inside session struct.
-		flashes   map[string]*flashMessage
-		mu        sync.RWMutex
-		createdAt time.Time
-		provider  *provider
+// Provider contains global session methods and saved SessionStores.
+// it can operate a SessionStore by its id.
+type Provider interface {
+	SessionInit(gclifetime int64, config string) error
+	SessionRead(sid string) (Store, error)
+	SessionExist(sid string) bool
+	SessionRegenerate(oldsid, sid string) (Store, error)
+	SessionDestroy(sid string) error
+	SessionAll() int //get all active session
+	SessionGC()
+}
+
+var provides = make(map[string]Provider)
+
+// SLogger a helpful variable to log information about session
+var SLogger = NewSessionLog(os.Stderr)
+
+// Register makes a session provide available by the provided name.
+// If Register is called twice with the same name or if driver is nil,
+// it panics.
+func Register(name string, provide Provider) {
+	if provide == nil {
+		panic("session: Register provide is nil")
 	}
-
-	flashMessage struct {
-		// if true then this flash message is removed on the flash gc
-		shouldRemove bool
-		value        interface{}
+	if _, dup := provides[name]; dup {
+		panic("session: Register called twice for provider " + name)
 	}
-)
-
-var _ Session = &session{}
-
-// ID returns the session's id
-func (s *session) ID() string {
-	return s.sid
+	provides[name] = provide
 }
 
-// Get returns a value based on its "key".
-func (s *session) Get(key string) interface{} {
-	s.mu.RLock()
-	value := s.values.Get(key)
-	s.mu.RUnlock()
-
-	return value
+// ManagerConfig define the session config
+type ManagerConfig struct {
+	CookieName              string `json:"cookieName"`
+	EnableSetCookie         bool   `json:"enableSetCookie,omitempty"`
+	Gclifetime              int64  `json:"gclifetime"`
+	Maxlifetime             int64  `json:"maxLifetime"`
+	DisableHTTPOnly         bool   `json:"disableHTTPOnly"`
+	Secure                  bool   `json:"secure"`
+	CookieLifeTime          int    `json:"cookieLifeTime"`
+	ProviderConfig          string `json:"providerConfig"`
+	Domain                  string `json:"domain"`
+	SessionIDLength         int64  `json:"sessionIDLength"`
+	EnableSidInHTTPHeader   bool   `json:"EnableSidInHTTPHeader"`
+	SessionNameInHTTPHeader string `json:"SessionNameInHTTPHeader"`
+	EnableSidInURLQuery     bool   `json:"EnableSidInURLQuery"`
 }
 
-// when running on the session manager removes any 'old' flash messages
-func (s *session) runFlashGC() {
-	s.mu.Lock()
-	for key, v := range s.flashes {
-		if v.shouldRemove {
-			delete(s.flashes, key)
-		}
-	}
-	s.mu.Unlock()
+// Manager contains Provider and its configuration.
+type Manager struct {
+	provider Provider
+	config   *ManagerConfig
 }
 
-// HasFlash returns true if this session has available flash messages.
-func (s *session) HasFlash() bool {
-	return len(s.flashes) > 0
-}
-
-// GetFlash returns a stored flash message based on its "key"
-// which will be removed on the next request.
-//
-// To check for flash messages we use the HasFlash() Method
-// and to obtain the flash message we use the GetFlash() Method.
-// There is also a method GetFlashes() to fetch all the messages.
-//
-// Fetching a message deletes it from the session.
-// This means that a message is meant to be displayed only on the first page served to the user.
-func (s *session) GetFlash(key string) interface{} {
-	fv, ok := s.peekFlashMessage(key)
+// NewManager Create new Manager with provider name and json config string.
+// provider name:
+// 1. cookie
+// 2. file
+// 3. memory
+// 4. redis
+// 5. mysql
+// json config:
+// 1. is https  default false
+// 2. hashfunc  default sha1
+// 3. hashkey default beegosessionkey
+// 4. maxage default is none
+func NewManager(provideName string, cf *ManagerConfig) (*Manager, error) {
+	provider, ok := provides[provideName]
 	if !ok {
-		return nil
+		return nil, fmt.Errorf("session: unknown provide %q (forgotten import?)", provideName)
 	}
-	fv.shouldRemove = true
-	return fv.value
-}
 
-// PeekFlash returns a stored flash message based on its "key".
-// Unlike GetFlash, this will keep the message valid for the next requests,
-// until GetFlashes or GetFlash("key").
-func (s *session) PeekFlash(key string) interface{} {
-	fv, ok := s.peekFlashMessage(key)
-	if !ok {
-		return nil
+	if cf.Maxlifetime == 0 {
+		cf.Maxlifetime = cf.Gclifetime
 	}
-	return fv.value
-}
 
-func (s *session) peekFlashMessage(key string) (*flashMessage, bool) {
-	s.mu.Lock()
-	if fv, found := s.flashes[key]; found {
-		return fv, true
-	}
-	s.mu.Unlock()
+	if cf.EnableSidInHTTPHeader {
+		if cf.SessionNameInHTTPHeader == "" {
+			panic(errors.New("SessionNameInHTTPHeader is empty"))
+		}
 
-	return nil, false
-}
-
-// GetString same as Get but returns as string, if nil then returns an empty string
-func (s *session) GetString(key string) string {
-	if value := s.Get(key); value != nil {
-		if v, ok := value.(string); ok {
-			return v
+		strMimeHeader := textproto.CanonicalMIMEHeaderKey(cf.SessionNameInHTTPHeader)
+		if cf.SessionNameInHTTPHeader != strMimeHeader {
+			strErrMsg := "SessionNameInHTTPHeader (" + cf.SessionNameInHTTPHeader + ") has the wrong format, it should be like this : " + strMimeHeader
+			panic(errors.New(strErrMsg))
 		}
 	}
 
-	return ""
+	err := provider.SessionInit(cf.Maxlifetime, cf.ProviderConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	if cf.SessionIDLength == 0 {
+		cf.SessionIDLength = 16
+	}
+
+	return &Manager{
+		provider,
+		cf,
+	}, nil
 }
 
-// GetFlashString same as GetFlash but returns as string, if nil then returns an empty string
-func (s *session) GetFlashString(key string) string {
-	if value := s.GetFlash(key); value != nil {
-		if v, ok := value.(string); ok {
-			return v
+// getSid retrieves session identifier from HTTP Request.
+// First try to retrieve id by reading from cookie, session cookie name is configurable,
+// if not exist, then retrieve id from querying parameters.
+//
+// error is not nil when there is anything wrong.
+// sid is empty when need to generate a new session id
+// otherwise return an valid session id.
+func (manager *Manager) getSid(r *http.Request) (string, error) {
+	cookie, errs := r.Cookie(manager.config.CookieName)
+	if errs != nil || cookie.Value == "" {
+		var sid string
+		if manager.config.EnableSidInURLQuery {
+			errs := r.ParseForm()
+			if errs != nil {
+				return "", errs
+			}
+
+			sid = r.FormValue(manager.config.CookieName)
 		}
-	}
 
-	return ""
-}
-
-var errFindParse = errors.New("Unable to find the %s with key: %s. Found? %#v")
-
-// GetInt same as Get but returns as int, if not found then returns -1 and an error
-func (s *session) GetInt(key string) (int, error) {
-	v := s.Get(key)
-
-	if vint, ok := v.(int); ok {
-		return vint, nil
-	}
-
-	if vstring, sok := v.(string); sok {
-		return strconv.Atoi(vstring)
-	}
-
-	return -1, errFindParse.Format("int", key, v)
-}
-
-// GetInt64 same as Get but returns as int64, if not found then returns -1 and an error
-func (s *session) GetInt64(key string) (int64, error) {
-	v := s.Get(key)
-
-	if vint64, ok := v.(int64); ok {
-		return vint64, nil
-	}
-
-	if vint, ok := v.(int); ok {
-		return int64(vint), nil
-	}
-
-	if vstring, sok := v.(string); sok {
-		return strconv.ParseInt(vstring, 10, 64)
-	}
-
-	return -1, errFindParse.Format("int64", key, v)
-
-}
-
-// GetFloat32 same as Get but returns as float32, if not found then returns -1 and an error
-func (s *session) GetFloat32(key string) (float32, error) {
-	v := s.Get(key)
-
-	if vfloat32, ok := v.(float32); ok {
-		return vfloat32, nil
-	}
-
-	if vfloat64, ok := v.(float64); ok {
-		return float32(vfloat64), nil
-	}
-
-	if vint, ok := v.(int); ok {
-		return float32(vint), nil
-	}
-
-	if vstring, sok := v.(string); sok {
-		vfloat64, err := strconv.ParseFloat(vstring, 32)
-		if err != nil {
-			return -1, err
+		// if not found in Cookie / param, then read it from request headers
+		if manager.config.EnableSidInHTTPHeader && sid == "" {
+			sids, isFound := r.Header[manager.config.SessionNameInHTTPHeader]
+			if isFound && len(sids) != 0 {
+				return sids[0], nil
+			}
 		}
-		return float32(vfloat64), nil
+
+		return sid, nil
 	}
 
-	return -1, errFindParse.Format("float32", key, v)
+	// HTTP Request contains cookie for sessionid info.
+	return url.QueryUnescape(cookie.Value)
 }
 
-// GetFloat64 same as Get but returns as float64, if not found then returns -1 and an error
-func (s *session) GetFloat64(key string) (float64, error) {
-	v := s.Get(key)
+// SessionStart generate or read the session id from http request.
+// if session id exists, return SessionStore with this id.
+func (manager *Manager) SessionStart(w http.ResponseWriter, r *http.Request) (session Store, errs error) {
+	sid, errs := manager.getSid(r)
 
-	if vfloat32, ok := v.(float32); ok {
-		return float64(vfloat32), nil
+	if errs != nil {
+		return nil, errs
 	}
 
-	if vfloat64, ok := v.(float64); ok {
-		return vfloat64, nil
+	if sid != "" && manager.provider.SessionExist(sid) {
+		return manager.provider.SessionRead(sid)
 	}
 
-	if vint, ok := v.(int); ok {
-		return float64(vint), nil
+	// Generate a new session
+	sid, errs = manager.sessionID()
+	if errs != nil {
+		return nil, errs
 	}
 
-	if vstring, sok := v.(string); sok {
-		return strconv.ParseFloat(vstring, 32)
+	session, errs = manager.provider.SessionRead(sid)
+	if errs != nil {
+		return nil, errs
 	}
 
-	return -1, errFindParse.Format("float64", key, v)
+	cookie := &http.Cookie{
+		Name:     manager.config.CookieName,
+		Value:    url.QueryEscape(sid),
+		Path:     "/",
+		HttpOnly: !manager.config.DisableHTTPOnly,
+		Secure:   manager.isSecure(r),
+		Domain:   manager.config.Domain,
+	}
+	if manager.config.CookieLifeTime > 0 {
+		cookie.MaxAge = manager.config.CookieLifeTime
+		cookie.Expires = time.Now().Add(time.Duration(manager.config.CookieLifeTime) * time.Second)
+	}
+	if manager.config.EnableSetCookie {
+		http.SetCookie(w, cookie)
+	}
+	r.AddCookie(cookie)
+
+	if manager.config.EnableSidInHTTPHeader {
+		r.Header.Set(manager.config.SessionNameInHTTPHeader, sid)
+		w.Header().Set(manager.config.SessionNameInHTTPHeader, sid)
+	}
+
+	return
 }
 
-// GetBoolean same as Get but returns as boolean, if not found then returns -1 and an error
-func (s *session) GetBoolean(key string) (bool, error) {
-	v := s.Get(key)
-	// here we could check for "true", "false" and 0 for false and 1 for true
-	// but this may cause unexpected behavior from the developer if they expecting an error
-	// so we just check if bool, if yes then return that bool, otherwise return false and an error
-	if vb, ok := v.(bool); ok {
-		return vb, nil
+// SessionDestroy Destroy session by its id in http request cookie.
+func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
+	if manager.config.EnableSidInHTTPHeader {
+		r.Header.Del(manager.config.SessionNameInHTTPHeader)
+		w.Header().Del(manager.config.SessionNameInHTTPHeader)
 	}
 
-	return false, errFindParse.Format("bool", key, v)
-}
-
-// GetAll returns a copy of all session's values
-func (s *session) GetAll() map[string]interface{} {
-	items := make(map[string]interface{}, len(s.values))
-	s.mu.RLock()
-	for _, kv := range s.values {
-		items[kv.Key] = kv.Value()
+	cookie, err := r.Cookie(manager.config.CookieName)
+	if err != nil || cookie.Value == "" {
+		return
 	}
-	s.mu.RUnlock()
-	return items
-}
 
-// GetFlashes returns all flash messages as map[string](key) and interface{} value
-// NOTE: this will cause at remove all current flash messages on the next request of the same user
-func (s *session) GetFlashes() map[string]interface{} {
-	flashes := make(map[string]interface{}, len(s.flashes))
-	s.mu.Lock()
-	for key, v := range s.flashes {
-		flashes[key] = v.value
-		v.shouldRemove = true
+	sid, _ := url.QueryUnescape(cookie.Value)
+	manager.provider.SessionDestroy(sid)
+	if manager.config.EnableSetCookie {
+		expiration := time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
+		cookie = &http.Cookie{Name: manager.config.CookieName,
+			Path:     "/",
+			HttpOnly: !manager.config.DisableHTTPOnly,
+			Expires:  expiration,
+			MaxAge:   -1,
+			Domain:   manager.config.Domain}
+
+		http.SetCookie(w, cookie)
 	}
-	s.mu.Unlock()
-	return flashes
 }
 
-// VisitAll loop each one entry and calls the callback function func(key,value)
-func (s *session) VisitAll(cb func(k string, v interface{})) {
-	s.values.Visit(cb)
+// GetSessionStore Get SessionStore by its id.
+func (manager *Manager) GetSessionStore(sid string) (sessions Store, err error) {
+	sessions, err = manager.provider.SessionRead(sid)
+	return
 }
 
-func (s *session) set(key string, value interface{}, immutable bool) {
-	s.mu.Lock()
-	if immutable {
-		s.values.SetImmutable(key, value)
+// GC Start session gc process.
+// it can do gc in times after gc lifetime.
+func (manager *Manager) GC() {
+	manager.provider.SessionGC()
+	time.AfterFunc(time.Duration(manager.config.Gclifetime)*time.Second, func() { manager.GC() })
+}
+
+// SessionRegenerateID Regenerate a session id for this SessionStore who's id is saving in http request.
+func (manager *Manager) SessionRegenerateID(w http.ResponseWriter, r *http.Request) (session Store) {
+	sid, err := manager.sessionID()
+	if err != nil {
+		return
+	}
+	cookie, err := r.Cookie(manager.config.CookieName)
+	if err != nil || cookie.Value == "" {
+		//delete old cookie
+		session, _ = manager.provider.SessionRead(sid)
+		cookie = &http.Cookie{Name: manager.config.CookieName,
+			Value:    url.QueryEscape(sid),
+			Path:     "/",
+			HttpOnly: !manager.config.DisableHTTPOnly,
+			Secure:   manager.isSecure(r),
+			Domain:   manager.config.Domain,
+		}
 	} else {
-		s.values.Set(key, value)
+		oldsid, _ := url.QueryUnescape(cookie.Value)
+		session, _ = manager.provider.SessionRegenerate(oldsid, sid)
+		cookie.Value = url.QueryEscape(sid)
+		cookie.HttpOnly = true
+		cookie.Path = "/"
+		cookie.Domain = manager.config.Domain
 	}
-	s.mu.Unlock()
-
-	s.updateDatabases()
-}
-
-// Set fills the session with an entry"value", based on its "key".
-func (s *session) Set(key string, value interface{}) {
-	s.set(key, value, false)
-}
-
-// SetImmutable fills the session with an entry "value", based on its "key".
-// Unlike `Set`, the output value cannot be changed by the caller later on (when .Get)
-// An Immutable entry should be only changed with a `SetImmutable`, simple `Set` will not work
-// if the entry was immutable, for your own safety.
-// Use it consistently, it's far slower than `Set`.
-// Read more about muttable and immutable go types: https://stackoverflow.com/a/8021081
-func (s *session) SetImmutable(key string, value interface{}) {
-	s.set(key, value, true)
-}
-
-// SetFlash sets a flash message by its key.
-//
-// A flash message is used in order to keep a message in session through one or several requests of the same user.
-// It is removed from session after it has been displayed to the user.
-// Flash messages are usually used in combination with HTTP redirections,
-// because in this case there is no view, so messages can only be displayed in the request that follows redirection.
-//
-// A flash message has a name and a content (AKA key and value).
-// It is an entry of an associative array. The name is a string: often "notice", "success", or "error", but it can be anything.
-// The content is usually a string. You can put HTML tags in your message if you display it raw.
-// You can also set the message value to a number or an array: it will be serialized and kept in session like a string.
-//
-// Flash messages can be set using the SetFlash() Method
-// For example, if you would like to inform the user that his changes were successfully saved,
-// you could add the following line to your Handler:
-//
-// SetFlash("success", "Data saved!");
-//
-// In this example we used the key 'success'.
-// If you want to define more than one flash messages, you will have to use different keys
-func (s *session) SetFlash(key string, value interface{}) {
-	s.mu.Lock()
-	s.flashes[key] = &flashMessage{value: value}
-	s.mu.Unlock()
-}
-
-// Delete removes an entry by its key,
-// returns true if actually something was removed.
-func (s *session) Delete(key string) bool {
-	s.mu.Lock()
-	removed := s.values.Remove(key)
-	s.mu.Unlock()
-
-	s.updateDatabases()
-	return removed
-}
-
-func (s *session) updateDatabases() {
-	s.provider.updateDatabases(s.sid, s.values)
-}
-
-// DeleteFlash removes a flash message by its key
-func (s *session) DeleteFlash(key string) {
-	s.mu.Lock()
-	delete(s.flashes, key)
-	s.mu.Unlock()
-}
-
-// Clear removes all entries
-func (s *session) Clear() {
-	s.mu.Lock()
-	s.values.Reset()
-	s.mu.Unlock()
-
-	s.updateDatabases()
-}
-
-// Clear removes all flash messages
-func (s *session) ClearFlashes() {
-	s.mu.Lock()
-	for key := range s.flashes {
-		delete(s.flashes, key)
+	if manager.config.CookieLifeTime > 0 {
+		cookie.MaxAge = manager.config.CookieLifeTime
+		cookie.Expires = time.Now().Add(time.Duration(manager.config.CookieLifeTime) * time.Second)
 	}
-	s.mu.Unlock()
+	if manager.config.EnableSetCookie {
+		http.SetCookie(w, cookie)
+	}
+	r.AddCookie(cookie)
+
+	if manager.config.EnableSidInHTTPHeader {
+		r.Header.Set(manager.config.SessionNameInHTTPHeader, sid)
+		w.Header().Set(manager.config.SessionNameInHTTPHeader, sid)
+	}
+
+	return
+}
+
+// GetActiveSession Get all active sessions count number.
+func (manager *Manager) GetActiveSession() int {
+	return manager.provider.SessionAll()
+}
+
+// SetSecure Set cookie with https.
+func (manager *Manager) SetSecure(secure bool) {
+	manager.config.Secure = secure
+}
+
+func (manager *Manager) sessionID() (string, error) {
+	b := make([]byte, manager.config.SessionIDLength)
+	n, err := rand.Read(b)
+	if n != len(b) || err != nil {
+		return "", fmt.Errorf("Could not successfully read from the system CSPRNG")
+	}
+	return hex.EncodeToString(b), nil
+}
+
+// Set cookie with https.
+func (manager *Manager) isSecure(req *http.Request) bool {
+	if !manager.config.Secure {
+		return false
+	}
+	if req.URL.Scheme != "" {
+		return req.URL.Scheme == "https"
+	}
+	if req.TLS == nil {
+		return false
+	}
+	return true
+}
+
+// Log implement the log.Logger
+type Log struct {
+	*log.Logger
+}
+
+// NewSessionLog set io.Writer to create a Logger for session.
+func NewSessionLog(out io.Writer) *Log {
+	sl := new(Log)
+	sl.Logger = log.New(out, "[SESSION]", 1e9)
+	return sl
 }
