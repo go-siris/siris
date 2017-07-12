@@ -554,7 +554,7 @@ type Context interface {
 	VisitAllCookies(visitor func(name string, value string))
 
 	// Session returns the current user's Session.
-	Session() sessions.Session
+	Session() sessions.Store
 	// SessionDestroy destroys the whole session and removes the session id cookie.
 	SessionDestroy()
 
@@ -766,7 +766,7 @@ type context struct {
 	// the route's handlers
 	handlers Handlers
 	// the session, can be nil if never acquired
-	session sessions.Session
+	session sessions.Store
 	// the current position of the handler's chain
 	currentHandlerIndex int
 }
@@ -2075,14 +2075,17 @@ func (ctx *context) VisitAllCookies(visitor func(name string, value string)) {
 }
 
 // Session returns the current user's Session.
-func (ctx *context) Session() sessions.Session {
+func (ctx *context) Session() sessions.Store {
 	sessmanager, err := ctx.Application().SessionManager()
 	if err != nil {
 		return nil
 	}
 
 	if ctx.session == nil {
-		ctx.session = sessmanager.Start(ctx.writer, ctx.request)
+		ctx.session, err = sessmanager.SessionStart(ctx.writer, ctx.request)
+		if err != nil {
+			return nil
+		}
 	}
 
 	return ctx.session
@@ -2095,7 +2098,7 @@ func (ctx *context) SessionDestroy() {
 		if err != nil {
 			return
 		}
-		sessmanager.Destroy(ctx.writer, ctx.request)
+		sessmanager.SessionDestroy(ctx.writer, ctx.request)
 	}
 }
 
