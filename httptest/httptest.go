@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/go-siris/siris"
-	"github.com/iris-contrib/httpexpect"
+	"gopkg.in/gavv/httpexpect.v1"
 )
 
 type (

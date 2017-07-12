@@ -7,9 +7,7 @@ package dnsmessage
 import (
 	"bytes"
 	"fmt"
-	"net"
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -279,6 +277,69 @@ func TestSkipAll(t *testing.T) {
 	}
 }
 
+func TestSkipEach(t *testing.T) {
+	msg := smallTestMsg()
+
+	buf, err := msg.Pack()
+	if err != nil {
+		t.Fatal("Packing test message:", err)
+	}
+	var p Parser
+	if _, err := p.Start(buf); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name string
+		f    func() error
+	}{
+		{"SkipQuestion", p.SkipQuestion},
+		{"SkipAnswer", p.SkipAnswer},
+		{"SkipAuthority", p.SkipAuthority},
+		{"SkipAdditional", p.SkipAdditional},
+	}
+	for _, test := range tests {
+		if err := test.f(); err != nil {
+			t.Errorf("First call: got %s() = %v, want = %v", test.name, err, nil)
+		}
+		if err := test.f(); err != ErrSectionDone {
+			t.Errorf("Second call: got %s() = %v, want = %v", test.name, err, ErrSectionDone)
+		}
+	}
+}
+
+func TestSkipAfterRead(t *testing.T) {
+	msg := smallTestMsg()
+
+	buf, err := msg.Pack()
+	if err != nil {
+		t.Fatal("Packing test message:", err)
+	}
+	var p Parser
+	if _, err := p.Start(buf); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name string
+		skip func() error
+		read func() error
+	}{
+		{"Question", p.SkipQuestion, func() error { _, err := p.Question(); return err }},
+		{"Answer", p.SkipAnswer, func() error { _, err := p.Answer(); return err }},
+		{"Authority", p.SkipAuthority, func() error { _, err := p.Authority(); return err }},
+		{"Additional", p.SkipAdditional, func() error { _, err := p.Additional(); return err }},
+	}
+	for _, test := range tests {
+		if err := test.read(); err != nil {
+			t.Errorf("Got %s() = _, %v, want = _, %v", test.name, err, nil)
+		}
+		if err := test.skip(); err != ErrSectionDone {
+			t.Errorf("Got Skip%s() = %v, want = %v", test.name, err, ErrSectionDone)
+		}
+	}
+}
+
 func TestSkipNotStarted(t *testing.T) {
 	var p Parser
 
@@ -536,115 +597,60 @@ func TestBuilder(t *testing.T) {
 	}
 }
 
-func ExampleHeaderSearch() {
-	msg := Message{
-		Header: Header{Response: true, Authoritative: true},
-		Questions: []Question{
-			{
-				Name:  mustNewName("foo.bar.example.com."),
-				Type:  TypeA,
-				Class: ClassINET,
+func TestResourcePack(t *testing.T) {
+	for _, tt := range []struct {
+		m   Message
+		err error
+	}{
+		{
+			Message{
+				Questions: []Question{
+					{
+						Name:  mustNewName("."),
+						Type:  TypeAAAA,
+						Class: ClassINET,
+					},
+				},
+				Answers: []Resource{{ResourceHeader{}, nil}},
 			},
-			{
-				Name:  mustNewName("bar.example.com."),
-				Type:  TypeA,
-				Class: ClassINET,
+			&nestedError{"packing Answer", errNilResouceBody},
+		},
+		{
+			Message{
+				Questions: []Question{
+					{
+						Name:  mustNewName("."),
+						Type:  TypeAAAA,
+						Class: ClassINET,
+					},
+				},
+				Authorities: []Resource{{ResourceHeader{}, (*NSResource)(nil)}},
+			},
+			&nestedError{"packing Authority",
+				&nestedError{"ResourceHeader",
+					&nestedError{"Name", errNonCanonicalName},
+				},
 			},
 		},
-		Answers: []Resource{
-			{
-				ResourceHeader{
-					Name:  mustNewName("foo.bar.example.com."),
-					Type:  TypeA,
-					Class: ClassINET,
+		{
+			Message{
+				Questions: []Question{
+					{
+						Name:  mustNewName("."),
+						Type:  TypeA,
+						Class: ClassINET,
+					},
 				},
-				&AResource{[4]byte{127, 0, 0, 1}},
+				Additionals: []Resource{{ResourceHeader{}, nil}},
 			},
-			{
-				ResourceHeader{
-					Name:  mustNewName("bar.example.com."),
-					Type:  TypeA,
-					Class: ClassINET,
-				},
-				&AResource{[4]byte{127, 0, 0, 2}},
-			},
+			&nestedError{"packing Additional", errNilResouceBody},
 		},
-	}
-
-	buf, err := msg.Pack()
-	if err != nil {
-		panic(err)
-	}
-
-	wantName := "bar.example.com."
-
-	var p Parser
-	if _, err := p.Start(buf); err != nil {
-		panic(err)
-	}
-
-	for {
-		q, err := p.Question()
-		if err == ErrSectionDone {
-			break
-		}
-		if err != nil {
-			panic(err)
-		}
-
-		if q.Name.String() != wantName {
-			continue
-		}
-
-		fmt.Println("Found question for name", wantName)
-		if err := p.SkipAllQuestions(); err != nil {
-			panic(err)
-		}
-		break
-	}
-
-	var gotIPs []net.IP
-	for {
-		h, err := p.AnswerHeader()
-		if err == ErrSectionDone {
-			break
-		}
-		if err != nil {
-			panic(err)
-		}
-
-		if (h.Type != TypeA && h.Type != TypeAAAA) || h.Class != ClassINET {
-			continue
-		}
-
-		if !strings.EqualFold(h.Name.String(), wantName) {
-			if err := p.SkipAnswer(); err != nil {
-				panic(err)
-			}
-			continue
-		}
-
-		switch h.Type {
-		case TypeA:
-			r, err := p.AResource()
-			if err != nil {
-				panic(err)
-			}
-			gotIPs = append(gotIPs, r.A[:])
-		case TypeAAAA:
-			r, err := p.AAAAResource()
-			if err != nil {
-				panic(err)
-			}
-			gotIPs = append(gotIPs, r.AAAA[:])
+	} {
+		_, err := tt.m.Pack()
+		if !reflect.DeepEqual(err, tt.err) {
+			t.Errorf("got %v for %v; want %v", err, tt.m, tt.err)
 		}
 	}
-
-	fmt.Printf("Found A/AAAA records for name %s: %v\n", wantName, gotIPs)
-
-	// Output:
-	// Found question for name bar.example.com.
-	// Found A/AAAA records for name bar.example.com.: [127.0.0.2]
 }
 
 func BenchmarkParsing(b *testing.B) {
@@ -799,6 +805,50 @@ func BenchmarkBuilding(b *testing.B) {
 		if _, err := bld.Finish(); err != nil {
 			b.Fatal("bld.Finish():", err)
 		}
+	}
+}
+
+func smallTestMsg() Message {
+	name := mustNewName("example.com.")
+	return Message{
+		Header: Header{Response: true, Authoritative: true},
+		Questions: []Question{
+			{
+				Name:  name,
+				Type:  TypeA,
+				Class: ClassINET,
+			},
+		},
+		Answers: []Resource{
+			{
+				ResourceHeader{
+					Name:  name,
+					Type:  TypeA,
+					Class: ClassINET,
+				},
+				&AResource{[4]byte{127, 0, 0, 1}},
+			},
+		},
+		Authorities: []Resource{
+			{
+				ResourceHeader{
+					Name:  name,
+					Type:  TypeA,
+					Class: ClassINET,
+				},
+				&AResource{[4]byte{127, 0, 0, 1}},
+			},
+		},
+		Additionals: []Resource{
+			{
+				ResourceHeader{
+					Name:  name,
+					Type:  TypeA,
+					Class: ClassINET,
+				},
+				&AResource{[4]byte{127, 0, 0, 1}},
+			},
+		},
 	}
 }
 

@@ -107,8 +107,8 @@ type Application struct {
 	// view engine
 	view view.View
 
-	// sessions and flash messages
-	sessions sessions.Sessions
+	// sessions messages
+	sessions *sessions.Manager
 
 	// used for build
 	once sync.Once
@@ -153,10 +153,12 @@ func Default() *Application {
 	app := New()
 
 	app.AttachView(view.HTML("./templates", ".html"))
-	app.AttachSessionManager(sessions.New(sessions.Config{
-		Cookie:  "sirissessionid",
-		Expires: 7 * (24 * time.Hour), // 1 week
-	}))
+	app.AttachSessionManager("memory", &sessions.ManagerConfig{
+		CookieName:      "go-session-id",
+		EnableSetCookie: true,
+		Gclifetime:      3600,
+		Maxlifetime:     7200,
+	})
 
 	app.Use(recover.New())
 	app.Use(requestLogger.New())
@@ -474,17 +476,26 @@ func (app *Application) View(writer io.Writer, filename string, layout string, b
 // AttachSessionManager registers a session manager to the framework which is used for flash messages too.
 //
 // See context.Session too.
-func (app *Application) AttachSessionManager(manager sessions.Sessions) {
+func (app *Application) AttachSessionManager(provider string, cfg *sessions.ManagerConfig) {
+	manager, err := sessions.NewManager(provider, cfg)
+	if err != nil {
+		return
+	}
 	app.sessions = manager
+	go app.sessions.GC()
+	app.Done(func(ctx context.Context) {
+		ctx.Session().SessionRelease(ctx.ResponseWriter())
+	})
 }
 
 // SessionManager returns the session manager which contain a Start and Destroy methods
 // used inside the context.Session().
 //
 // It's ready to use after the RegisterSessions.
-func (app *Application) SessionManager() (sessions.Sessions, error) {
+func (app *Application) SessionManager() (*sessions.Manager, error) {
+	var sessions *sessions.Manager
 	if app.sessions == nil {
-		return nil, errors.New("session manager is missing")
+		return sessions, errors.New("session manager is missing")
 	}
 	return app.sessions, nil
 }

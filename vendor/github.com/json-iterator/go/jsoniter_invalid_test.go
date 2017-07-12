@@ -1,7 +1,9 @@
 package jsoniter
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/require"
+	"io"
 	"testing"
 )
 
@@ -40,4 +42,59 @@ func Test_invalid_any(t *testing.T) {
 	should.Equal("", any.ToString())
 
 	should.Equal(Invalid, any.Get(0.1).Get(1).ValueType())
+}
+
+func Test_invalid_struct_input(t *testing.T) {
+	should := require.New(t)
+	type TestObject struct{}
+	input := []byte{54, 141, 30}
+	obj := TestObject{}
+	should.NotNil(Unmarshal(input, &obj))
+}
+
+func Test_invalid_slice_input(t *testing.T) {
+	should := require.New(t)
+	type TestObject struct{}
+	input := []byte{93}
+	obj := []string{}
+	should.NotNil(Unmarshal(input, &obj))
+}
+
+func Test_invalid_array_input(t *testing.T) {
+	should := require.New(t)
+	type TestObject struct{}
+	input := []byte{93}
+	obj := [0]string{}
+	should.NotNil(Unmarshal(input, &obj))
+}
+
+func Test_invalid_float(t *testing.T) {
+	inputs := []string{
+		`1.e1`, // dot without following digit
+		`1.`,   // dot can not be the last char
+		``,     // empty number
+		`01`,   // extra leading zero
+		`-`,    // negative without digit
+		`--`,   // double negative
+		`--2`,  // double negative
+	}
+	for _, input := range inputs {
+		t.Run(input, func(t *testing.T) {
+			should := require.New(t)
+			iter := ParseString(ConfigDefault, input+",")
+			iter.Skip()
+			should.NotEqual(io.EOF, iter.Error)
+			should.NotNil(iter.Error)
+			v := float64(0)
+			should.NotNil(json.Unmarshal([]byte(input), &v))
+			iter = ParseString(ConfigDefault, input+",")
+			iter.ReadFloat64()
+			should.NotEqual(io.EOF, iter.Error)
+			should.NotNil(iter.Error)
+			iter = ParseString(ConfigDefault, input+",")
+			iter.ReadFloat32()
+			should.NotEqual(io.EOF, iter.Error)
+			should.NotNil(iter.Error)
+		})
+	}
 }

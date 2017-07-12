@@ -60,7 +60,7 @@ func TestField_Set(t *testing.T) {
 	}
 
 	if f.Value().(string) != "fatih" {
-		t.Errorf("set value is wrong: %s want: %s", f.Value().(string), "fatih")
+		t.Errorf("Setted value is wrong: %s want: %s", f.Value().(string), "fatih")
 	}
 
 	f = s.Field("Y")
@@ -71,7 +71,7 @@ func TestField_Set(t *testing.T) {
 
 	sliceLen := len(f.Value().([]string))
 	if sliceLen != 3 {
-		t.Errorf("set values slice length is wrong: %d, want: %d", sliceLen, 3)
+		t.Errorf("Setted values slice length is wrong: %d, want: %d", sliceLen, 3)
 	}
 
 	f = s.Field("C")
@@ -81,7 +81,7 @@ func TestField_Set(t *testing.T) {
 	}
 
 	if f.Value().(bool) {
-		t.Errorf("set value is wrong: %t want: %t", f.Value().(bool), false)
+		t.Errorf("Setted value is wrong: %t want: %t", f.Value().(bool), false)
 	}
 
 	// let's pass a different type
@@ -93,7 +93,7 @@ func TestField_Set(t *testing.T) {
 
 	// old value should be still there :)
 	if f.Value().(string) != "fatih" {
-		t.Errorf("set value is wrong: %s want: %s", f.Value().(string), "fatih")
+		t.Errorf("Setted value is wrong: %s want: %s", f.Value().(string), "fatih")
 	}
 
 	// let's access an unexported field, which should give an error
