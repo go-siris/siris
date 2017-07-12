@@ -26,11 +26,7 @@ func IsTLS(srv *http.Server) bool {
 // Returns "https" on secure server,
 // otherwise "http".
 func ResolveSchemeFromServer(srv *http.Server) string {
-	if IsTLS(srv) {
-		return SchemeHTTPS
-	}
-
-	return SchemeHTTP
+	return ResolveScheme(IsTLS(srv))
 }
 
 // ResolveURLFromServer returns the scheme+host from a server.
