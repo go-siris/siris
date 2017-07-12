@@ -25,3 +25,6 @@ vendor/**/examples
 
 # Jetbrains
 .idea
+
+# Coverage
+.coverage.txt

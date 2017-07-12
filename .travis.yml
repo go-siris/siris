@@ -1,19 +1,33 @@
 language: go
+
 os:
   - linux
   - osx
+
 go:
   - go1.8
+  - tip
+
 go_import_path: github.com/go-siris/siris
+
+before_install:
+ - chmod +x ./go-test.sh
+
 install:
   - go get ./...
 # install test dependencies
   - go get golang.org/x/tools/cmd/cover
   - go get -v github.com/axw/gocov
   - go install github.com/axw/gocov/gocov
+
 script:
   - gocov test $(go list ./... | grep -v /vendor/) | gocov report
- # For now keep it commented.
- # - cd ./_examples
- # - go get ./...
-  - go test -v -cover $(go list ./... | grep -v /vendor/)
+  - ./go-test.sh
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+matrix:
+  allow_failures:
+    - go: tip
+
