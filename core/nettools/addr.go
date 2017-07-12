@@ -199,11 +199,26 @@ func ResolvePort(addr string) int {
 	return 80
 }
 
-// ResolveScheme returns the scheme based on the "vhost"
-func ResolveScheme(vhost string) string {
-	// pure check
-	if strings.HasPrefix(vhost, SchemeHTTPS) || ResolvePort(vhost) == 443 {
+// ResolveScheme returns "https://" if "isTLS" receiver is true,
+// otherwise "http://".
+func ResolveScheme(isTLS bool) string {
+	if isTLS {
 		return SchemeHTTPS
 	}
+
 	return SchemeHTTP
+}
+
+// ResolveSchemeFromVHost returns the scheme based on the "vhost".
+func ResolveSchemeFromVHost(vhost string) string {
+	// pure check
+	isTLS := strings.HasPrefix(vhost, SchemeHTTPS) || ResolvePort(vhost) == 443
+	return ResolveScheme(isTLS)
+}
+
+// ResolveURL takes the scheme and an address
+// and returns its URL, pure implementation but it does the job.
+func ResolveURL(scheme string, addr string) string {
+	host := ResolveVHost(addr)
+	return scheme + "://" + host
 }
