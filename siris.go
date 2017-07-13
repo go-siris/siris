@@ -14,12 +14,13 @@ import (
 	"sync"
 	"time"
 
+	//logger
+	"github.com/sirupsen/logrus"
 	// context for the handlers
 	"github.com/go-siris/siris/context"
 	// core packages, needed to build the application
 	"github.com/go-siris/siris/core/errors"
 	"github.com/go-siris/siris/core/host"
-	"github.com/go-siris/siris/core/logger"
 	"github.com/go-siris/siris/core/nettools"
 	"github.com/go-siris/siris/core/router"
 	// sessions and view
@@ -88,10 +89,8 @@ type Application struct {
 	// all fields defaults to something that is working, developers don't have to set it.
 	config *Configuration
 
-	// logger logs to the defined logger.
-	// Use AttachLogger to change the default which prints messages to the os.Stdout.
-	// It's just an io.Writer, period.
-	logger io.Writer
+	// the logrus logger instance, defaults to "Info" level messages (all except "Debug")
+	logger *logrus.Logger
 
 	// view engine
 	view view.View
@@ -106,7 +105,7 @@ type Application struct {
 
 	// Hosts contains a list of all servers (Host Supervisors) that this app is running on.
 	//
-	// Hosts may be empty only if application ran(`app.Run`) with `iris.Raw` option runner,
+	// Hosts may be empty only if application ran(`app.Run`) with `siris.Raw` option runner,
 	// otherwise it contains a single host (`app.Hosts[0]`).
 	//
 	// Additional Host Supervisors can be added to that list by calling the `app.NewHost` manually.
@@ -121,7 +120,7 @@ func New() *Application {
 
 	app := &Application{
 		config:     &config,
-		logger:     logger.NewDevLogger(banner),
+		logger:     logrus.New(),
 		APIBuilder: router.NewAPIBuilder(),
 		Router:     router.NewRouter(),
 	}
@@ -165,6 +164,26 @@ func (app *Application) Configure(configurators ...Configurator) *Application {
 	}
 
 	return app
+}
+
+// These are the different logging levels. You can set the logging level to log
+// on the application 's instance of logger, obtained with `app.Logger()`.
+//
+// These are conversions from logrus.
+const (
+	// NoLog level, logs nothing.
+	// It's the logrus' `PanicLevel` but it never used inside siris so it will never log.
+	NoLog = logrus.PanicLevel
+	// ErrorLevel level. Logs. Used for errors that should definitely be noted.
+	// Commonly used for hooks to send errors to an error tracking service.
+	ErrorLevel = logrus.ErrorLevel
+	// WarnLevel level. Non-critical entries that deserve eyes.
+	WarnLevel = logrus.WarnLevel
+)
+
+// Logger returns the logrus logger instance(pointer) that is being used inside the "app".
+func (app *Application) Logger() *logrus.Logger {
+	return app.logger
 }
 
 // Build sets up, once, the framework.
@@ -213,7 +232,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 
 	// check if different ErrorLog provided, if not bind it with the framework's logger
 	if srv.ErrorLog == nil {
-		srv.ErrorLog = log.New(app.logger, "[HTTP Server] ", 0)
+		srv.ErrorLog = log.New(app.logger.Out, "[HTTP Server] ", 0)
 	}
 
 	if srv.Addr == "" {
@@ -236,7 +255,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 
 	if !app.config.DisableBanner {
 		// show the banner and the available keys to exit from app.
-		su.RegisterOnServe(host.WriteStartupLogOnServe(app.logger, banner+"V"+Version))
+		su.RegisterOnServe(host.WriteStartupLogOnServe(app.logger.Out, banner+"V"+Version))
 	}
 
 	// the below schedules some tasks that will run among the server
@@ -362,6 +381,12 @@ func Raw(f func() error) Runner {
 	}
 }
 
+// ErrServerClosed is returned by the Server's Serve, ServeTLS, ListenAndServe,
+// and ListenAndServeTLS methods after a call to Shutdown or Close.
+//
+// Conversion for the http.ErrServerClosed.
+var ErrServerClosed = http.ErrServerClosed
+
 // Run builds the framework and starts the desired `Runner` with or without configuration edits.
 //
 // Run should be called only once per Application instance, it blocks like http.Server.
@@ -379,30 +404,20 @@ func (app *Application) Run(serve Runner, withOrWithout ...Configurator) error {
 	// first Build because it doesn't need anything from configuration,
 	//  this give the user the chance to modify the router inside a configurator as well.
 	if err := app.Build(); err != nil {
-		return err
+		return errors.PrintAndReturnErrors(err, app.logger.Errorf)
 	}
 
 	app.Configure(withOrWithout...)
 
 	// this will block until an error(unless supervisor's DeferFlow called from a Task).
-	return serve(app)
-}
-
-// AttachLogger attachs a new logger to the framework.
-func (app *Application) AttachLogger(logWriter io.Writer) {
-	if logWriter == nil {
-		// convert that to an empty writerFunc
-		logWriter = logger.NoOpLogger
+	err := serve(app)
+	if err != nil {
+		if err == http.ErrServerClosed {
+			return nil
+		}
+		app.Logger().Errorln(err)
 	}
-	app.logger = logWriter
-}
-
-// Log sends a message to the defined io.Writer logger, it's
-// just a help function for internal use but it can be used to a cusotom middleware too.
-//
-// See AttachLogger too.
-func (app *Application) Log(format string, a ...interface{}) {
-	logger.Log(app.logger, format, a...)
+	return err
 }
 
 // AttachView should be used to register view engines mapping to a root directory
@@ -423,9 +438,15 @@ func (app *Application) AttachView(viewEngine view.Engine) error {
 // Returns an error on failure, otherwise nil.
 func (app *Application) View(writer io.Writer, filename string, layout string, bindingData interface{}) error {
 	if app.view.Len() == 0 {
-		return errors.New("view engine is missing")
+		err := errors.New("view engine is missing, use `AttachView`")
+		app.Logger().Errorln(err)
+		return err
 	}
-	return app.view.ExecuteWriter(writer, filename, layout, bindingData)
+	err := app.view.ExecuteWriter(writer, filename, layout, bindingData)
+	if err != nil {
+		app.Logger().Errorln(err)
+	}
+	return err
 }
 
 // AttachSessionManager registers a session manager to the framework which is used for flash messages too.

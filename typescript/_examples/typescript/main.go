@@ -15,7 +15,7 @@ import (
 func main() {
 	app := siris.New()
 
-	app.StaticWeb("/scripts", "./www") // serve the scripts
+	app.StaticWeb("/scripts", "./www/scripts") // serve the scripts
 
 	app.Get("/", func(ctx context.Context) {
 		ctx.ServeFile("./www/index.html", false)
