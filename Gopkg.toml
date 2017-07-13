@@ -181,3 +181,7 @@
 [[constraint]]
   version = "v1"
   name = "gopkg.in/go-siris/tcplisten.v1"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/sirupsen/logrus"

@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/iris-contrib/httpexpect"
@@ -17,6 +18,10 @@ import (
 
 const (
 	debug = false
+)
+
+var (
+	rwmu = sync.RWMutex{}
 )
 
 func newTester(t *testing.T, baseURL string, handler http.Handler) *httpexpect.Expect {
@@ -77,7 +82,9 @@ func testSupervisor(t *testing.T, creator func(*http.Server, []func(TaskHost)) *
 	}
 
 	helloMe := func(_ TaskHost) {
+		rwmu.Lock()
 		logger.Print(expectedHelloMessage)
+		rwmu.Unlock()
 	}
 
 	host := creator(srv, []func(TaskHost){helloMe})
@@ -94,13 +101,17 @@ func testSupervisor(t *testing.T, creator func(*http.Server, []func(TaskHost)) *
 	// but it's "safe" here.
 
 	// testing Task (recorded) message:
-	if got := loggerOutput.String(); expectedHelloMessage != got {
+	//
+	rwmu.RLock()
+	got := loggerOutput.String()
+	rwmu.RUnlock()
+	if expectedHelloMessage != got {
 		t.Fatalf("expected hello Task's message to be '%s' but got '%s'", expectedHelloMessage, got)
 	}
 }
 func TestSupervisor(t *testing.T) {
 	testSupervisor(t, func(srv *http.Server, tasks []func(TaskHost)) *Supervisor {
-		su := New(srv)
+		su := New(srv, false)
 		for _, t := range tasks {
 			su.RegisterOnServe(t)
 		}

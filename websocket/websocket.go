@@ -36,13 +36,13 @@ func fixPath(s string) string {
 func (s *server) Attach(app *siris.Application) {
 	wsPath := fixPath(s.config.Endpoint)
 	if wsPath == "" {
-		app.Log("websocket's configuration field 'Endpoint' cannot be empty, websocket server stops")
+		app.Logger().Warnf("websocket's configuration field 'Endpoint' cannot be empty, websocket server stops")
 		return
 	}
 
 	wsClientSidePath := fixPath(s.config.ClientSourcePath)
 	if wsClientSidePath == "" {
-		app.Log("websocket's configuration field 'ClientSourcePath' cannot be empty, websocket server stops")
+		app.Logger().Warnf("websocket's configuration field 'ClientSourcePath' cannot be empty, websocket server stops")
 		return
 	}
 
@@ -55,7 +55,7 @@ func (s *server) Attach(app *siris.Application) {
 		// serve the client side on domain:port/siris-ws.js
 		r, err := app.StaticContent(wsClientSidePath, "application/javascript", ClientSource)
 		if err != nil {
-			app.Log("websocket's route for javascript client-side library failed with: %v", err)
+			app.Logger().Warnf("websocket's route for javascript client-side library failed with: %v", err)
 			return
 		}
 		r.Name = clientSideLookupName

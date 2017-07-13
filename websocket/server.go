@@ -207,7 +207,7 @@ func (s *server) Handler() context.Handler {
 		// response.
 		conn, err := upgrader.Upgrade(ctx.ResponseWriter(), ctx.Request(), ctx.ResponseWriter().Header())
 		if err != nil {
-			ctx.Application().Log("websocket error: %v", err)
+			ctx.Application().Logger().Warnf("websocket error: %v", err)
 			ctx.StatusCode(siris.StatusServiceUnavailable)
 			return
 		}

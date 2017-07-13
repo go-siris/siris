@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/go-siris/siris/sessions"
+	"github.com/sirupsen/logrus"
 )
 
 // Application is the context's available Application instance, only things that are allowed to be happen inside the request are lived here.
@@ -16,8 +17,8 @@ type Application interface {
 	// ConfigurationReadOnly returns all the available configuration values can be used on a request.
 	ConfigurationReadOnly() ConfigurationReadOnly
 
-	// Log uses the user's defined logger to log a warning or error message.
-	Log(format string, a ...interface{})
+	// Logger returns the logrus logger instance(pointer) that is being used inside the "app".
+	Logger() *logrus.Logger
 
 	// View executes and write the result of a template file to the writer.
 	//
