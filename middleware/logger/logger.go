@@ -49,7 +49,7 @@ func (l *requestLoggerMiddleware) ServeHTTP(ctx context.Context) {
 	}
 
 	//finally print the logs, no new line, the framework's logger is responsible how to render each log.
-	ctx.Application().Log("%v %4v %s %s %s", status, latency, ip, method, path)
+	ctx.Application().Logger().Infof("%v %4v %s %s %s", status, latency, ip, method, path)
 }
 
 // New creates and returns a new request logger middleware.

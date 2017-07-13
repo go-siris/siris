@@ -12,7 +12,7 @@ import (
 )
 
 func ExampleSupervisor_RegisterOnError() {
-	su := New(&http.Server{Addr: ":8273", Handler: http.DefaultServeMux})
+	su := New(&http.Server{Addr: ":8273", Handler: http.DefaultServeMux}, false)
 
 	su.RegisterOnError(func(err error) {
 		fmt.Println(err.Error())
@@ -88,7 +88,7 @@ func ExampleSupervisor_RegisterOnServe() {
 	h := New(&http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		}),
-	})
+	}, false)
 
 	logger := log.New(os.Stdout, "Supervisor: ", 0)
 
