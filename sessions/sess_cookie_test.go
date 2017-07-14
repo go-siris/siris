@@ -4,10 +4,12 @@ package sessions
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/gavv/httpexpect.v1"
 )
 
@@ -169,4 +171,60 @@ func TestSessionCookie(t *testing.T) {
 	cookie.Domain().Equal("example.com")
 	cookie.Path().Equal("/")
 	t.Log("/session/functions-test: Test Done")
+
+	t.Log("globalSessions: Test Start")
+	err := errors.New("err test")
+	globalSessions.SetSecure(true)
+	if activeSessions := globalSessions.GetActiveSession(); activeSessions != 0 {
+		t.Fatal("GetActiveSession returns activeSessions != 0")
+	}
+	if _, err = globalSessions.GetSessionStore(sessionId1); err != nil {
+		t.Fatalf("GetSessionStore returns err, %s", err)
+	}
+	newseddion, _ := globalSessions.sessionID()
+	_, err = globalSessions.provider.SessionRegenerate("notfound1234", newseddion)
+	if err != nil {
+		t.Fatalf("SessionRegenerate returns err, %s", err)
+	}
+	t.Log("globalSessions: Test Done\n")
+}
+
+func TestSessionCookiePanic_Register(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+	Register("cookie", nil)
+}
+
+func TestSessionCookiePanic_RegisterDup(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+	Register("cookie", cookiepder)
+}
+
+func TestSessionCookiePanic_Manager(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	config := `{"cookieName":"gosessionid","gclifetime":600,"maxLifetime": 300,"domain":"example.com","enableSetCookie":true,"EnableSidInHTTPHeader":true,"SessionNameInHTTPHeader":"","providerConfig":"{\"cookieName\":\"gosessionid\",\"domain\":\"example.com\",\"securityKey\":\"siriscookiehashkey\"}"}`
+	conf := new(ManagerConfig)
+	if err := json.Unmarshal([]byte(config), conf); err != nil {
+		t.Fatal("json decode error", err)
+	}
+	_, _ = NewManager("cookie", conf)
+}
+
+func TestSessionCookiePanic_Manager2(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	config := `{"cookieName":"gosessionid","gclifetime":600,"maxLifetime": 300,"domain":"example.com","enableSetCookie":true,"EnableSidInHTTPHeader":true,"SessionNameInHTTPHeader":"gosessionid","providerConfig":"{\"cookieName\":\"gosessionid\",\"domain\":\"example.com\",\"securityKey\":\"siriscookiehashkey\"}"}`
+	conf := new(ManagerConfig)
+	if err := json.Unmarshal([]byte(config), conf); err != nil {
+		t.Fatal("json decode error", err)
+	}
+	_, _ = NewManager("cookie", conf)
 }
