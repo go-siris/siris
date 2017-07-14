@@ -1,0 +1,30 @@
+version: "{build}"
+
+os: Windows Server 2012 R2
+
+clone_folder: c:\gopath\src\github.com\go-siris\siris
+
+init:
+  - git config --global core.autocrlf input
+
+environment:
+  GOPATH: c:\gopath
+  GOVERSION: 1.8
+
+install:
+  - echo %PATH%
+  - echo %GOPATH%
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
+  - go version
+  - go env
+  - go get ./...
+
+test_script:
+  - ps: go test -v $(go list ./... | sls -n "vendor|_examples")
+
+branches:
+  only:
+    - master
+
+build: false
+deploy: false
