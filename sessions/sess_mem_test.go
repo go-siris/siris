@@ -4,10 +4,12 @@ package sessions
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/gavv/httpexpect.v1"
 )
 
@@ -147,7 +149,7 @@ func TestSessionMemory(t *testing.T) {
 		Expect().
 		Status(http.StatusOK)
 	if sessionId1 != sessionId2 {
-		t.Fatal("sessionIds not Match: %s != %s", sessionId1, sessionId2)
+		t.Fatalf("sessionIds not Match: %s != %s", sessionId1, sessionId2)
 	}
 	t.Log("/session/same-session-id: Test Done\n")
 
@@ -162,7 +164,7 @@ func TestSessionMemory(t *testing.T) {
 	cookie.Path().Equal("/")
 	cookie.Expires().Equal(time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC))
 	if sessionId1 != sessionId2 {
-		t.Fatal("sessionIds not Match: %s != %s", sessionId1, sessionId2)
+		t.Fatalf("sessionIds not Match: %s != %s", sessionId1, sessionId2)
 	}
 	t.Log("/session/destroy: Test Done\n")
 
@@ -176,7 +178,7 @@ func TestSessionMemory(t *testing.T) {
 	cookie.Domain().Equal("example.com")
 	cookie.Path().Equal("/")
 	if sessionId4 == sessionId3 {
-		t.Fatal("sessionIds3/4 Match but not allowed: %s == %s", sessionId3, sessionId4)
+		t.Fatalf("sessionIds3/4 Match but not allowed: %s == %s", sessionId3, sessionId4)
 	}
 	t.Log("/session/getnew: Test Done\n")
 
@@ -190,7 +192,7 @@ func TestSessionMemory(t *testing.T) {
 	cookie.Domain().Equal("example.com")
 	cookie.Path().Equal("/")
 	if sessionId4 == sessionId5 {
-		t.Fatal("sessionIds4/5 Match but not allowed: %s != %s", sessionId4, sessionId5)
+		t.Fatalf("sessionIds4/5 Match but not allowed: %s != %s", sessionId4, sessionId5)
 	}
 	t.Log("/session/regenerate: Test Done\n")
 
@@ -204,7 +206,63 @@ func TestSessionMemory(t *testing.T) {
 	cookie.Domain().Equal("example.com")
 	cookie.Path().Equal("/")
 	if sessionId5 == sessionId6 {
-		t.Fatal("sessionIds5/6 Match but not allowed: %s != %s", sessionId5, sessionId6)
+		t.Fatalf("sessionIds5/6 Match but not allowed: %s != %s", sessionId5, sessionId6)
 	}
 	t.Log("/session/functions-test: Test Done")
+
+	t.Log("globalSessions: Test Start")
+	err := errors.New("err test")
+	globalSessions.SetSecure(true)
+	if activeSessions := globalSessions.GetActiveSession(); activeSessions == 0 {
+		t.Fatal("GetActiveSession returns 0")
+	}
+	if _, err = globalSessions.GetSessionStore(sessionId1); err != nil {
+		t.Fatalf("GetSessionStore returns err, %s", err)
+	}
+	newseddion, _ := globalSessions.sessionID()
+	_, err = globalSessions.provider.SessionRegenerate("notfound1234", newseddion)
+	if err != nil {
+		t.Fatalf("SessionRegenerate returns err, %s", err)
+	}
+	t.Log("globalSessions: Test Done\n")
+}
+
+func TestSessionMemoryPanic_Register(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+	Register("memory", nil)
+}
+
+func TestSessionMemoryPanic_RegisterDup(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+	Register("memory", mempder)
+}
+
+func TestSessionMemoryPanic_Manager(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	config := `{"cookieName":"gosessionid","gclifetime":600,"maxLifetime": 300,"domain":"example.com","enableSetCookie":true,"EnableSidInHTTPHeader":true,"SessionNameInHTTPHeader":""}`
+	conf := new(ManagerConfig)
+	if err := json.Unmarshal([]byte(config), conf); err != nil {
+		t.Fatal("json decode error", err)
+	}
+	_, _ = NewManager("cookie", conf)
+}
+
+func TestSessionMemoryPanic_Manager2(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	config := `{"cookieName":"gosessionid","gclifetime":600,"maxLifetime": 300,"domain":"example.com","enableSetCookie":true,"EnableSidInHTTPHeader":true,"SessionNameInHTTPHeader":"gosessionid"}`
+	conf := new(ManagerConfig)
+	if err := json.Unmarshal([]byte(config), conf); err != nil {
+		t.Fatal("json decode error", err)
+	}
+	_, _ = NewManager("cookie", conf)
 }
