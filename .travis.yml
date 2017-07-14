@@ -5,7 +5,7 @@ os:
   - osx
 
 go:
-  - go1.8
+  - go1.8.x
   - tip
 
 go_import_path: github.com/go-siris/siris
@@ -21,7 +21,6 @@ install:
   - go install github.com/axw/gocov/gocov
 
 script:
-  - gocov test $(go list ./... | grep -v /vendor/) | gocov report
   - ./go-test.sh
 
 after_success:
