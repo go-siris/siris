@@ -75,7 +75,8 @@ func New(t *testing.T, app *siris.Application, setters ...OptionSetter) *httpexp
 	}
 
 	// disable logger
-	app.Logger().Level = 0
+	// TODO: add Zap NewAtomicLevel...
+	//app.Logger().Level = 0
 	app.Build()
 
 	testConfiguration := httpexpect.Config{

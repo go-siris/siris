@@ -15,7 +15,8 @@ import (
 	"time"
 
 	//logger
-	"github.com/sirupsen/logrus"
+	//"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	// context for the handlers
 	"github.com/go-siris/siris/context"
 	// core packages, needed to build the application
@@ -77,6 +78,17 @@ var (
 	Amber = view.Amber
 )
 
+// serverErrLogger allows us to use the zap.Logger as our http.Server ErrorLog
+type serverErrLogger struct {
+	log *zap.SugaredLogger
+}
+
+// Implement Write to log server errors using the zap logger
+func (s serverErrLogger) Write(b []byte) (int, error) {
+	s.log.Debug(string(b))
+	return 0, nil
+}
+
 // Application is responsible to manage the state of the application.
 // It contains and handles all the necessary parts to create a fast web server.
 type Application struct {
@@ -90,7 +102,7 @@ type Application struct {
 	config *Configuration
 
 	// the logrus logger instance, defaults to "Info" level messages (all except "Debug")
-	logger *logrus.Logger
+	logger *zap.SugaredLogger
 
 	// view engine
 	view view.View
@@ -120,7 +132,7 @@ func New() *Application {
 
 	app := &Application{
 		config:     &config,
-		logger:     logrus.New(),
+		logger:     zap.NewExample().Sugar(),
 		APIBuilder: router.NewAPIBuilder(),
 		Router:     router.NewRouter(),
 	}
@@ -171,18 +183,28 @@ func (app *Application) Configure(configurators ...Configurator) *Application {
 //
 // These are conversions from logrus.
 const (
-	// NoLog level, logs nothing.
-	// It's the logrus' `PanicLevel` but it never used inside siris so it will never log.
-	NoLog = logrus.PanicLevel
-	// ErrorLevel level. Logs. Used for errors that should definitely be noted.
-	// Commonly used for hooks to send errors to an error tracking service.
-	ErrorLevel = logrus.ErrorLevel
-	// WarnLevel level. Non-critical entries that deserve eyes.
-	WarnLevel = logrus.WarnLevel
+	// DebugLevel logs are typically voluminous, and are usually disabled in
+	// production.
+	DebugLevel = zap.DebugLevel
+	// InfoLevel is the default logging priority.
+	InfoLevel = zap.InfoLevel
+	// WarnLevel logs are more important than Info, but don't need individual
+	// human review.
+	WarnLevel = zap.WarnLevel
+	// ErrorLevel logs are high-priority. If an application is running smoothly,
+	// it shouldn't generate any error-level logs.
+	ErrorLevel = zap.ErrorLevel
+	// DPanicLevel logs are particularly important errors. In development the
+	// logger panics after writing the message.
+	DPanicLevel = zap.DPanicLevel
+	// PanicLevel logs a message, then panics.
+	PanicLevel = zap.PanicLevel
+	// FatalLevel logs a message, then calls os.Exit(1).
+	FatalLevel = zap.FatalLevel
 )
 
-// Logger returns the logrus logger instance(pointer) that is being used inside the "app".
-func (app *Application) Logger() *logrus.Logger {
+// Logger returns the zap logger instance(pointer) that is being used inside the "app".
+func (app *Application) Logger() *zap.SugaredLogger {
 	return app.logger
 }
 
@@ -232,7 +254,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 
 	// check if different ErrorLog provided, if not bind it with the framework's logger
 	if srv.ErrorLog == nil {
-		srv.ErrorLog = log.New(app.logger.Out, "[HTTP Server] ", 0)
+		srv.ErrorLog = log.New(serverErrLogger{app.Logger()}, "[HTTP Server] ", 0)
 	}
 
 	if srv.Addr == "" {
@@ -255,7 +277,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 
 	if !app.config.DisableBanner {
 		// show the banner and the available keys to exit from app.
-		su.RegisterOnServe(host.WriteStartupLogOnServe(app.logger.Out, banner+"V"+Version))
+		su.RegisterOnServe(host.WriteStartupLogOnServe(app.Logger(), banner+"V"+Version))
 	}
 
 	// the below schedules some tasks that will run among the server
@@ -415,7 +437,7 @@ func (app *Application) Run(serve Runner, withOrWithout ...Configurator) error {
 		if err == http.ErrServerClosed {
 			return nil
 		}
-		app.Logger().Errorln(err)
+		app.Logger().Error(err)
 	}
 	return err
 }
@@ -439,12 +461,12 @@ func (app *Application) AttachView(viewEngine view.Engine) error {
 func (app *Application) View(writer io.Writer, filename string, layout string, bindingData interface{}) error {
 	if app.view.Len() == 0 {
 		err := errors.New("view engine is missing, use `AttachView`")
-		app.Logger().Errorln(err)
+		app.Logger().Error(err)
 		return err
 	}
 	err := app.view.ExecuteWriter(writer, filename, layout, bindingData)
 	if err != nil {
-		app.Logger().Errorln(err)
+		app.Logger().Error(err)
 	}
 	return err
 }
