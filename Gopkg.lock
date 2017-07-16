@@ -105,6 +105,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/json-iterator/go"
+  packages = ["."]
+  revision = "6a4fbb9892c50d930834e09be2d8a339b4fff3e2"
+
+[[projects]]
+  branch = "master"
   name = "github.com/juju/errors"
   packages = ["."]
   revision = "a3edbf48b75d756b79f3abb22bfc8a56e349081f"
@@ -250,6 +256,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "23e02c453b87f0b38409a0bc6a0c4a2287200db051b05669b003d778c238d17e"
+  inputs-digest = "ebb24d984924455563273b34cf87ed9794d6d7194360a611ebbbd8342cd5ef68"
   solver-name = "gps-cdcl"
   solver-version = 1
