@@ -277,7 +277,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 
 	if !app.config.DisableBanner {
 		// show the banner and the available keys to exit from app.
-		su.RegisterOnServe(host.WriteStartupLogOnServe(app.Logger(), banner+"V"+Version))
+		su.RegisterOnServeHook(host.WriteStartupLogOnServe(app.Logger(), banner+"V"+Version))
 	}
 
 	// the below schedules some tasks that will run among the server
@@ -285,7 +285,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 	if !app.config.DisableInterruptHandler {
 		// when CTRL+C/CMD+C pressed.
 		shutdownTimeout := 5 * time.Second
-		host.RegisterOnInterrupt(host.ShutdownOnInterrupt(su, shutdownTimeout))
+		host.RegisterOnInterruptHook(host.ShutdownOnInterrupt(su, shutdownTimeout))
 	}
 
 	app.Hosts = append(app.Hosts, su)
@@ -296,7 +296,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 // RegisterOnInterrupt registers a global function to call when CTRL+C/CMD+C pressed or a unix kill command received.
 //
 // A shortcut for the `host#RegisterOnInterrupt`.
-var RegisterOnInterrupt = host.RegisterOnInterrupt
+var RegisterOnInterruptHook = host.RegisterOnInterruptHook
 
 // Shutdown gracefully terminates all the application's server hosts.
 // Returns an error on the first failure, otherwise nil.
