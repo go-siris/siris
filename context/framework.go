@@ -9,7 +9,10 @@ import (
 	"net/http"
 
 	"github.com/go-siris/siris/sessions"
-	"github.com/sirupsen/logrus"
+
+	//logger
+	//"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 // Application is the context's available Application instance, only things that are allowed to be happen inside the request are lived here.
@@ -18,7 +21,7 @@ type Application interface {
 	ConfigurationReadOnly() ConfigurationReadOnly
 
 	// Logger returns the logrus logger instance(pointer) that is being used inside the "app".
-	Logger() *logrus.Logger
+	Logger() *zap.SugaredLogger
 
 	// View executes and write the result of a template file to the writer.
 	//

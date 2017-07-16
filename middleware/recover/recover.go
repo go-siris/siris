@@ -50,7 +50,7 @@ func New() context.Handler {
 				logMessage += fmt.Sprintf("At Request: %s\n", getRequestLogs(ctx))
 				logMessage += fmt.Sprintf("Trace: %s\n", err)
 				logMessage += fmt.Sprintf("\n%s\n", stacktrace)
-				ctx.Application().Logger().Warnln(logMessage)
+				ctx.Application().Logger().Warn(logMessage)
 
 				ctx.StopExecution()
 				ctx.StatusCode(500)
