@@ -98,8 +98,8 @@ func (su *Supervisor) newListener() (net.Listener, error) {
 	return l, nil
 }
 
-// RegisterOnError registers a function to call when errors occured by the underline http server.
-func (su *Supervisor) RegisterOnError(cb func(error)) {
+// RegisterOnErrorHook registers a function to call when errors occured by the underline http server.
+func (su *Supervisor) RegisterOnErrorHook(cb func(error)) {
 	su.mu.Lock()
 	su.onErr = append(su.onErr, cb)
 	su.mu.Unlock()
@@ -118,9 +118,9 @@ func (su *Supervisor) notifyErr(err error) {
 	su.mu.Unlock()
 }
 
-// RegisterOnServe registers a function to call on
+// RegisterOnServeHook registers a function to call on
 // Serve/ListenAndServe/ListenAndServeTLS/ListenAndServeAutoTLS.
-func (su *Supervisor) RegisterOnServe(cb func(TaskHost)) {
+func (su *Supervisor) RegisterOnServeHook(cb func(TaskHost)) {
 	su.mu.Lock()
 	su.onServe = append(su.onServe, cb)
 	su.mu.Unlock()
@@ -231,13 +231,13 @@ func (su *Supervisor) ListenAndServeAutoTLS() error {
 	return su.ListenAndServe()
 }
 
-// RegisterOnShutdown registers a function to call on Shutdown.
+// RegisterOnShutdownHook registers a function to call on Shutdown.
 // This can be used to gracefully shutdown connections that have
 // undergone NPN/ALPN protocol upgrade or that have been hijacked.
 // This function should start protocol-specific graceful shutdown,
 // but should not wait for shutdown to complete.
-func (su *Supervisor) RegisterOnShutdown(cb func()) {
-	// when go1.9: replace the following lines with su.Server.RegisterOnShutdown(f)
+func (su *Supervisor) RegisterOnShutdownHook(cb func()) {
+	// when go1.9: replace the following lines with su.Server.RegisterOnShutdownHook(f)
 	su.mu.Lock()
 	su.onShutdown = append(su.onShutdown, cb)
 	su.mu.Unlock()

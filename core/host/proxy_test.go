@@ -22,7 +22,7 @@ func TestProxy(t *testing.T) {
 	unexpectedRoute := "unexpected"
 
 	// proxySrv := siris.New()
-	u, err := url.Parse("https://localhost:4444")
+	u, err := url.Parse("https://localhost:4444?g=1")
 	if err != nil {
 		t.Fatalf("%v while parsing url", err)
 	}
@@ -87,6 +87,7 @@ func TestProxy(t *testing.T) {
 
 	e := httptest.NewInsecure(t, httptest.URL("http://localhost:2017"))
 	e.GET("/").Expect().Status(siris.StatusOK).Body().Equal(expectedIndex)
+	e.GET("").Expect().Status(siris.StatusOK).Body().Equal(expectedIndex)
 	e.GET("/about").Expect().Status(siris.StatusOK).Body().Equal(expectedAbout)
 	e.GET("/name/demo").Expect().Status(siris.StatusOK).Body().Equal(expectedDemo)
 	e.GET("/id/1234").Expect().Status(siris.StatusOK).Body().Equal(expectedDemoId)
