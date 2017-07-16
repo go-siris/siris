@@ -9,20 +9,39 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"go.uber.org/zap"
 )
 
-func ExampleSupervisor_RegisterOnError() {
+const (
+	banner = `
+  _________.___ __________ .___   _________
+ /   _____/|   |\______   \|   | /   _____/
+ \_____  \ |   | |       _/|   | \_____  \
+ /        \|   | |    |   \|   | /        \
+/_______  /|___| |____|_  /|___|/_______  /
+        \/              \/              \/
+         the fastest webframework
+`
+
+	// Version is the current version number of the Siris Web framework.
+	//
+	// Look https://github.com/go-siris/siris#where-can-i-find-older-versions for older versions.
+	Version = "7.3.4"
+)
+
+func ExampleSupervisor_RegisterOnErrorHook() {
 	su := New(&http.Server{Addr: ":8273", Handler: http.DefaultServeMux}, false)
 
-	su.RegisterOnError(func(err error) {
+	su.RegisterOnErrorHook(func(err error) {
 		fmt.Println(err.Error())
 	})
 
-	su.RegisterOnError(func(err error) {
+	su.RegisterOnErrorHook(func(err error) {
 		fmt.Println(err.Error())
 	})
 
-	su.RegisterOnError(func(err error) {
+	su.RegisterOnErrorHook(func(err error) {
 		fmt.Println(err.Error())
 	})
 
@@ -84,7 +103,7 @@ func (m myTestTask) OnServe(host TaskHost) {
 	}
 }
 
-func ExampleSupervisor_RegisterOnServe() {
+func ExampleSupervisor_RegisterOnServeHook() {
 	h := New(&http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		}),
@@ -98,7 +117,9 @@ func ExampleSupervisor_RegisterOnServe() {
 		logger:       logger,
 	}
 
-	h.RegisterOnServe(mytask.OnServe)
+	h.RegisterOnServeHook(WriteStartupLogOnServe(func() *zap.SugaredLogger { log, _ := zap.NewDevelopment(); return log.Sugar() }(), banner+"V"+Version))
+
+	h.RegisterOnServeHook(mytask.OnServe)
 
 	ln, err := net.Listen("tcp4", ":9394")
 	if err != nil {

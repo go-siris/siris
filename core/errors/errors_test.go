@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/go-siris/siris/core/errors"
+	"github.com/stretchr/testify/assert"
 )
 
 var errMessage = "User with mail: %s already exists"
@@ -68,9 +69,37 @@ func TestAppend(t *testing.T) {
 	do("Append Test string Message", errAppended, expectedErrorMessage, t)
 }
 
+func TestEqual(t *testing.T) {
+	newE := errUserAlreadyExists
+	if !errUserAlreadyExists.Equal(newE) {
+		t.Fatalf("error %s failed, expected:\n%s got:\n%s", "Equal", newE.Error(), errUserAlreadyExists.Error())
+	}
+}
+
+func TestEmpty(t *testing.T) {
+	newE := errors.New("")
+	if newE.Empty() {
+		t.Fatal("error Empty failed, expected:\ntrue got:\nfalse")
+	}
+}
+func TestNotEmpty(t *testing.T) {
+	newE := errors.New("123")
+	if !newE.NotEmpty() {
+		t.Fatal("error NotEmpty failed, expected:\nfalse got:\ntrue")
+	}
+}
+
 func TestNewLine(t *testing.T) {
 	err := errors.New(errMessage)
 	expected := errors.Prefix + expectedUserAlreadyExists
+	do("NewLine Test", err, expected, t)
+}
+
+func TestNewLineAppend(t *testing.T) {
+	err := errors.New(errMessage)
+	err.AppendErr(errUserAlreadyExists)
+	expected := errors.Prefix + expectedUserAlreadyExists
+	_ = err.HasStack()
 	do("NewLine Test", err, expected, t)
 }
 
@@ -80,4 +109,39 @@ func TestPrefix(t *testing.T) {
 	errUpdatedPrefix := errors.New(errMessage)
 	expected := errors.Prefix + expectedUserAlreadyExists
 	do("Prefix Test with "+errors.Prefix, errUpdatedPrefix, expected, t)
+}
+
+func TestWith(t *testing.T) {
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.With(nil)
+	expected := errors.Prefix + expectedUserAlreadyExists
+	do("With Test", errUpdatedPrefix, expected, t)
+}
+
+func TestWith2(t *testing.T) {
+	errors.Prefix = "MyPrefix: "
+
+	userErr := errors.New(userMail)
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.With(userErr)
+	expected := errors.Prefix + expectedUserAlreadyExists
+	do("With Test2", errUpdatedPrefix, expected, t)
+}
+
+func TestPanic(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.Panic()
+}
+
+func TestPanic2(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.Panicf(userMail)
 }

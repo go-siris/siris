@@ -73,10 +73,15 @@ func (e Error) Format(a ...interface{}) Error {
 }
 
 func omitNewLine(message string) string {
-	if strings.HasSuffix(message, "\n") {
-		return message[0 : len(message)-2]
-	} else if strings.HasSuffix(message, "\\n") {
+	if strings.HasPrefix(message, "\\n") {
+		message = message[3 : len(message)-3]
+	} else if strings.HasPrefix(message, "\n") {
+		message = message[2 : len(message)-2]
+	}
+	if strings.HasSuffix(message, "\\n") {
 		return message[0 : len(message)-3]
+	} else if strings.HasSuffix(message, "\n") {
+		return message[0 : len(message)-2]
 	}
 	return message
 }

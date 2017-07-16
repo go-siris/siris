@@ -113,7 +113,7 @@ func TestSupervisor(t *testing.T) {
 	testSupervisor(t, func(srv *http.Server, tasks []func(TaskHost)) *Supervisor {
 		su := New(srv, false)
 		for _, t := range tasks {
-			su.RegisterOnServe(t)
+			su.RegisterOnServeHook(t)
 		}
 
 		return su
