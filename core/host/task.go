@@ -6,20 +6,21 @@ package host
 // supervisor.
 import (
 	"context"
-	"fmt"
-	"io"
 	"net/http"
 	"runtime"
 	"time"
 
 	"github.com/go-siris/siris/core/nettools"
+
+	//logger
+	"go.uber.org/zap"
 )
 
 // WriteStartupLogOnServe is a task which accepts a logger(io.Writer)
 // and logs the listening address
 // by a generated message based on the host supervisor's server and writes it to the "w".
 // This function should be registered on Serve.
-func WriteStartupLogOnServe(w io.Writer, banner string) func(TaskHost) {
+func WriteStartupLogOnServe(logger *zap.SugaredLogger, banner string) func(TaskHost) {
 	return func(h TaskHost) {
 		guessScheme := nettools.ResolveScheme(h.Supervisor.manuallyTLS)
 		listeningURI := nettools.ResolveURL(guessScheme, h.Supervisor.Server.Addr)
@@ -27,8 +28,8 @@ func WriteStartupLogOnServe(w io.Writer, banner string) func(TaskHost) {
 		if runtime.GOOS == "darwin" {
 			interruptkey = "CMD"
 		}
-		w.Write([]byte(fmt.Sprintf("%s\n\nNow listening on: %s\nApplication started. Press %s+C to shut down.\n",
-			banner, listeningURI, interruptkey)))
+		logger.Infof("%s\n\nNow listening on: %s\nApplication started. Press %s+C to shut down.\n",
+			banner, listeningURI, interruptkey)
 	}
 }
 
