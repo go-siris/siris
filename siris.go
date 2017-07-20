@@ -129,10 +129,11 @@ type Application struct {
 // New creates and returns a fresh empty Siris *Application instance.
 func New() *Application {
 	config := DefaultConfiguration()
+	logger, _ := zap.NewDevelopmentConfig().Build()
 
 	app := &Application{
 		config:     &config,
-		logger:     zap.NewExample().Sugar(),
+		logger:     logger.Sugar(),
 		APIBuilder: router.NewAPIBuilder(),
 		Router:     router.NewRouter(),
 	}

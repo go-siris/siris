@@ -323,13 +323,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert","pbkdf2"]
-  revision = "4bc1c249b153ce1da9f55437759cec51fe6acabb"
+  revision = "6914964337150723782436d56b3f21610a74ce7b"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","idna","publicsuffix"]
-  revision = "02ac38e2528ff4adea90f184d71a3faa04b4b1b0"
+  revision = "7b7efd8000731a766f6cbfa2c04010627521c66e"
 
 [[projects]]
   branch = "master"
@@ -364,6 +364,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e7634c5a2419579ca5bdbddc2908829b090995c756accefb42bd674da0133dd1"
+  inputs-digest = "d26e76c140a70a456c46b7a4d08f651001730b991e314fa83c5fd7d50ef0e3b3"
   solver-name = "gps-cdcl"
   solver-version = 1
