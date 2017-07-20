@@ -1,7 +1,3 @@
-// Copyright 2017 Gerasimos Maropoulos, ΓΜ. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package router
 
 import (
@@ -142,7 +138,7 @@ func WithHost(host string) RoutePathReverserOption {
 	return func(ps *RoutePathReverser) {
 		ps.vhost = host
 		if ps.vscheme == "" {
-			ps.vscheme = nettools.ResolveScheme(host)
+			ps.vscheme = nettools.ResolveSchemeFromVHost(host)
 		}
 	}
 }
@@ -222,7 +218,7 @@ func toStringSlice(args []interface{}) []string {
 // Remove the URL for now, it complicates things for the whole framework without a specific benefits,
 // developers can just concat the subdomain, (host can be auto-retrieve by browser using the Path).
 
-// URL same as Path but returns the full uri, i.e https://mysubdomain.mydomain.com/hello/kataras
+// URL same as Path but returns the full uri, i.e https://mysubdomain.mydomain.com/hello/siris
 func (ps *RoutePathReverser) URL(routeName string, paramValues ...interface{}) (url string) {
 	if ps.vhost == "" || ps.vscheme == "" {
 		return "not supported"

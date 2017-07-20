@@ -5,6 +5,7 @@
 package router
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -21,7 +22,6 @@ import (
 	"time"
 
 	"github.com/go-siris/siris/context"
-	"github.com/go-siris/siris/core/errors"
 )
 
 // StaticEmbeddedHandler returns a Handler which can serve

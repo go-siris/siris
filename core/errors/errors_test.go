@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/go-siris/siris/core/errors"
+	"github.com/stretchr/testify/assert"
 )
 
 var errMessage = "User with mail: %s already exists"
@@ -13,26 +14,16 @@ var errUserAlreadyExists = errors.New(errMessage)
 var userMail = "user1@mail.go"
 var expectedUserAlreadyExists = "User with mail: user1@mail.go already exists"
 
-func getNewLine() string {
-	if errors.NewLine {
-		return "\n"
-	}
-	return ""
-}
-
 func ExampleError() {
-	fmt.Print(errUserAlreadyExists.Format(userMail))
-	// first output first Output line
+
 	fmt.Print(errUserAlreadyExists.Format(userMail).Append("Please change your mail addr"))
-	// second output second and third Output lines
 
 	// Output:
-	// User with mail: user1@mail.go already exists
 	// User with mail: user1@mail.go already exists
 	// Please change your mail addr
 }
 
-func do(method string, testErr *errors.Error, expectingMsg string, t *testing.T) {
+func do(method string, testErr errors.Error, expectingMsg string, t *testing.T) {
 	formattedErr := func() error {
 		return testErr.Format(userMail)
 	}()
@@ -43,56 +34,114 @@ func do(method string, testErr *errors.Error, expectingMsg string, t *testing.T)
 }
 
 func TestFormat(t *testing.T) {
-	expected := errors.Prefix + expectedUserAlreadyExists + getNewLine()
+	expected := errors.Prefix + expectedUserAlreadyExists
 	do("Format Test", errUserAlreadyExists, expected, t)
 }
 
 func TestAppendErr(t *testing.T) {
-	errors.NewLine = true
-	errors.Prefix = "error: "
 
 	errChangeMailMsg := "Please change your mail addr"
-	errChangeMail := fmt.Errorf(errChangeMailMsg)                                                           // test go standard error
-	expectedErrorMessage := errUserAlreadyExists.Format(userMail).Error() + errChangeMailMsg + getNewLine() // first Prefix and last newline lives inside do
+	errChangeMail := fmt.Errorf(errChangeMailMsg) // test go standard error
 	errAppended := errUserAlreadyExists.AppendErr(errChangeMail)
-	do("Append Test Standard error type", &errAppended, expectedErrorMessage, t)
+	expectedErrorMessage := errUserAlreadyExists.Format(userMail).Error() + "\n" + errChangeMailMsg
+
+	do("Append Test Standard error type", errAppended, expectedErrorMessage, t)
 }
 
 func TestAppendError(t *testing.T) {
-	errors.NewLine = true
 	errors.Prefix = "error: "
 
 	errChangeMailMsg := "Please change your mail addr"
-	errChangeMail := errors.New(errChangeMailMsg)                                                                // test Error struct
-	expectedErrorMessage := errUserAlreadyExists.Format(userMail).Error() + errChangeMail.Error() + getNewLine() // first Prefix and last newline lives inside do
+	errChangeMail := errors.New(errChangeMailMsg)
+
 	errAppended := errUserAlreadyExists.AppendErr(errChangeMail)
-	do("Append Test Error type", &errAppended, expectedErrorMessage, t)
+	expectedErrorMessage := errUserAlreadyExists.Format(userMail).Error() + "\n" + errChangeMail.Error()
+
+	do("Append Test Error type", errAppended, expectedErrorMessage, t)
 }
 
 func TestAppend(t *testing.T) {
-	errors.NewLine = true
 	errors.Prefix = "error: "
 
 	errChangeMailMsg := "Please change your mail addr"
-	expectedErrorMessage := errUserAlreadyExists.Format(userMail).Error() + errChangeMailMsg + getNewLine() // first Prefix and last newline lives inside do
+	expectedErrorMessage := errUserAlreadyExists.Format(userMail).Error() + "\n" + errChangeMailMsg
 	errAppended := errUserAlreadyExists.Append(errChangeMailMsg)
-	do("Append Test string Message", &errAppended, expectedErrorMessage, t)
+	do("Append Test string Message", errAppended, expectedErrorMessage, t)
+}
+
+func TestEqual(t *testing.T) {
+	newE := errUserAlreadyExists
+	if !errUserAlreadyExists.Equal(newE) {
+		t.Fatalf("error %s failed, expected:\n%s got:\n%s", "Equal", newE.Error(), errUserAlreadyExists.Error())
+	}
+}
+
+func TestEmpty(t *testing.T) {
+	newE := errors.New("")
+	if newE.Empty() {
+		t.Fatal("error Empty failed, expected:\ntrue got:\nfalse")
+	}
+}
+func TestNotEmpty(t *testing.T) {
+	newE := errors.New("123")
+	if !newE.NotEmpty() {
+		t.Fatal("error NotEmpty failed, expected:\nfalse got:\ntrue")
+	}
 }
 
 func TestNewLine(t *testing.T) {
-	errors.NewLine = false
-
-	errNoNewLine := errors.New(errMessage)
+	err := errors.New(errMessage)
 	expected := errors.Prefix + expectedUserAlreadyExists
-	do("NewLine Test", errNoNewLine, expected, t)
+	do("NewLine Test", err, expected, t)
+}
 
-	errors.NewLine = true
+func TestNewLineAppend(t *testing.T) {
+	err := errors.New(errMessage)
+	err.AppendErr(errUserAlreadyExists)
+	expected := errors.Prefix + expectedUserAlreadyExists
+	_ = err.HasStack()
+	do("NewLine Test", err, expected, t)
 }
 
 func TestPrefix(t *testing.T) {
 	errors.Prefix = "MyPrefix: "
 
 	errUpdatedPrefix := errors.New(errMessage)
-	expected := errors.Prefix + expectedUserAlreadyExists + "\n"
+	expected := errors.Prefix + expectedUserAlreadyExists
 	do("Prefix Test with "+errors.Prefix, errUpdatedPrefix, expected, t)
+}
+
+func TestWith(t *testing.T) {
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.With(nil)
+	expected := errors.Prefix + expectedUserAlreadyExists
+	do("With Test", errUpdatedPrefix, expected, t)
+}
+
+func TestWith2(t *testing.T) {
+	errors.Prefix = "MyPrefix: "
+
+	userErr := errors.New(userMail)
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.With(userErr)
+	expected := errors.Prefix + expectedUserAlreadyExists
+	do("With Test2", errUpdatedPrefix, expected, t)
+}
+
+func TestPanic(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.Panic()
+}
+
+func TestPanic2(t *testing.T) {
+	defer func() {
+		assert.NotNil(t, recover())
+	}()
+
+	errUpdatedPrefix := errors.New(errMessage)
+	errUpdatedPrefix.Panicf(userMail)
 }
