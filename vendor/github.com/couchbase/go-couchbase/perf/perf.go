@@ -98,7 +98,7 @@ func doBulkGetOps(b *couchbase.Bucket, total int, quantum int, startNum int) {
 			currentKeyNum++
 
 		}
-		_, err := b.GetBulk(keylist)
+		_, err := b.GetBulkRaw(keylist)
 		if err != nil {
 			log.Printf(" Failed to get keys startnum %s to %d", keylist[0], quantum)
 		}
