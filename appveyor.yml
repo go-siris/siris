@@ -8,7 +8,7 @@ init:
 
 environment:
   GOPATH: c:\gopath
-  GOVERSION: 1.8.x
+  GOVERSION: 1.8.3
 
 install:
   - echo %PATH%
