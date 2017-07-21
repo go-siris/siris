@@ -89,7 +89,7 @@
   name = "github.com/fatih/structs"
   packages = ["."]
   revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
-  version = "v1.0"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -188,6 +188,12 @@
   revision = "4e24498b31dba4683efb9d35c1c8a91e2eda28c8"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/pasztorpisti/qs"
+  packages = ["."]
+  revision = "bd87e8997f304b9c33c9092d7312ea3954c24d4d"
+
+[[projects]]
   name = "github.com/pelletier/go-buffruneio"
   packages = ["."]
   revision = "c37440a7cf42ac63b919c752ca73a85067e05992"
@@ -269,7 +275,7 @@
   branch = "master"
   name = "github.com/valyala/fasthttp"
   packages = [".","fasthttputil","stackless"]
-  revision = "52a0993b96f032dea57fa93081d7c0a1aa906430"
+  revision = "d257ae60a32c5605ac63b2f4f0f80a0dcffb0719"
 
 [[projects]]
   branch = "master"
@@ -314,10 +320,16 @@
   version = "v1.2.0"
 
 [[projects]]
+  name = "go.uber.org/multierr"
+  packages = ["."]
+  revision = "3c4937480c32f4c13a875a1829af76c98ca3d40a"
+  version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
   name = "go.uber.org/zap"
-  packages = [".","buffer","internal/bufferpool","internal/color","internal/exit","internal/multierror","zapcore"]
-  revision = "9cabc84638b70e564c3dab2766efcb1ded2aac9f"
-  version = "v1.4.1"
+  packages = [".","buffer","internal/bufferpool","internal/color","internal/exit","zapcore"]
+  revision = "dadca013650a921313c28fa51e4e89e84e3e252d"
 
 [[projects]]
   branch = "master"
@@ -329,7 +341,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","idna","publicsuffix"]
-  revision = "7b7efd8000731a766f6cbfa2c04010627521c66e"
+  revision = "ab5485076ff3407ad2d02db054635913f017b0ed"
 
 [[projects]]
   branch = "master"
@@ -359,11 +371,11 @@
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "3b4ad1db5b2a649883ff3782f5f9f6fb52be71af"
+  revision = "25c4ec802a7d637f88d584ab26798e94ad14c13b"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d26e76c140a70a456c46b7a4d08f651001730b991e314fa83c5fd7d50ef0e3b3"
+  inputs-digest = "54d1d5a820044c7dfdd032297a2ac361f46bb9c35dae9678deedb2634fc7c8e1"
   solver-name = "gps-cdcl"
   solver-version = 1

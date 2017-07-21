@@ -192,5 +192,13 @@
   
 [[override]]
   branch = "master"
+  name = "go.uber.org/zap"
+  
+[[override]]
+  branch = "master"
   name = "github.com/json-iterator/go"
+  
+[[constraint]]
+  branch = "master"
+  name = "github.com/pasztorpisti/qs"
 
