@@ -23,14 +23,12 @@ package zapcore_test
 import (
 	"errors"
 	"fmt"
-	"io"
 	"math"
 	"testing"
 	"time"
 
 	"go.uber.org/zap"
 
-	richErrors "github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 
 	. "go.uber.org/zap/zapcore"
@@ -40,18 +38,6 @@ type users int
 
 func (u users) String() string {
 	return fmt.Sprintf("%d users", int(u))
-}
-
-func (u users) Error() string {
-	return fmt.Sprintf("%d too many users", int(u))
-}
-
-func (u users) Format(s fmt.State, verb rune) {
-	// Implement fmt.Formatter, but don't add any information beyond the basic
-	// Error method.
-	if verb == 'v' && s.Flag('+') {
-		io.WriteString(s, u.Error())
-	}
 }
 
 func (u users) MarshalLogObject(enc ObjectEncoder) error {
@@ -121,6 +107,7 @@ func TestFields(t *testing.T) {
 		{t: Int8Type, i: 42, want: int8(42)},
 		{t: StringType, s: "foo", want: "foo"},
 		{t: TimeType, i: 1000, iface: time.UTC, want: time.Unix(0, 1000).In(time.UTC)},
+		{t: TimeType, i: 1000, want: time.Unix(0, 1000)},
 		{t: Uint64Type, i: 42, want: uint64(42)},
 		{t: Uint32Type, i: 42, want: uint32(42)},
 		{t: Uint16Type, i: 42, want: uint16(42)},
@@ -129,7 +116,6 @@ func TestFields(t *testing.T) {
 		{t: ReflectType, iface: users(2), want: users(2)},
 		{t: NamespaceType, want: map[string]interface{}{}},
 		{t: StringerType, iface: users(2), want: "2 users"},
-		{t: ErrorType, iface: users(2), want: "2 too many users"},
 		{t: SkipType, want: interface{}(nil)},
 	}
 
@@ -144,24 +130,6 @@ func TestFields(t *testing.T) {
 
 		assert.True(t, f.Equals(f), "Field does not equal itself")
 	}
-}
-
-func TestRichErrorSupport(t *testing.T) {
-	f := Field{
-		Type:      ErrorType,
-		Interface: richErrors.WithMessage(richErrors.New("egad"), "failed"),
-		Key:       "k",
-	}
-	enc := NewMapObjectEncoder()
-	f.AddTo(enc)
-	assert.Equal(t, "failed: egad", enc.Fields["k"], "Unexpected basic error message.")
-
-	serialized := enc.Fields["kVerbose"]
-	// Don't assert the exact format used by a third-party package, but ensure
-	// that some critical elements are present.
-	assert.Regexp(t, `egad`, serialized, "Expected original error message to be present.")
-	assert.Regexp(t, `failed`, serialized, "Expected error annotation to be present.")
-	assert.Regexp(t, `TestRichErrorSupport`, serialized, "Expected calling function to be present in stacktrace.")
 }
 
 func TestEquals(t *testing.T) {

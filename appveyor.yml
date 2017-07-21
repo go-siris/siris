@@ -1,15 +1,14 @@
 version: 1.0.{build}-{branch}
 os: Windows Server 2012 R2
 
-clone_depth: 5
-clone_folder: c:\gopath\src\github.com\go-siris\siris
+shallow_clone: true
 
 init:
   - git config --global core.autocrlf input
 
 environment:
   GOPATH: c:\gopath
-  GOVERSION: 1.8
+  GOVERSION: 1.8.3
 
 install:
   - echo %PATH%
