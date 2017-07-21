@@ -1,7 +1,7 @@
-version: "{build}"
-
+version: 1.0.{build}-{branch}
 os: Windows Server 2012 R2
 
+clone_depth: 5
 clone_folder: c:\gopath\src\github.com\go-siris\siris
 
 init:
@@ -22,9 +22,6 @@ install:
 test_script:
   - ps: go test -v $(go list ./... | sls -n "vendor|_examples")
 
-branches:
-  only:
-    - master
-
-build: false
+build:
+  verbosity: minimal
 deploy: false

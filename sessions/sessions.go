@@ -22,6 +22,9 @@ type (
 
 		// Destroy should kills the net/http session and remove the associated cookie.
 		SessionDestroy(http.ResponseWriter, *http.Request)
+
+		// Regenerate a new sessionId for security reasons.
+		SessionRegenerateID(http.ResponseWriter, *http.Request) Store
 	} // Sessions is being implemented by Manager
 )
 

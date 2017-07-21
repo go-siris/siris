@@ -1,43 +1,28 @@
 package main
 
-// developers can use any library to add a custom cookie encoder/decoder.
-// At this example we use the gorilla's securecookie package:
-// $ go get github.com/gorilla/securecookie
 // $ go run main.go
 
 import (
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
 	"github.com/go-siris/siris/sessions"
-
-	"github.com/gorilla/securecookie"
 )
 
 func main() {
 	app := siris.New()
 
-	cookieName := "mycustomsessionid"
-	// AES only supports key sizes of 16, 24 or 32 bytes.
-	// You either need to provide exactly that amount or you derive the key from what you type in.
-	hashKey := []byte("the-big-and-secret-fash-key-here")
-	blockKey := []byte("lot-secret-of-characters-big-too")
-	secureCookie := securecookie.New(hashKey, blockKey)
-
-	mySessions := sessions.New(sessions.Config{
-		Cookie: cookieName,
-		Encode: secureCookie.Encode,
-		Decode: secureCookie.Decode,
+	app.AttachSessionManager("cookie", &sessions.ManagerConfig{
+		CookieName:      "go-session-id",
+		EnableSetCookie: true,
+		Gclifetime:      3600,
+		Maxlifetime:     7200,
+		Domain:          "example.com",
+		EnableSetCookie: true,
+		ProviderConfig:  "{\"cookieName\":\"go-session-id\",\"domain\":\"example.com\",\"securityKey\":\"siriscookiesecretkey\"}",
 	})
 
-	// OPTIONALLY:
-	// import "github.com/go-siris/siris/sessions/sessiondb/redis"
-	// or import "github.com/kataras/go-sessions/sessiondb/$any_available_community_database"
-	// mySessions.UseDatabase(redis.New(...))
-
-	app.AttachSessionManager(mySessions) // Attach the session manager we just created.
-
 	app.Get("/", func(ctx context.Context) {
-		ctx.Writef("You should navigate to the /set, /get, /delete, /clear,/destroy instead")
+		ctx.Writef("You should navigate to the /set, /get, /delete, /clear, /regenerate, /destroy instead")
 	})
 	app.Get("/set", func(ctx context.Context) {
 
@@ -45,12 +30,12 @@ func main() {
 		ctx.Session().Set("name", "siris")
 
 		//test if set here
-		ctx.Writef("All ok session set to: %s", ctx.Session().GetString("name"))
+		ctx.Writef("All ok session set to: %s", ctx.Session().Get("name"))
 	})
 
 	app.Get("/get", func(ctx context.Context) {
 		// get a specific key, as string, if no found returns just an empty string
-		name := ctx.Session().GetString("name")
+		name := ctx.Session().Get("name")
 
 		ctx.Writef("The name on the /set was: %s", name)
 	})
@@ -62,7 +47,12 @@ func main() {
 
 	app.Get("/clear", func(ctx context.Context) {
 		// removes all entries
-		ctx.Session().Clear()
+		ctx.Session().Flush()
+	})
+
+	app.Get("/regenerate", func(ctx context.Context) {
+		// removes all entries
+		ctx.SessionRegenerateID()
 	})
 
 	app.Get("/destroy", func(ctx context.Context) {
