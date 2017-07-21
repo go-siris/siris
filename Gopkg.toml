@@ -209,6 +209,6 @@
   
 [[override]]
   branch = "master"
-  name = "https://github.com/ssdb/gossdb"
+  name = "github.com/ssdb/gossdb"
   source = "https://github.com/go-siris/gossdb.git"
 
