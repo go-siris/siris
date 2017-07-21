@@ -115,8 +115,8 @@
   version = "0.2.2"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/iris-contrib/httpexpect"
+  name = "gopkg.in/gavv/httpexpect.v1"
+  branch = "v1"
 
 [[constraint]]
   branch = "master"
@@ -184,4 +184,13 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/sirupsen/logrus"
+  name = "github.com/siddontang/ledisdb"
+
+[[override]]
+  branch = "master"
+  name = "github.com/valyala/fasthttp"
+  
+[[override]]
+  branch = "master"
+  name = "github.com/json-iterator/go"
+

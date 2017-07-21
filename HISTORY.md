@@ -16,6 +16,15 @@ Developers are not forced to upgrade if they don't really need it. Upgrade whene
 
 **How to upgrade**: Open your command-line and execute this command: `go get -u github.com/go-siris/siris`.
 
+# {{release.date}} | v7.4.x
+
+- feature/fix RemoteAddr only overwrite when options are set #36
+- feature add "Many" route option #27
+- feature replaced logger with the faster Zap logger #44
+- feature added jsoniter as drop-in replacement for encoding/json, can be enabled via options #24, #49
+- bugfix sessions with out GC, memory was never cleaned up... #31, #45
+- bugfix race condition #39, #44
+
 # Sa, 24 June 2017 | v7.3.4
 
 - bugfix in router for a bug that occurs under crazy conditions

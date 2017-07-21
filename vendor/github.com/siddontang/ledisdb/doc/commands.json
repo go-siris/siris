@@ -1,0 +1,721 @@
+{
+    "DECR": {
+        "arguments": "key",
+        "group": "KV",
+        "readonly": false
+    },
+    "DECRBY": {
+        "arguments": "key decrement",
+        "group": "KV",
+        "readonly": false
+    },
+    "DEL": {
+        "arguments": "key [key ...]",
+        "group": "KV",
+        "readonly": false
+    },
+    "ECHO": {
+        "arguments": "message",
+        "group": "Server",
+        "readonly": true
+    },
+    "EXISTS": {
+        "arguments": "key",
+        "group": "KV",
+        "readonly": true
+    },
+    "EXPIRE": {
+        "arguments": "key seconds",
+        "group": "KV",
+        "readonly": false
+    },
+    "EXPIREAT": {
+        "arguments": "key timestamp",
+        "group": "KV",
+        "readonly": false
+    },
+    "FULLSYNC": {
+        "arguments": "[NEW]",
+        "group": "Replication",
+        "readonly": false
+
+    },
+    "GET": {
+        "arguments": "key",
+        "group": "KV",
+        "readonly": true
+    },
+    "GETSET": {
+        "arguments": " key value",
+        "group": "KV",
+        "readonly": false
+    },
+    "HCLEAR": {
+        "arguments": "key",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HDEL": {
+        "arguments": "key field [field ...]",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HEXISTS": {
+        "arguments": "key field",
+        "group": "Hash",
+        "readonly": true
+    },
+    "HEXPIRE": {
+        "arguments": "key seconds",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HEXPIREAT": {
+        "arguments": "key timestamp",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HGET": {
+        "arguments": "key field",
+        "group": "Hash",
+        "readonly": true
+    },
+    "HGETALL": {
+        "arguments": "key",
+        "group": "Hash",
+        "readonly": true
+    },
+    "HINCRBY": {
+        "arguments": "key field increment",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HKEYS": {
+        "arguments": "key",
+        "group": "Hash",
+        "readonly": true
+    },
+    "HLEN": {
+        "arguments": "key",
+        "group": "Hash",
+        "readonly": true
+    },
+    "HMCLEAR": {
+        "arguments": "key [key ...]",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HMGET": {
+        "arguments": "key field [field ...]",
+        "group": "Hash",
+        "readonly": true
+    },
+    "HMSET": {
+        "arguments": "key field value [field value ...]",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HPERSIST": {
+        "arguments": "key",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HSET": {
+        "arguments": "key field value",
+        "group": "Hash",
+        "readonly": false
+    },
+    "HTTL": {
+        "arguments": "key",
+        "group": "Hash",
+        "readonly": true
+    },
+    "HVALS": {
+        "arguments": "key",
+        "group": "Hash",
+        "readonly": true
+    },
+    "INCR": {
+        "arguments": "key",
+        "group": "KV",
+        "readonly": false
+    },
+    "INCRBY": {
+        "arguments": "key increment",
+        "group": "KV",
+        "readonly": false
+    },
+    "LCLEAR": {
+        "arguments": "key",
+        "group": "List",
+        "readonly": false
+    },
+    "LEXPIRE": {
+        "arguments": "key seconds",
+        "group": "List",
+        "readonly": false
+    },
+    "LEXPIREAT": {
+        "arguments": "key timestamp",
+        "group": "List",
+        "readonly": false
+    },
+    "LINDEX": {
+        "arguments": "key index",
+        "group": "List",
+        "readonly": true
+    },
+    "LLEN": {
+        "arguments": "key",
+        "group": "List",
+        "readonly": true
+    },
+    "LMCLEAR": {
+        "arguments": "key [key ...]",
+        "group": "List",
+        "readonly": false
+    },
+    "LPERSIST": {
+        "arguments": "key",
+        "group": "List",
+        "readonly": false
+    },
+    "LPOP": {
+        "arguments": "key",
+        "group": "List",
+        "readonly": false
+    },
+    "LPUSH": {
+        "arguments": "key value [value ...]",
+        "group": "List",
+        "readonly": false
+    },
+    "LRANGE": {
+        "arguments": "key start stop",
+        "group": "List",
+        "readonly": true
+    },
+    "LTTL": {
+        "arguments": "key",
+        "group": "List",
+        "readonly": true
+    },
+    "BLPOP": {
+        "arguments": "key [key ...] timeout",
+        "group": "List",
+        "readonly": false
+    },
+    "BRPOP": {
+        "arguments": "key [key ...] timeout",
+        "group": "List",
+        "readonly": false
+    },
+    "MGET": {
+        "arguments": "key [key ...]",
+        "group": "KV",
+        "readonly": true
+    },
+    "MSET": {
+        "arguments": "key value [key value ...]",
+        "group": "KV",
+        "readonly": false
+    },
+    "PERSIST": {
+        "arguments": "key",
+        "group": "KV",
+        "readonly": false
+    },
+    "PING": {
+        "arguments": "-",
+        "group": "Server",
+        "readonly": true
+    },
+    "RPOP": {
+        "arguments": "key",
+        "group": "List",
+        "readonly": false
+    },
+    "RPUSH": {
+        "arguments": "key value [value ...]",
+        "group": "List",
+        "readonly": false
+    },
+    "SELECT": {
+        "arguments": "index",
+        "group": "Server",
+        "readonly": true
+    },
+    "SET": {
+        "arguments": "key value",
+        "group": "KV",
+        "readonly": false
+    },
+    "SETNX": {
+        "arguments": "key value",
+        "group": "KV",
+        "readonly": false
+    },
+    "SETEX": {
+        "arguments": "key seconds value",
+        "group": "KV",
+        "readonly": false
+    },
+    "SLAVEOF": {
+        "arguments": "host port [RESTART] [READONLY]",
+        "group": "Replication",
+        "readonly": false
+    },
+    "SYNC": {
+        "arguments": "logid",
+        "group": "Replication",
+        "readonly": false
+    },
+    "SADD" :{
+        "arguments": "key member [member ...]",
+        "group": "Set",
+        "readonly": false
+    },
+    "SCARD": {
+        "arguments": "key",
+        "group": "Set",
+        "readonly": true
+    },
+    "SDIFF": {
+        "arguments": "key [key ...]",
+        "group": "Set",
+        "readonly": true
+    },
+    "SDIFFSTORE": {
+        "arguments": "destination key [key ...]",
+        "group": "Set",
+        "readonly": false
+    },
+    "SINTER": {
+        "arguments": "key [key ...]",
+        "group": "Set",
+        "readonly": true
+    },
+    "SINTERSTORE": {
+        "arguments": "destination key [key ...]",
+        "group": "Set",
+        "readonly": false
+    },
+    "SISMEMBER": {
+        "arguments": "key member",
+        "group": "Set",
+        "readonly": true
+    },
+    "SMEMBERS": {
+        "arguments": "key",
+        "group": "Set",
+        "readonly": true
+    },
+    "SREM": {
+        "arguments": "key member [member ...]",
+        "group": "Set",
+        "readonly": false
+    },
+    "SUNION": {
+        "arguments": "key [key ...]",
+        "group": "Set",
+        "readonly": true
+    },
+    "SUNIONSTORE": {
+        "arguments": "destination key [key ...]",
+        "group": "Set",
+        "readonly": false
+    },
+    "SCLEAR": {
+        "arguments": "key",
+        "group": "Set",
+        "readonly": false
+    },
+    "SMCLEAR": {
+        "arguments": "key [key ...]",
+        "group": "Set",
+        "readonly": false
+    },
+    "SEXPIRE": {
+        "arguments": "key seconds",
+        "group": "Set",
+        "readonly": false
+    },
+    "SEXPIREAT": {
+        "arguments": "key timestamp",
+        "group": "Set",
+        "readonly": false
+    },
+    "STTL": {
+        "arguments": "key",
+        "group": "Set",
+        "readonly": true
+    },
+    "SPERSIST": {
+        "arguments": "key",
+        "group": "Set",
+        "readonly": false
+    },
+    "TTL": {
+        "arguments": "key",
+        "group": "KV",
+        "readonly": true
+    },
+    "ZADD": {
+        "arguments": "key score member [score member ...]",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZCARD": {
+        "arguments": "key",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZCLEAR": {
+        "arguments": "key",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZCOUNT": {
+        "arguments": "key min max",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZEXPIRE": {
+        "arguments": "key seconds",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZEXPIREAT": {
+        "arguments": "key timestamp",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZINCRBY": {
+        "arguments": "key increment member",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZMCLEAR": {
+        "arguments": "key [key ...]",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZPERSIST": {
+        "arguments": "key",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZRANGE": {
+        "arguments": "key start stop [WITHSCORES]",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZRANGEBYSCORE": {
+        "arguments": "key min max [WITHSCORES] [LIMIT offset count]",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZRANK": {
+        "arguments": "key member",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZREM": {
+        "arguments": "key member [member ...]",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZREMRANGEBYRANK": {
+        "arguments": "key start stop",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZREMRANGEBYSCORE": {
+        "arguments": "key min max",
+        "group": "ZSet",
+        "readonly": false
+    },
+    "ZREVRANGE": {
+        "arguments": "key start stop [WITHSCORES]",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZREVRANGEBYSCORE": {
+        "arguments": "key max min  [WITHSCORES][LIMIT offset count]",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZREVRANK": {
+        "arguments": "key member",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZSCORE": {
+        "arguments": "key member",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZTTL": {
+        "arguments": "key",
+        "group": "ZSet",
+        "readonly": true
+    },
+    "ZUNIONSTORE":{
+        "arguments": "destkey numkeys key [key ...] [WEIGHTS weight [weight ...]] [AGGREGATE SUM|MIN|MAX]",
+        "group": "ZSet",
+        "readonly": false
+    },
+
+    "ZINTERSTORE":{
+        "arguments": "destkey numkeys key [key ...] [WEIGHTS weight [weight ...]] [AGGREGATE SUM|MIN|MAX]",
+        "group": "ZSet",
+        "readonly": false
+    },
+
+    "ZRANGEBYLEX":{
+        "arguments": "key min max [LIMIT offset count]",
+        "group": "ZSet",
+        "readonly": true
+    },
+
+    "ZREMRANGBYLEX":{
+        "arguments": "key min max",
+        "group": "ZSet",
+        "readonly": false
+    },
+
+    "ZLEXCOUNT":{
+        "arguments": "key min max",
+        "group": "ZSet",
+        "readonly": true
+    },
+ 
+    "FLUSHALL": {
+        "arguments": "-",
+        "group": "Server",
+        "readonly": false
+    },
+
+    "FLUSHDB": {
+        "arguments": "-",
+        "group": "Server",
+        "readonly": false
+    },
+
+    "INFO": {
+        "arguments": "[section]",
+        "group": "Server",
+        "readonly": true
+    },
+
+    "EVAL": {
+        "arguments": "script numkeys key [key ...] arg [arg ...]",
+        "group": "Script",
+        "readonly": false
+    },
+
+    "EVALSHA": {
+        "arguments": "sha1 numkeys key [key ...] arg [arg ...]",
+        "group": "Script",
+        "readonly": false
+    },
+
+    "SCRIPT LOAD": {
+        "arguments": "script",
+        "group": "Script",
+        "readonly": false
+    },
+
+    "SCRIPT EXISTS": {
+        "arguments": "script [script ...]",
+        "group": "Script",
+        "readonly": false
+    },
+
+    "SCRIPT FLUSH": {
+        "arguments" : "-",
+        "group": "Script",
+        "readonly": false
+    },
+
+    "TIME": {
+        "arguments" : "-",
+        "group": "Server",
+        "readonly": true
+    },
+
+    "CONFIG REWRITE": {
+        "arguments" : "-",
+        "group": "Server",
+        "readonly": false
+    },
+
+    "CONFIG GET": {
+        "arguments" : "parameter",
+        "group": "Server",
+        "readonly": true
+    },
+
+    "DUMP": {
+        "arguments" : "key",
+        "group": "KV",
+        "readonly": true
+    },
+
+    "LDUMP": {
+        "arguments" : "key",
+        "group": "List",
+        "readonly": true
+    },
+
+    "HDUMP": {
+        "arguments" : "key",
+        "group": "Hash",
+        "readonly": true
+    },
+
+
+    "SDUMP": {
+        "arguments" : "key",
+        "group": "Set",
+        "readonly": true
+    },
+
+    "ZDUMP": {
+        "arguments" : "key",
+        "group": "ZSet",
+        "readonly": true
+    },
+
+    "XSCAN": {
+        "arguments": "type cursor [MATCH match] [COUNT count] [ASC|DESC]",
+        "group": "Server",
+        "readonly": true
+    },
+
+    "XHSCAN": {
+        "arguments": "key cursor [MATCH match] [COUNT count] [ASC|DESC]",
+        "group": "Hash",
+        "readonly": true
+    },
+
+    "XSSCAN": {
+        "arguments": "key cursor [MATCH match] [COUNT count] [ASC|DESC]",
+        "group": "Set",
+        "readonly": true
+    },
+
+    "XZSCAN": {
+        "arguments": "key cursor [MATCH match] [COUNT count] [ASC|DESC]",
+        "group": "ZSet",
+        "readonly": true
+    },
+
+    "RESTORE": {
+        "arguments" : "key ttl value",
+        "group" : "Server",
+        "readonly" : false
+    },
+
+    "ROLE": {
+        "arguments" : "-",
+        "group" : "Server",
+        "readonly" : true
+    },
+
+    "APPEND": {
+        "arguments" : "key value",
+        "group" : "KV",
+        "readonly" : false
+    },
+
+    "GETRANGE": {
+        "arguments" : "key start end",
+        "group" : "KV",
+        "readonly" : true
+    },
+
+    "SETRANGE": {
+        "arguments" : "key offset value",
+        "group" : "KV",
+        "readonly" : false
+    },
+
+    "STRLEN": {
+        "arguments" : "key",
+        "group" : "KV",
+        "readonly" : true
+    },
+
+    "BITCOUNT": {
+        "arguments" : "key [start] [end]",
+        "group" : "KV",
+        "readonly" : true
+    },
+
+    "BITOP": {
+        "arguments" : "operation destkey key [key ...]",
+        "group" : "KV",
+        "readonly" : false
+    },
+
+    "BITPOS": {
+        "arguments" : "key bit [start] [end]",
+        "group" : "KV",
+        "readonly" : true
+    },
+
+    "GETBIT": {
+        "arguments" : "key offset",
+        "group" : "KV",
+        "readonly" : true
+    },
+
+    "SETBIT": {
+        "arguments" : "key offset value",
+        "group" : "KV",
+        "readonly" : false
+    },
+
+    "HKEYEXISTS": {
+        "arguments" : "key",
+        "group" : "Hash",
+        "readonly" : true
+    },
+
+    "LKEYEXISTS": {
+        "arguments" : "key",
+        "group" : "List",
+        "readonly" : true
+    },
+
+    "SKEYEXISTS": {
+        "arguments" : "key",
+        "group" : "Set",
+        "readonly" : true
+    },
+
+    "ZKEYEXISTS": {
+        "arguments" : "key",
+        "group" : "ZSet",
+        "readonly" : true
+    },
+
+    "XLSORT": {
+        "arguments" : "key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]",
+        "group" : "List",
+        "readonly" : false
+    },
+
+    "XSSORT": {
+        "arguments" : "key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]",
+        "group" : "Set",
+        "readonly" : false
+    },
+
+    "XZSORT": {
+        "arguments" : "key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]",
+        "group" : "ZSet",
+        "readonly" : false
+    }
+}

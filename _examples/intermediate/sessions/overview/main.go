@@ -14,7 +14,7 @@ var (
 func secret(ctx context.Context) {
 
 	// Check if user is authenticated
-	if auth, _ := ctx.Session().GetBoolean("authenticated"); !auth {
+	if auth, _ := ctx.Session().Get("authenticated"); !auth {
 		ctx.StatusCode(siris.StatusForbidden)
 		return
 	}
@@ -45,8 +45,12 @@ func main() {
 
 	// Look https://github.com/go-siris/siris/tree/master/sessions/_examples for more features,
 	// i.e encode/decode and lifetime.
-	sess := sessions.New(sessions.Config{Cookie: key})
-	app.AttachSessionManager(sess)
+	app.AttachSessionManager("memory", &sessions.ManagerConfig{
+		CookieName:      key,
+		EnableSetCookie: true,
+		Gclifetime:      3600,
+		Maxlifetime:     7200,
+	})
 
 	app.Get("/secret", secret)
 	app.Get("/login", login)
