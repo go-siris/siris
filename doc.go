@@ -48,7 +48,6 @@ Example code:
     import (
         "github.com/go-siris/siris"
         "github.com/go-siris/siris/context"
-        "github.com/go-siris/siris/view"
     )
 
     // User is just a bindable object structure.
@@ -66,7 +65,7 @@ Example code:
         // Define templates using the std html/template engine.
         // Parse and load all files inside "./views" folder with ".html" file extension.
         // Reload the templates on each request (development mode).
-        app.AttachView(view.HTML("./views", ".html").Reload(true))
+        app.AttachView(app.HTML("./views", ".html").Reload(true))
 
         // Regster custom handler for specific http errors.
         app.OnErrorCode(siris.StatusInternalServerError, func(ctx context.Context) {
@@ -81,7 +80,7 @@ Example code:
         })
 
         app.Use(func(ctx context.Context) {
-            ctx.Application().Log("Begin request for path: %s", ctx.Path())
+            ctx.Application().Logger().Infof("Begin request for path: %s", ctx.Path())
             ctx.Next()
         })
 
@@ -123,7 +122,7 @@ Example code:
     }
 
     func logThisMiddleware(ctx context.Context) {
-        ctx.Application().Log("Path: %s | IP: %s", ctx.Path(), ctx.RemoteAddr())
+        ctx.Application().Logger().Infof("Path: %s | IP: %s", ctx.Path(), ctx.RemoteAddr())
 
         // .Next is required to move forward to the chain of handlers,
         // if missing then it stops the execution at this handler.
@@ -341,7 +340,7 @@ Example code:
         adminRoutes := app.Party("/admin", adminMiddleware)
 
         adminRoutes.Done(func(ctx context.Context) { // executes always last if ctx.Next()
-            ctx.Application().Log("response sent to " + ctx.Path())
+            ctx.Application().Logger().Info("response sent to " + ctx.Path())
         })
         // adminRoutes.Layout("/views/layouts/admin.html") // set a view layout for these routes, see more at intermediate/view examples.
 
@@ -432,7 +431,7 @@ Example code:
         // values can be any type of object so we could cast the value to a string
         // but Siris provides an easy to do that, if donate_url is not defined, then it returns an empty string instead.
         donateURL := ctx.Values().GetString("donate_url")
-        ctx.Application().Log("donate_url value was: " + donateURL)
+        ctx.Application().Logger().Info("donate_url value was: " + donateURL)
         ctx.Writef("\n\nDonate sent(?).")
     }
 
@@ -802,7 +801,7 @@ Example code:
     }
 
     func h(ctx context.Context) {
-        ctx.Application().Log(ctx.Path())
+        ctx.Application().Logger().Info(ctx.Path())
         ctx.Writef("Hello from %s", ctx.Path())
     }
 
@@ -839,19 +838,18 @@ Example code:
     import (
         "github.com/go-siris/siris"
         "github.com/go-siris/siris/context"
-        "github.com/go-siris/siris/view"
     )
 
     func main() {
         app := siris.New() // defaults to these
 
-        // - standard html  | view.HTML(...)
-        // - django         | view.Django(...)
-        // - pug(jade)      | view.Pug(...)
-        // - handlebars     | view.Handlebars(...)
-        // - amber          | view.Amber(...)
+        // - standard html  | app.HTML(...)
+        // - django         | app.Django(...)
+        // - pug(jade)      | app.Pug(...)
+        // - handlebars     | app.Handlebars(...)
+        // - amber          | app.Amber(...)
 
-        tmpl := view.HTML("./templates", ".html")
+        tmpl := app.HTML("./templates", ".html")
         tmpl.Reload(true) // reload templates on each request (development mode)
         // default template funcs are:
         //
@@ -891,7 +889,6 @@ Example code:
     import (
         "github.com/go-siris/siris"
         "github.com/go-siris/siris/context"
-        "github.com/go-siris/siris/view"
     )
 
     func main() {
@@ -901,7 +898,7 @@ Example code:
         // $ go build
         // $ ./embedding-templates-into-app
         // html files are not used, you can delete the folder and run the example
-        app.AttachView(view.HTML("./templates", ".html").Binary(Asset, AssetNames))
+        app.AttachView(app.HTML("./templates", ".html").Binary(Asset, AssetNames))
         app.Get("/", hi)
 
         // http://localhost:8080
@@ -926,7 +923,7 @@ as they no neeed to restart their app on every template edit.
 Example code:
 
 
-    pugEngine := view.Pug("./templates", ".jade")
+    pugEngine := app.Pug("./templates", ".jade")
     pugEngine.Reload(true) // <--- set to true to re-build the templates on each request.
     app.AttachView(pugEngine)
 
