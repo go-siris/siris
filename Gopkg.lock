@@ -42,6 +42,7 @@
   name = "github.com/couchbase/go-couchbase"
   packages = ["."]
   revision = "38214ff773a7fa8df2789558ebea9b3f86379324"
+  source = "https://github.com/go-siris/go-couchbase.git"
 
 [[projects]]
   branch = "master"
@@ -376,6 +377,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "54d1d5a820044c7dfdd032297a2ac361f46bb9c35dae9678deedb2634fc7c8e1"
+  inputs-digest = "0f1b4fe63551819c51361239e77ac75b4b61ff065acd281708be35b530c9e52c"
   solver-name = "gps-cdcl"
   solver-version = 1
