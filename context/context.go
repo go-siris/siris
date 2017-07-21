@@ -29,6 +29,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/monoculum/formam"
+	"github.com/pasztorpisti/qs"
 	"github.com/russross/blackfriday"
 
 	"github.com/go-siris/siris/core/errors"
@@ -369,6 +370,18 @@ type Context interface {
 	// ReadForm binds the formObject  with the form data
 	// it supports any kind of struct.
 	ReadForm(formObject interface{}) error
+
+	//  +------------------------------------------------------------+
+	//  | URL.Query Helper                                           |
+	//  +------------------------------------------------------------+
+
+	// ReadQuery binds the queryObject with the query data
+	// it supports any kind of struct.
+	// Support for standard types and: pointer, slice, array, map, struct
+	ReadQuery(queryObject interface{}) error
+
+	// CreateQuery creates a query-string from a struct object
+	CreateQuery(queryObject interface{}) (string, error)
 
 	//  +------------------------------------------------------------+
 	//  | Body (raw) Writers                                         |
@@ -1364,6 +1377,16 @@ func (ctx *context) ReadJSON(jsonObject interface{}) error {
 func (ctx *context) ReadXML(xmlObject interface{}) error {
 	return ctx.UnmarshalBody(xmlObject, UnmarshalerFunc(xml.Unmarshal))
 
+}
+
+// ReadQuery reads URL.Query from request's and binds it to a value of any valid standard types.
+func (ctx *context) ReadQuery(queryObject interface{}) error {
+	return qs.Unmarshal(queryObject, ctx.request.URL.RawQuery)
+}
+
+// CreateQuery create a URL.Query from a struct of any valid standard types.
+func (ctx *context) CreateQuery(queryObject interface{}) (string, error) {
+	return qs.Marshal(queryObject)
 }
 
 var (
