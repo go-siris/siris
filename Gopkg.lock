@@ -41,7 +41,8 @@
   branch = "master"
   name = "github.com/couchbase/go-couchbase"
   packages = ["."]
-  revision = "38214ff773a7fa8df2789558ebea9b3f86379324"
+  revision = "33b52ce0b55b7268544e657aa09adba87cb122a2"
+  source = "https://github.com/go-siris/go-couchbase.git"
 
 [[projects]]
   branch = "master"
@@ -89,7 +90,7 @@
   name = "github.com/fatih/structs"
   packages = ["."]
   revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
-  version = "v1.0.0"
+  version = "v1.0"
 
 [[projects]]
   branch = "master"
@@ -251,7 +252,8 @@
   branch = "master"
   name = "github.com/ssdb/gossdb"
   packages = ["ssdb"]
-  revision = "96753833c5cc3ea638335ecf9b1cf1b5f8901ca3"
+  revision = "b673c237588766969b484471838c08e914b1b517"
+  source = "https://github.com/go-siris/gossdb.git"
 
 [[projects]]
   name = "github.com/stretchr/testify"
@@ -275,7 +277,7 @@
   branch = "master"
   name = "github.com/valyala/fasthttp"
   packages = [".","fasthttputil","stackless"]
-  revision = "d257ae60a32c5605ac63b2f4f0f80a0dcffb0719"
+  revision = "ae643c872d2c060154a4fb2162dc1c0ab1693ccd"
 
 [[projects]]
   branch = "master"
@@ -376,6 +378,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "54d1d5a820044c7dfdd032297a2ac361f46bb9c35dae9678deedb2634fc7c8e1"
+  inputs-digest = "898325c6b7d3b1129c5bedbf16ef191a7572b336bb0bd18dd37896191adfdfe4"
   solver-name = "gps-cdcl"
   solver-version = 1
