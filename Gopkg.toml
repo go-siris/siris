@@ -201,4 +201,14 @@
 [[constraint]]
   branch = "master"
   name = "github.com/pasztorpisti/qs"
+  
+[[override]]
+  branch = "master"
+  name = "github.com/couchbase/go-couchbase"
+  source = "https://github.com/go-siris/go-couchbase.git"
+  
+[[override]]
+  branch = "master"
+  name = "github.com/ssdb/gossdb"
+  source = "https://github.com/go-siris/gossdb.git"
 
