@@ -557,6 +557,8 @@ type Context interface {
 	Session() sessions.Store
 	// SessionDestroy destroys the whole session and removes the session id cookie.
 	SessionDestroy()
+	// SessionRegenerateID gernerates a new session ID and removes the old session id.
+	SessionRegenerateID() sessions.Store
 
 	// MaxAge returns the "cache-control" request header's value
 	// seconds as int64
@@ -2086,6 +2088,20 @@ func (ctx *context) Session() sessions.Store {
 		if err != nil {
 			return nil
 		}
+	}
+
+	return ctx.session
+}
+
+// SessionRegenerateID gernerates a new session ID and removes the old session id.
+func (ctx *context) SessionRegenerateID() sessions.Store {
+	sessmanager, err := ctx.Application().SessionManager()
+	if err != nil {
+		return nil
+	}
+
+	if ctx.session != nil {
+		ctx.session = sessmanager.SessionRegenerateID(ctx.writer, ctx.request)
 	}
 
 	return ctx.session
