@@ -428,7 +428,7 @@ func (rb *APIBuilder) StaticContent(reqPath string, cType string, content []byte
 	h := func(ctx context.Context) {
 		if err := ctx.WriteWithExpiration(content, cType, modtime); err != nil {
 			ctx.NotFound()
-			// ctx.Application().Log("error while serving []byte via StaticContent: %s", err.Error())
+			// ctx.Application().Logger().Info("error while serving []byte via StaticContent: %s", err.Error())
 		}
 	}
 
@@ -528,7 +528,7 @@ func (rb *APIBuilder) Favicon(favPath string, requestPath ...string) (*Route, er
 		ctx.ResponseWriter().Header().Set(lastModifiedHeaderKey, modtime)
 		ctx.StatusCode(http.StatusOK)
 		if _, err := ctx.Write(cacheFav); err != nil {
-			// ctx.Application().Log("error while trying to serve the favicon: %s", err.Error())
+			// ctx.Application().Logger().Info("error while trying to serve the favicon: %s", err.Error())
 			ctx.StatusCode(http.StatusInternalServerError)
 		}
 	}

@@ -1,4 +1,6 @@
 // Copyright 2017 Go-SIRIS Authors. All Rights Reserved.
+
+// Package sessions provider
 package sessions
 
 import (

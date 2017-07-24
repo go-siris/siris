@@ -78,6 +78,12 @@ var (
 	Amber = view.Amber
 )
 
+var (
+	// LimitRequestBodySize is a middleware which sets a request body size limit
+	// for all next handlers in the chain.
+	LimitRequestBodySize = context.LimitRequestBodySize
+)
+
 // serverErrLogger allows us to use the zap.Logger as our http.Server ErrorLog
 type serverErrLogger struct {
 	log *zap.SugaredLogger
@@ -153,7 +159,7 @@ func New() *Application {
 func Default() *Application {
 	app := New()
 
-	app.AttachView(view.HTML("./templates", ".html"))
+	_ = app.AttachView(view.HTML("./templates", ".html"))
 	app.AttachSessionManager("memory", &sessions.ManagerConfig{
 		CookieName:      "go-session-id",
 		EnableSetCookie: true,
@@ -228,10 +234,9 @@ func (app *Application) Build() (err error) {
 		}
 
 		if !app.Router.Downgraded() {
-			var routerHandler router.RequestHandler
 			// router
 			// create the request handler, the default routing handler
-			routerHandler = router.NewDefaultHandler()
+			var routerHandler = router.NewDefaultHandler()
 
 			err = app.Router.BuildRouter(app.ContextPool, routerHandler, app.APIBuilder)
 			// re-build of the router from outside can be done with;
@@ -296,7 +301,7 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 	return su
 }
 
-// RegisterOnInterrupt registers a global function to call when CTRL+C/CMD+C pressed or a unix kill command received.
+// RegisterOnInterruptHook registers a global function to call when CTRL+C/CMD+C pressed or a unix kill command received.
 //
 // A shortcut for the `host#RegisterOnInterrupt`.
 var RegisterOnInterruptHook = host.RegisterOnInterruptHook
