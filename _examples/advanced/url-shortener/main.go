@@ -80,7 +80,7 @@ func main() {
 			} else {
 				if err = db.Set(key, formValue); err != nil {
 					ctx.ViewData("form_result", "Internal error while saving the URL")
-					app.Log("while saving URL: " + err.Error())
+					app.Logger().Info("while saving URL: " + err.Error())
 				} else {
 					ctx.StatusCode(siris.StatusOK)
 					shortenURL := "http://" + app.ConfigurationReadOnly().GetVHost() + "/u/" + key

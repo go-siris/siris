@@ -106,7 +106,10 @@ func (app *Application) ListenLETSENCRYPT(addr string, cacheDirOptional ...strin
 	proxyAddr := hostname + ":80"
 	target, err := url.Parse("https://" + hostname)
 	CheckErr(err)
-	go host.NewProxy(proxyAddr, target).ListenAndServe()
+	go func() {
+		err2 := host.NewProxy(proxyAddr, target).ListenAndServe()
+		CheckErr(err2)
+	}()
 
 	CheckErr(app.Run(Listener(l)))
 }

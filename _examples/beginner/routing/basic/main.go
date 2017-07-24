@@ -65,7 +65,7 @@ func main() {
 	adminRoutes := app.Party("/admin", adminMiddleware)
 
 	adminRoutes.Done(func(ctx context.Context) { // executes always last if ctx.Next()
-		ctx.Application().Log("response sent to " + ctx.Path())
+		ctx.Application().Logger().Info("response sent to " + ctx.Path())
 	})
 	// adminRoutes.Layout("/views/layouts/admin.html") // set a view layout for these routes, see more at intermediate/view examples.
 
@@ -156,7 +156,7 @@ func donateFinishHandler(ctx context.Context) {
 	// values can be any type of object so we could cast the value to a string
 	// but Siris provides an easy to do that, if donate_url is not defined, then it returns an empty string instead.
 	donateURL := ctx.Values().GetString("donate_url")
-	ctx.Application().Log("donate_url value was: " + donateURL)
+	ctx.Application().Logger().Info("donate_url value was: " + donateURL)
 	ctx.Writef("\n\nDonate sent(?).")
 }
 

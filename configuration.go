@@ -187,7 +187,7 @@ func WithCharset(charset string) Configurator {
 func WithRemoteAddrHeader(headerName string) Configurator {
 	return func(app *Application) {
 		if app.config.RemoteAddrHeaders == nil {
-			app.config.RemoteAddrHeaders = make(map[string]bool, 0)
+			app.config.RemoteAddrHeaders = make(map[string]bool)
 		}
 		app.config.RemoteAddrHeaders[headerName] = true
 	}
@@ -205,7 +205,7 @@ func WithRemoteAddrHeader(headerName string) Configurator {
 func WithoutRemoteAddrHeader(headerName string) Configurator {
 	return func(app *Application) {
 		if app.config.RemoteAddrHeaders == nil {
-			app.config.RemoteAddrHeaders = make(map[string]bool, 0)
+			app.config.RemoteAddrHeaders = make(map[string]bool)
 		}
 		app.config.RemoteAddrHeaders[headerName] = false
 	}
@@ -217,7 +217,7 @@ func WithoutRemoteAddrHeader(headerName string) Configurator {
 func WithOtherValue(key string, val interface{}) Configurator {
 	return func(app *Application) {
 		if app.config.Other == nil {
-			app.config.Other = make(map[string]interface{}, 0)
+			app.config.Other = make(map[string]interface{})
 		}
 		app.config.Other[key] = val
 	}
@@ -399,7 +399,7 @@ func (c Configuration) GetFireMethodNotAllowed() bool {
 	return c.FireMethodNotAllowed
 }
 
-// GetDisableBodyConsumptionOnUnmarshal returns the configuration.GetDisableBodyConsumptionOnUnmarshal,
+// GetDisableBodyConsumptionOnUnmarshal returns the configuration.DisableBodyConsumptionOnUnmarshal,
 // manages the reading behavior of the context's body readers/binders.
 // If returns true then the body consumption by the `context.UnmarshalBody/ReadJSON/ReadXML`
 // is disabled.
@@ -412,8 +412,9 @@ func (c Configuration) GetDisableBodyConsumptionOnUnmarshal() bool {
 	return c.DisableBodyConsumptionOnUnmarshal
 }
 
-// GetJSONInteratorReplacementUnmarshal returns the configuration.GetJSONInteratorReplacementUnmarshal,
+// GetJSONInteratorReplacement returns the configuration.JSONInteratorReplacement,
 // manages the reading behavior of the context's body readers/binders.
+//
 // If returns true then the JSON body is Marshal and Unmarshal by JSON-Interator a dropin replacment
 // for encoding/json.
 func (c Configuration) GetJSONInteratorReplacement() bool {
@@ -554,7 +555,7 @@ func WithConfiguration(c Configuration) Configurator {
 
 		if v := c.RemoteAddrHeaders; len(v) > 0 {
 			if main.RemoteAddrHeaders == nil {
-				main.RemoteAddrHeaders = make(map[string]bool, 0)
+				main.RemoteAddrHeaders = make(map[string]bool)
 			}
 			for key, value := range v {
 				main.RemoteAddrHeaders[key] = value
@@ -563,7 +564,7 @@ func WithConfiguration(c Configuration) Configurator {
 
 		if v := c.Other; len(v) > 0 {
 			if main.Other == nil {
-				main.Other = make(map[string]interface{}, 0)
+				main.Other = make(map[string]interface{})
 			}
 			for key, value := range v {
 				main.Other[key] = value
@@ -594,6 +595,6 @@ func DefaultConfiguration() Configuration {
 			"X-Forwarded-For":  false,
 			"CF-Connecting-IP": false,
 		},
-		Other: make(map[string]interface{}, 0),
+		Other: make(map[string]interface{}),
 	}
 }

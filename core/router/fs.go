@@ -308,7 +308,7 @@ func (w *fsHandler) Build() context.Handler {
 					// headers[contentEncodingHeader] = nil
 					// headers[contentLength] = nil
 				}
-				// ctx.Application().Log(errMsg)
+				// ctx.Application().Logger().Info(errMsg)
 				ctx.StatusCode(prevStatusCode)
 				return
 			}

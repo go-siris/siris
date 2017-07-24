@@ -36,8 +36,3 @@ type (
 	Map = context.Map
 )
 
-var (
-	// LimitRequestBodySize is a middleware which sets a request body size limit
-	// for all next handlers in the chain.
-	LimitRequestBodySize = context.LimitRequestBodySize
-)
