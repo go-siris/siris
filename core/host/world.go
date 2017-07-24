@@ -18,7 +18,7 @@ type world struct {
 
 var w = &world{}
 
-// RegisterOnInterrupt registers a global function to call when CTRL+C/CMD+C pressed or a unix kill command received.
+// RegisterOnInterruptHook registers a global function to call when CTRL+C/CMD+C pressed or a unix kill command received.
 func RegisterOnInterruptHook(cb func()) {
 	w.mu.Lock()
 	w.onInterrupt = append(w.onInterrupt, cb)
