@@ -29,7 +29,7 @@ func newApp() *siris.Application {
 		// register them to the www subdomain/vhost as well:
 		for _, r := range currentRoutes {
 			if _, err := www.Handle(r.Method, r.Path, r.Handlers...); err != nil {
-				app.Log("%s for www. failed: %v", r.Path, err)
+				app.Logger().Info("%s for www. failed: %v", r.Path, err)
 			}
 		}
 	}

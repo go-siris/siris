@@ -1311,7 +1311,7 @@ func (ctx *context) Redirect(urlToRedirect string, statusHeader ...int) {
 	// // (it can solve issues when developer redirects to the same handler over and over again)
 	// // Note: it doesn't stops the redirect, the developer gets what he/she expected.
 	// if shouldCheckForCycle {
-	// 	ctx.Application().Log("warning: redirect from: '%s' to: '%s',\ncurrent method: '%s'", ctx.Path(), urlToRedirect, ctx.Method())
+	// 	ctx.Application().Logger().Info("warning: redirect from: '%s' to: '%s',\ncurrent method: '%s'", ctx.Path(), urlToRedirect, ctx.Method())
 	// }
 
 	http.Redirect(ctx.writer, ctx.request, urlToRedirect, httpStatus)
@@ -1367,10 +1367,8 @@ func (ctx *context) UnmarshalBody(v interface{}, unmarshaler Unmarshaler) error 
 func (ctx *context) ReadJSON(jsonObject interface{}) error {
 	if ctx.Application().ConfigurationReadOnly().GetJSONInteratorReplacement() {
 		return ctx.UnmarshalBody(jsonObject, UnmarshalerFunc(jsoniter.Unmarshal))
-	} else {
-		return ctx.UnmarshalBody(jsonObject, UnmarshalerFunc(json.Unmarshal))
 	}
-
+	return ctx.UnmarshalBody(jsonObject, UnmarshalerFunc(json.Unmarshal))
 }
 
 // ReadXML reads XML from request's body and binds it to a value of any xml-valid type.
@@ -1743,19 +1741,19 @@ var (
 
 // WriteJSON marshals the given interface object and writes the JSON response to the 'writer'.
 // Ignores StatusCode, Gzip, StreamingJSON options.
-func WriteJSON(writer io.Writer, v interface{}, options JSON, replacementJson bool) (int, error) {
+func WriteJSON(writer io.Writer, v interface{}, options JSON, replacementJSON bool) (int, error) {
 	var result []byte
 	var err error
 
 	if indent := options.Indent; indent != "" {
-		if replacementJson {
+		if replacementJSON {
 			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.MarshalIndent(v, "", indent)
 		} else {
 			result, err = json.MarshalIndent(v, "", indent)
 		}
 		result = append(result, newLineB...)
 	} else {
-		if replacementJson {
+		if replacementJSON {
 			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 		} else {
 			result, err = json.Marshal(v)
@@ -1785,7 +1783,7 @@ var defaultJSONOptions = JSON{}
 func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 	options := defaultJSONOptions
 	var err error
-	replacementJson := ctx.Application().ConfigurationReadOnly().GetJSONInteratorReplacement()
+	replacementJSON := ctx.Application().ConfigurationReadOnly().GetJSONInteratorReplacement()
 
 	if len(opts) > 0 {
 		options = opts[0]
@@ -1794,7 +1792,7 @@ func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 	ctx.ContentType(contentJSONHeaderValue)
 
 	if options.StreamingJSON {
-		if replacementJson {
+		if replacementJSON {
 			var jsoniterConfig = jsoniter.Config{
 				EscapeHTML:    !options.UnescapeHTML,
 				IndentionStep: 4,
@@ -1815,7 +1813,7 @@ func (ctx *context) JSON(v interface{}, opts ...JSON) (int, error) {
 		return ctx.writer.Written(), err
 	}
 
-	n, err := WriteJSON(ctx.writer, v, options, replacementJson)
+	n, err := WriteJSON(ctx.writer, v, options, replacementJSON)
 	if err != nil {
 		ctx.StatusCode(http.StatusInternalServerError)
 		return 0, err
@@ -1829,7 +1827,7 @@ var (
 )
 
 // WriteJSONP marshals the given interface object and writes the JSON response to the writer.
-func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson bool) (int, error) {
+func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJSON bool) (int, error) {
 	var result []byte
 	var err error
 	if callback := options.Callback; callback != "" {
@@ -1838,7 +1836,7 @@ func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson 
 	}
 
 	if indent := options.Indent; indent != "" {
-		if replacementJson {
+		if replacementJSON {
 			result, err = jsoniter.ConfigCompatibleWithStandardLibrary.MarshalIndent(v, "", indent)
 		} else {
 			result, err = json.MarshalIndent(v, "", indent)
@@ -1850,7 +1848,7 @@ func WriteJSONP(writer io.Writer, v interface{}, options JSONP, replacementJson 
 		return writer.Write(result)
 	}
 
-	if replacementJson {
+	if replacementJSON {
 		result, err = jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 	} else {
 		result, err = json.Marshal(v)
@@ -1866,7 +1864,7 @@ var defaultJSONPOptions = JSONP{}
 // JSONP marshals the given interface object and writes the JSON response to the client.
 func (ctx *context) JSONP(v interface{}, opts ...JSONP) (int, error) {
 	options := defaultJSONPOptions
-	replacementJson := ctx.Application().ConfigurationReadOnly().GetJSONInteratorReplacement()
+	replacementJSON := ctx.Application().ConfigurationReadOnly().GetJSONInteratorReplacement()
 
 	if len(opts) > 0 {
 		options = opts[0]
@@ -1874,7 +1872,7 @@ func (ctx *context) JSONP(v interface{}, opts ...JSONP) (int, error) {
 
 	ctx.ContentType(contentJavascriptHeaderValue)
 
-	n, err := WriteJSONP(ctx.writer, v, options, replacementJson)
+	n, err := WriteJSONP(ctx.writer, v, options, replacementJSON)
 	if err != nil {
 		ctx.StatusCode(http.StatusInternalServerError)
 		return 0, err

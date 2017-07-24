@@ -32,7 +32,7 @@ func (ctx *MyContext) Next() {
 // [...]
 
 func (ctx *MyContext) HTML(htmlContents string) (int, error) {
-	ctx.Application().Log("Executing .HTML function from MyContext")
+	ctx.Application().Logger().Info("Executing .HTML function from MyContext")
 
 	ctx.ContentType("text/html")
 	return ctx.WriteString(htmlContents)
@@ -81,6 +81,6 @@ func main() {
 
 // should always print "($PATH) Handler is executing from 'MyContext'"
 func recordWhichContextJustForProofOfConcept(ctx context.Context) {
-	ctx.Application().Log("(%s) Handler is executing from: '%s'", ctx.Path(), reflect.TypeOf(ctx).Elem().Name())
+	ctx.Application().Logger().Info("(%s) Handler is executing from: '%s'", ctx.Path(), reflect.TypeOf(ctx).Elem().Name())
 	ctx.Next()
 }

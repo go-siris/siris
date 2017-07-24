@@ -81,7 +81,7 @@ func defaultErrorCodeHandlers() *ErrorCodeHandlers {
 func statusText(statusCode int) context.Handler {
 	return func(ctx context.Context) {
 		if _, err := ctx.WriteString(http.StatusText(statusCode)); err != nil {
-			// ctx.Application().Log("(status code: %d) %s",
+			// ctx.Application().Logger().Info("(status code: %d) %s",
 			// 	err.Error(), statusCode)
 		}
 	}

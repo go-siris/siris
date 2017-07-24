@@ -35,7 +35,7 @@ func main() {
 		// using the go v1.8's HTTP/2 Push.
 		// Note that you have to listen using ListenTLS in order this to work.
 		if err := ctx.ResponseWriter().Push("/js/chat.js", nil); err != nil {
-			ctx.Application().Log(err.Error())
+			ctx.Application().Logger().Info(err.Error())
 		}
 		ctx.ViewData("", clientPage{"Client Page", ctx.Host()})
 		ctx.View("client.html")

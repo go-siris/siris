@@ -21,7 +21,7 @@ type Query struct {
 	Categories []string `qs:"category"`
 }
 
-func createApp_Query() *siris.Application {
+func createAppQuery() *siris.Application {
 	app := siris.Default()
 
 	app.Get("/read", func(c context.Context) {
@@ -64,8 +64,8 @@ func createApp_Query() *siris.Application {
 	return app
 }
 
-func createClient_Query(t *testing.T) *httpexpect.Expect {
-	handler := createApp_Query()
+func createClientQuery(t *testing.T) *httpexpect.Expect {
+	handler := createAppQuery()
 
 	return httpexpect.WithConfig(httpexpect.Config{
 		BaseURL:  "http://example.com",
@@ -84,7 +84,7 @@ func createClient_Query(t *testing.T) *httpexpect.Expect {
 }
 
 func TestSiris_Query(t *testing.T) {
-	e := createClient_Query(t)
+	e := createClientQuery(t)
 
 	b1 := e.GET("/write").
 		Expect().

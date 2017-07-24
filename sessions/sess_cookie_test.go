@@ -27,48 +27,48 @@ func TestSessionCookie(t *testing.T) {
 	//  GET /session/same-session-id   	get same sessionId again
 	mux := http.NewServeMux()
 
-	var sessionId1 string
+	var sessionID1 string
 	mux.HandleFunc("/session", func(w http.ResponseWriter, r *http.Request) {
 		sess, err := globalSessions.SessionStart(w, r)
 		if err != nil {
 			t.Fatal("start error,", err)
 		}
-		sessionId1 = sess.SessionID()
+		sessionID1 = sess.SessionID()
 		sess.SessionRelease(w)
 	})
 
-	var sessionId2 string
+	var sessionID2 string
 	mux.HandleFunc("/session/same-session-id", func(w http.ResponseWriter, r *http.Request) {
 		sess, err := globalSessions.SessionStart(w, r)
 		if err != nil {
 			t.Fatal("start error,", err)
 		}
-		sessionId2 = sess.SessionID()
+		sessionID2 = sess.SessionID()
 		sess.SessionRelease(w)
 	})
 
-	var sessionId3 string
+	var sessionID3 string
 	mux.HandleFunc("/session/destroy", func(w http.ResponseWriter, r *http.Request) {
 		sess, err := globalSessions.SessionStart(w, r)
 		if err != nil {
 			t.Fatal("start error,", err)
 		}
-		sessionId3 = sess.SessionID()
+		sessionID3 = sess.SessionID()
 		sess.SessionRelease(w)
 		globalSessions.SessionDestroy(w, r)
 	})
 
-	var sessionId4 string
+	var sessionID4 string
 	mux.HandleFunc("/session/getnew", func(w http.ResponseWriter, r *http.Request) {
 		sess, err := globalSessions.SessionStart(w, r)
 		if err != nil {
 			t.Fatal("start error,", err)
 		}
-		sessionId4 = sess.SessionID()
+		sessionID4 = sess.SessionID()
 		sess.SessionRelease(w)
 	})
 
-	var sessionId5 string
+	var sessionID5 string
 	mux.HandleFunc("/session/functions-test", func(w http.ResponseWriter, r *http.Request) {
 		sess, err := globalSessions.SessionStart(w, r)
 		if err != nil {
@@ -102,7 +102,7 @@ func TestSessionCookie(t *testing.T) {
 		if username4 := sess.Get("username"); username4 != nil {
 			t.Fatal("flush not work as excepted")
 		}
-		sessionId5 = sess.SessionID()
+		sessionID5 = sess.SessionID()
 		sess.SessionRelease(w)
 	})
 
@@ -134,7 +134,7 @@ func TestSessionCookie(t *testing.T) {
 	t.Log("/session/same-session-id: Test Start")
 	// check cookies
 	e.GET("/session/same-session-id").
-		WithCookie("gosessionid", sessionId1).
+		WithCookie("gosessionid", sessionID1).
 		Expect().
 		Status(http.StatusOK)
 	t.Log("/session/same-session-id: Test Done\n")
@@ -142,7 +142,7 @@ func TestSessionCookie(t *testing.T) {
 	t.Log("/session/destroy: Test Start")
 	// check cookies destroyed
 	resp := e.GET("/session/destroy").
-		WithCookie("gosessionid", sessionId2).
+		WithCookie("gosessionid", sessionID2).
 		Expect().
 		Status(http.StatusOK)
 	cookie := resp.Cookie("gosessionid")
@@ -153,7 +153,7 @@ func TestSessionCookie(t *testing.T) {
 	t.Log("/session/getnew: Test Start")
 	// get new session cookie
 	resp = e.GET("/session/getnew").
-		WithCookie("gosessionid", sessionId3).
+		WithCookie("gosessionid", sessionID3).
 		Expect().
 		Status(http.StatusOK)
 	cookie = resp.Cookie("gosessionid")
@@ -164,7 +164,7 @@ func TestSessionCookie(t *testing.T) {
 	t.Log("/session/functions-test: Test Start")
 	// get regenerated session cookie
 	resp = e.GET("/session/functions-test").
-		WithCookie("gosessionid", sessionId4).
+		WithCookie("gosessionid", sessionID4).
 		Expect().
 		Status(http.StatusOK)
 	cookie = resp.Cookie("gosessionid")
@@ -178,7 +178,7 @@ func TestSessionCookie(t *testing.T) {
 	if activeSessions := globalSessions.GetActiveSession(); activeSessions != 0 {
 		t.Fatal("GetActiveSession returns activeSessions != 0")
 	}
-	if _, err = globalSessions.GetSessionStore(sessionId1); err != nil {
+	if _, err = globalSessions.GetSessionStore(sessionID1); err != nil {
 		t.Fatalf("GetSessionStore returns err, %s", err)
 	}
 	newseddion, _ := globalSessions.sessionID()

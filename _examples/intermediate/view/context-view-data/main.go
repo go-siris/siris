@@ -37,7 +37,7 @@ func main() {
 	app.Get("/", func(ctx context.Context) {
 		ctx.ViewData("BodyMessage", "a sample text here... set by the route handler")
 		if err := ctx.View("index.html"); err != nil {
-			ctx.Application().Log(err.Error())
+			ctx.Application().Logger().Info(err.Error())
 		}
 	})
 
@@ -47,7 +47,7 @@ func main() {
 
 		// same file, just to keep things simple.
 		if err := ctx.View("index.html"); err != nil {
-			ctx.Application().Log(err.Error())
+			ctx.Application().Logger().Info(err.Error())
 		}
 	})
 

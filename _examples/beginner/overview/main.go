@@ -36,7 +36,7 @@ func main() {
 	})
 
 	app.Use(func(ctx context.Context) {
-		ctx.Application().Log("Begin request for path: %s", ctx.Path())
+		ctx.Application().Logger().Info("Begin request for path: %s", ctx.Path())
 		ctx.Next()
 	})
 
@@ -78,7 +78,7 @@ func main() {
 }
 
 func logThisMiddleware(ctx context.Context) {
-	ctx.Application().Log("Path: %s | IP: %s", ctx.Path(), ctx.RemoteAddr())
+	ctx.Application().Logger().Info("Path: %s | IP: %s", ctx.Path(), ctx.RemoteAddr())
 
 	// .Next is required to move forward to the chain of handlers,
 	// if missing then it stops the execution at this handler.
