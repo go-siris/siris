@@ -1100,7 +1100,7 @@ func (ctx *context) RemoteAddr() string {
 	for headerName, enabled := range remoteHeaders {
 		if enabled {
 			headerName = http.CanonicalHeaderKey(headerName)
-			headerValue := ctx.GetHeader(http.CanonicalHeaderKey(headerName))
+			headerValue := ctx.GetHeader(headerName)
 			// exception needed for 'X-Forwarded-For' only , if enabled.
 			if headerName == http.CanonicalHeaderKey("X-Forwarded-For") {
 				idx := strings.IndexByte(headerValue, ',')
@@ -1108,7 +1108,7 @@ func (ctx *context) RemoteAddr() string {
 					headerValue = headerValue[0:idx]
 				}
 			} else if headerName == http.CanonicalHeaderKey("forwarded") {
-				params, _ := httpforwarded.Parse(headerValue)
+				params, _ := httpforwarded.Parse([]string{headerValue})
 				if len(params["for"]) >= 1 {
 					headerValue = params["for"][len(params["for"])-1]
 				}
