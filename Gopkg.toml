@@ -189,26 +189,29 @@
 [[override]]
   branch = "master"
   name = "github.com/valyala/fasthttp"
-  
+
 [[override]]
   branch = "master"
   name = "go.uber.org/zap"
-  
+
 [[override]]
   branch = "master"
   name = "github.com/json-iterator/go"
-  
+
 [[constraint]]
   branch = "master"
   name = "github.com/pasztorpisti/qs"
-  
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/theckman/httpforwarded"
+
 [[override]]
   branch = "master"
   name = "github.com/couchbase/go-couchbase"
   source = "https://github.com/go-siris/go-couchbase.git"
-  
+
 [[override]]
   branch = "master"
   name = "github.com/ssdb/gossdb"
   source = "https://github.com/go-siris/gossdb.git"
-

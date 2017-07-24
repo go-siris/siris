@@ -31,6 +31,7 @@ import (
 	"github.com/monoculum/formam"
 	"github.com/pasztorpisti/qs"
 	"github.com/russross/blackfriday"
+	"github.com/theckman/httpforwarded"
 
 	"github.com/go-siris/siris/core/errors"
 	"github.com/go-siris/siris/core/memstore"
@@ -1098,12 +1099,18 @@ func (ctx *context) RemoteAddr() string {
 
 	for headerName, enabled := range remoteHeaders {
 		if enabled {
-			headerValue := ctx.GetHeader(headerName)
+			headerName = http.CanonicalHeaderKey(headerName)
+			headerValue := ctx.GetHeader(http.CanonicalHeaderKey(headerName))
 			// exception needed for 'X-Forwarded-For' only , if enabled.
-			if headerName == "X-Forwarded-For" {
+			if headerName == http.CanonicalHeaderKey("X-Forwarded-For") {
 				idx := strings.IndexByte(headerValue, ',')
 				if idx >= 0 {
 					headerValue = headerValue[0:idx]
+				}
+			} else if headerName == http.CanonicalHeaderKey("forwarded") {
+				params, _ := httpforwarded.Parse(headerValue)
+				if len(params["for"]) >= 1 {
+					headerValue = params["for"][len(params["for"])-1]
 				}
 			}
 
