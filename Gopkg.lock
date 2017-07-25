@@ -268,6 +268,12 @@
   revision = "8c81ea47d4c41a385645e133e15510fc6a2a74b4"
 
 [[projects]]
+  name = "github.com/theckman/httpforwarded"
+  packages = ["."]
+  revision = "0bf9cfcea9fa86402871e1f8dbbeed622fd3f80a"
+  version = "v0.4.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/valyala/bytebufferpool"
   packages = ["."]
@@ -378,6 +384,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "898325c6b7d3b1129c5bedbf16ef191a7572b336bb0bd18dd37896191adfdfe4"
+  inputs-digest = "24f2777fc8e79a64cb55d4ba3db729ab01734e6ed7c81ace1605e29143e88b7c"
   solver-name = "gps-cdcl"
   solver-version = 1
