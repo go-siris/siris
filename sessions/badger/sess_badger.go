@@ -1,55 +1,41 @@
-// Copyright 2014 beego Author. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2017 SIRIS Authors. All Rights Reserved.
 
-// Package redis for session provider
+// Package badger for session provider
 //
-// depend on github.com/garyburd/redigo/redis
+// depend on github.com/dgraph-io/badger
 //
-// go install github.com/garyburd/redigo/redis
+// go install github.com/dgraph-io/badger
 //
 // Usage:
 // import(
-//   _ "github.com/go-siris/siris/sessions/redis"
+//   _ "github.com/go-siris/siris/sessions/badger"
 //   "github.com/go-siris/siris/sessions"
 // )
 //
 //	func init() {
-//		globalSessions, _ = sessions.NewManager("redis", ``{"cookieName":"gosessionid","gclifetime":3600,"ProviderConfig":"127.0.0.1:7070"}``)
+//		globalSessions, _ = sessions.NewManager("badger", {"cookieName":"gosessionid","gclifetime":3600,"ProviderConfig":"127.0.0.1:7070"}`)
 //		go globalSessions.GC()
 //	}
 //
 // more docs: http://beego.me/docs/module/sessions.md
-package redis
+package badger
 
 import (
 	"net/http"
 	"strconv"
 	"strings"
+	"io/ioutil"
 	"sync"
 
-	"github.com/garyburd/redigo/redis"
+	"github.com/dgraph-io/badger"
 	"github.com/go-siris/siris/sessions"
 )
 
-var redispder = &Provider{}
-
-// MaxPoolSize redis max pool size
-var MaxPoolSize = 100
+var badgerpder = &Provider{}
 
 // SessionStore redis session store
 type SessionStore struct {
-	p           *redis.Pool
+	p           *badger.KV
 	sid         string
 	lock        sync.RWMutex
 	values      map[interface{}]interface{}
@@ -57,121 +43,78 @@ type SessionStore struct {
 }
 
 // Set value in redis session
-func (rs *SessionStore) Set(key, value interface{}) error {
-	rs.lock.Lock()
-	defer rs.lock.Unlock()
-	rs.values[key] = value
+func (bs *SessionStore) Set(key, value interface{}) error {
+	bs.lock.Lock()
+	bs.values[key] = value
+	bs.lock.Unlock()
 	return nil
 }
 
 // Get value in redis session
-func (rs *SessionStore) Get(key interface{}) interface{} {
-	rs.lock.RLock()
-	defer rs.lock.RUnlock()
-	if v, ok := rs.values[key]; ok {
+func (bs *SessionStore) Get(key interface{}) interface{} {
+	bs.lock.RLock()
+	if v, ok := bs.values[key]; ok {
+		bs.lock.RUnlock()
 		return v
 	}
+	bs.lock.RUnlock()
 	return nil
 }
 
 // Delete value in redis session
-func (rs *SessionStore) Delete(key interface{}) error {
-	rs.lock.Lock()
-	defer rs.lock.Unlock()
-	delete(rs.values, key)
+func (bs *SessionStore) Delete(key interface{}) error {
+	bs.lock.Lock()
+	delete(bs.values, key)
+	bs.lock.Unlock()
 	return nil
 }
 
 // Flush clear all values in redis session
-func (rs *SessionStore) Flush() error {
-	rs.lock.Lock()
-	defer rs.lock.Unlock()
-	rs.values = make(map[interface{}]interface{})
+func (bs *SessionStore) Flush() error {
+	bs.lock.Lock()
+	bs.values = make(map[interface{}]interface{})
+	bs.lock.Unlock()
 	return nil
 }
 
 // SessionID get redis session id
-func (rs *SessionStore) SessionID() string {
-	return rs.sid
+func (bs *SessionStore) SessionID() string {
+	return bs.sid
 }
 
 // SessionRelease save session values to redis
-func (rs *SessionStore) SessionRelease(w http.ResponseWriter) {
-	b, err := sessions.EncodeGob(rs.values)
+func (bs *SessionStore) SessionRelease(w http.ResponseWriter) {
+	b, err := sessions.EncodeGob(bs.values)
 	if err != nil {
 		return
 	}
-	c := rs.p.Get()
+	c := bs.p.Get()
 	defer c.Close()
-	c.Do("SETEX", rs.sid, rs.maxlifetime, string(b))
+	c.Do("SETEX", bs.sid, bs.maxlifetime, string(b))
 }
 
 // Provider redis session provider
 type Provider struct {
 	maxlifetime int64
 	savePath    string
-	poolsize    int
-	password    string
-	dbNum       int
-	poollist    *redis.Pool
+	kv					*badger.KV
 }
 
-// SessionInit init redis session
-// savepath like redis server addr,pool size,password,dbnum
-// e.g. 127.0.0.1:6379,100,astaxie,0
-func (rp *Provider) SessionInit(maxlifetime int64, savePath string) error {
-	rp.maxlifetime = maxlifetime
-	configs := strings.Split(savePath, ",")
-	if len(configs) > 0 {
-		rp.savePath = configs[0]
-	}
-	if len(configs) > 1 {
-		poolsize, err := strconv.Atoi(configs[1])
-		if err != nil || poolsize < 0 {
-			rp.poolsize = MaxPoolSize
-		} else {
-			rp.poolsize = poolsize
-		}
-	} else {
-		rp.poolsize = MaxPoolSize
-	}
-	if len(configs) > 2 {
-		rp.password = configs[2]
-	}
-	if len(configs) > 3 {
-		dbnum, err := strconv.Atoi(configs[3])
-		if err != nil || dbnum < 0 {
-			rp.dbNum = 0
-		} else {
-			rp.dbNum = dbnum
-		}
-	} else {
-		rp.dbNum = 0
-	}
-	rp.poollist = redis.NewPool(func() (redis.Conn, error) {
-		c, err := redis.Dial("tcp", rp.savePath)
-		if err != nil {
-			return nil, err
-		}
-		if rp.password != "" {
-			if _, err = c.Do("AUTH", rp.password); err != nil {
-				c.Close()
-				return nil, err
-			}
-		}
-		_, err = c.Do("SELECT", rp.dbNum)
-		if err != nil {
-			c.Close()
-			return nil, err
-		}
-		return c, err
-	}, rp.poolsize)
-
-	return rp.poollist.Get().Err()
+// SessionInit init badger session
+// configString like json string with options
+// https://godoc.org/github.com/dgraph-io/badger#Options
+func (bp *Provider) SessionInit(maxlifetime int64, configString string) error {
+	bp.maxlifetime = maxlifetime
+	opt := badger.DefaultOptions
+	dir, _ := ioutil.TempDir("/tmp", "badger")
+	opt.Dir = dir
+	opt.ValueDir = dir
+	bp.kv, err := badger.NewKV(&opt)
+	return err
 }
 
 // SessionRead read redis session by sid
-func (rp *Provider) SessionRead(sid string) (sessions.Store, error) {
+func (bp *Provider) SessionRead(sid string) (sessions.Store, error) {
 	c := rp.poollist.Get()
 	defer c.Close()
 
@@ -189,12 +132,12 @@ func (rp *Provider) SessionRead(sid string) (sessions.Store, error) {
 		}
 	}
 
-	rs := &SessionStore{p: rp.poollist, sid: sid, values: kv, maxlifetime: rp.maxlifetime}
-	return rs, nil
+	bs := &SessionStore{p: rp.poollist, sid: sid, values: kv, maxlifetime: rp.maxlifetime}
+	return bs, nil
 }
 
 // SessionExist check redis session exist by sid
-func (rp *Provider) SessionExist(sid string) bool {
+func (bp *Provider) SessionExist(sid string) bool {
 	c := rp.poollist.Get()
 	defer c.Close()
 
@@ -205,7 +148,7 @@ func (rp *Provider) SessionExist(sid string) bool {
 }
 
 // SessionRegenerate generate new sid for redis session
-func (rp *Provider) SessionRegenerate(oldsid, sid string) (sessions.Store, error) {
+func (bp *Provider) SessionRegenerate(oldsid, sid string) (sessions.Store, error) {
 	c := rp.poollist.Get()
 	defer c.Close()
 
@@ -222,7 +165,7 @@ func (rp *Provider) SessionRegenerate(oldsid, sid string) (sessions.Store, error
 }
 
 // SessionDestroy delete redis session by id
-func (rp *Provider) SessionDestroy(sid string) error {
+func (bp *Provider) SessionDestroy(sid string) error {
 	c := rp.poollist.Get()
 	defer c.Close()
 
@@ -231,14 +174,38 @@ func (rp *Provider) SessionDestroy(sid string) error {
 }
 
 // SessionGC Impelment method, no used.
-func (rp *Provider) SessionGC() {
+func (bp *Provider) SessionGC() {
+	opt := badger.DefaultIteratorOptions
+	itr := bp.kv.NewIterator(opt)
+	for itr.Rewind(); itr.Valid(); itr.Next() {
+		item := itr.Item()
+		key := item.Key()
+		val := item.Value() // This could block while value is fetched from value log.
+		// For key only iteration, set opt.FetchValues to false, and don't call
+		// item.Value().
+
+		// TODO: Delete keys that not used maxlifetime
+		// value touch < time - maxlifetime
+
+		// Remember that both key, val would become invalid in the next iteration of the loop.
+		// So, if you need access to them outside, copy them or parse them.
+	}
+	itr.Close()
 }
 
 // SessionAll return all activeSession
-func (rp *Provider) SessionAll() int {
-	return 0
+func (bp *Provider) SessionAll() int {
+	count := 0
+	opt := badger.DefaultIteratorOptions
+	opt.FetchValues = false
+	itr := bp.kv.NewIterator(opt)
+	for itr.Rewind(); itr.Valid(); itr.Next() {
+		count++
+	}
+	itr.Close()
+	return count
 }
 
 func init() {
-	sessions.Register("redis", redispder)
+	sessions.Register("badger", badgerpder)
 }
