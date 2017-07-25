@@ -6,12 +6,14 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"gopkg.in/gavv/httpexpect.v1"
 )
@@ -111,6 +113,70 @@ func testSupervisor(t *testing.T, creator func(*http.Server, []func(TaskHost)) *
 }
 func TestSupervisor(t *testing.T) {
 	testSupervisor(t, func(srv *http.Server, tasks []func(TaskHost)) *Supervisor {
+		su := New(srv, false)
+		for _, t := range tasks {
+			su.RegisterOnServeHook(t)
+		}
+
+		return su
+	})
+}
+
+func testSupervisor2(t *testing.T, creator func(*http.Server, []func(TaskHost)) *Supervisor) {
+	loggerOutput := &bytes.Buffer{}
+	logger := log.New(loggerOutput, "", 0)
+	const (
+		expectedHelloMessage = "Hello\n"
+	)
+
+	// http routing
+	var (
+		expectedBody = "this is the response body\n"
+	)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(expectedBody))
+	})
+
+	// host (server wrapper and adapter) construction
+	addr := "127.0.0.1:5443"
+	srv := &http.Server{Handler: mux, Addr: addr, ErrorLog: logger}
+
+	helloMe := func(_ TaskHost) {
+		rwmu.Lock()
+		logger.Print(expectedHelloMessage)
+		rwmu.Unlock()
+	}
+
+	host := creator(srv, []func(TaskHost){helloMe})
+	defer host.Shutdown(context.TODO())
+
+	go func() {
+		err2 := host.ListenAndServeTLS("../../coverage-tests/fixtures/server.crt", "../../coverage-tests/fixtures/server.key")
+		fmt.Println(err2)
+	}()
+
+	time.Sleep(2 * time.Second)
+	// http testsing and various calls
+	// no need for time sleep because the following will take some time by theirselves
+	tester := newTester(t, "https://"+addr, mux)
+	tester.Request("GET", "/").Expect().Status(http.StatusOK).Body().Equal(expectedBody)
+
+	// WARNING: Data Race here because we try to read the logs
+	// but it's "safe" here.
+
+	// testing Task (recorded) message:
+	//
+	rwmu.RLock()
+	got := loggerOutput.String()
+	rwmu.RUnlock()
+	if expectedHelloMessage != got {
+		t.Fatalf("expected hello Task's message to be '%s' but got '%s'", expectedHelloMessage, got)
+	}
+}
+func TestSupervisor2(t *testing.T) {
+	testSupervisor2(t, func(srv *http.Server, tasks []func(TaskHost)) *Supervisor {
 		su := New(srv, false)
 		for _, t := range tasks {
 			su.RegisterOnServeHook(t)

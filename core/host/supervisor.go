@@ -2,15 +2,23 @@ package host
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/tls"
+	"io"
 	"net"
 	"net/http"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/go-siris/siris/core/errors"
 	"github.com/go-siris/siris/core/nettools"
 	"golang.org/x/crypto/acme/autocert"
+)
+
+const (
+	tlsNewTicketEvery = time.Hour * 6 // generate a new ticket for TLS PFS encryption every so often
+	tlsNumTickets     = 5             // hold and consider that many tickets to decrypt TLS sessions
 )
 
 // Supervisor is the wrapper and the manager for a compatible server
@@ -24,6 +32,8 @@ type Supervisor struct {
 	manuallyTLS    bool  // we need that in order to determinate what to output on the console before the server begin.
 	shouldWait     int32 // non-zero means that the host should wait for unblocking
 	unblockChan    chan struct{}
+
+	tlsGovChan chan struct{} // close to stop the TLS maintenance goroutine
 
 	mu sync.Mutex
 
@@ -212,6 +222,12 @@ func (su *Supervisor) ListenAndServeTLS(certFile string, keyFile string) error {
 	setupHTTP2(cfg)
 	su.Server.TLSConfig = cfg
 	su.manuallyTLS = true
+
+	// Setup any goroutines governing over TLS settings
+	su.tlsGovChan = make(chan struct{})
+	timer := time.NewTicker(tlsNewTicketEvery)
+	go runTLSTicketKeyRotation(su.Server.TLSConfig, timer, su.tlsGovChan)
+
 	return su.ListenAndServe()
 }
 
@@ -228,6 +244,12 @@ func (su *Supervisor) ListenAndServeAutoTLS() error {
 	setupHTTP2(cfg)
 	su.Server.TLSConfig = cfg
 	su.manuallyTLS = true
+
+	// Setup any goroutines governing over TLS settings
+	su.tlsGovChan = make(chan struct{})
+	timer := time.NewTicker(tlsNewTicketEvery)
+	go runTLSTicketKeyRotation(su.Server.TLSConfig, timer, su.tlsGovChan)
+
 	return su.ListenAndServe()
 }
 
@@ -268,4 +290,66 @@ func (su *Supervisor) Shutdown(ctx context.Context) error {
 	atomic.AddInt32(&su.closedManually, 1) // future-use
 	su.notifyShutdown()
 	return su.Server.Shutdown(ctx)
+}
+
+var runTLSTicketKeyRotation = standaloneTLSTicketKeyRotation
+
+var setSessionTicketKeysTestHook = func(keys [][32]byte) [][32]byte {
+	return keys
+}
+
+// standaloneTLSTicketKeyRotation governs over the array of TLS ticket keys used to de/crypt TLS tickets.
+// It periodically sets a new ticket key as the first one, used to encrypt (and decrypt),
+// pushing any old ticket keys to the back, where they are considered for decryption only.
+//
+// Lack of entropy for the very first ticket key results in the feature being disabled (as does Go),
+// later lack of entropy temporarily disables ticket key rotation.
+// Old ticket keys are still phased out, though.
+//
+// Stops the timer when returning.
+func standaloneTLSTicketKeyRotation(c *tls.Config, timer *time.Ticker, exitChan chan struct{}) {
+	defer timer.Stop()
+	// The entire page should be marked as sticky, but Go cannot do that
+	// without resorting to syscall#Mlock. And, we don't have madvise (for NODUMP), too. ☹
+	keys := make([][32]byte, 1, tlsNumTickets)
+
+	rng := c.Rand
+	if rng == nil {
+		rng = rand.Reader
+	}
+	if _, err := io.ReadFull(rng, keys[0][:]); err != nil {
+		c.SessionTicketsDisabled = true // bail if we don't have the entropy for the first one
+		return
+	}
+	c.SessionTicketKey = keys[0] // SetSessionTicketKeys doesn't set a 'tls.keysAlreadSet'
+	c.SetSessionTicketKeys(setSessionTicketKeysTestHook(keys))
+
+	for {
+		select {
+		case _, isOpen := <-exitChan:
+			if !isOpen {
+				return
+			}
+		case <-timer.C:
+			rng = c.Rand // could've changed since the start
+			if rng == nil {
+				rng = rand.Reader
+			}
+			var newTicketKey [32]byte
+			_, err := io.ReadFull(rng, newTicketKey[:])
+
+			if len(keys) < tlsNumTickets {
+				keys = append(keys, keys[0]) // manipulates the internal length
+			}
+			for idx := len(keys) - 1; idx >= 1; idx-- {
+				keys[idx] = keys[idx-1] // yes, this makes copies
+			}
+
+			if err == nil {
+				keys[0] = newTicketKey
+			}
+			// pushes the last key out, doesn't matter that we don't have a new one
+			c.SetSessionTicketKeys(setSessionTicketKeysTestHook(keys))
+		}
+	}
 }
