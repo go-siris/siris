@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/tls"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/go-siris/siris/core/errors"
 	"github.com/go-siris/siris/core/nettools"
+	"github.com/lucas-clemente/quic-go/h2quic"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -27,6 +29,7 @@ const (
 // Interfaces are separated to return relative functionality to them.
 type Supervisor struct {
 	Server         *http.Server
+	quicServer     *h2quic.Server
 	useReuseport   bool  // is by default: false
 	closedManually int32 // future use, accessed atomically (non-zero means we've called the Shutdown)
 	manuallyTLS    bool  // we need that in order to determinate what to output on the console before the server begin.
@@ -184,7 +187,11 @@ func (su *Supervisor) supervise(blockFunc func() error) error {
 // returned error is http.ErrServerClosed.
 func (su *Supervisor) Serve(l net.Listener) error {
 
-	return su.supervise(func() error { return su.Server.Serve(l) })
+	return su.supervise(func() error {
+		err := su.Server.Serve(l)
+		su.quicServer.Close()
+		return err
+	})
 }
 
 // ListenAndServe listens on the TCP network address addr
@@ -223,6 +230,8 @@ func (su *Supervisor) ListenAndServeTLS(certFile string, keyFile string) error {
 	su.Server.TLSConfig = cfg
 	su.manuallyTLS = true
 
+	su.quicServer = &h2quic.Server{Server: su.Server}
+
 	// Setup any goroutines governing over TLS settings
 	su.tlsGovChan = make(chan struct{})
 	timer := time.NewTicker(tlsNewTicketEvery)
@@ -244,6 +253,9 @@ func (su *Supervisor) ListenAndServeAutoTLS() error {
 	setupHTTP2(cfg)
 	su.Server.TLSConfig = cfg
 	su.manuallyTLS = true
+
+	su.quicServer = &h2quic.Server{Server: su.Server}
+	su.Server.Handler = s.wrapWithSvcHeaders(su.Server.Handler)
 
 	// Setup any goroutines governing over TLS settings
 	su.tlsGovChan = make(chan struct{})
@@ -351,5 +363,30 @@ func standaloneTLSTicketKeyRotation(c *tls.Config, timer *time.Ticker, exitChan 
 			// pushes the last key out, doesn't matter that we don't have a new one
 			c.SetSessionTicketKeys(setSessionTicketKeysTestHook(keys))
 		}
+	}
+}
+
+// ListenPacket creates udp connection for QUIC if it is enabled,
+func (su *Supervisor) ListenPacket() (net.PacketConn, error) {
+	udpAddr, err := net.ResolveUDPAddr("udp", su.Server.Addr)
+	if err != nil {
+		return nil, err
+	}
+	return net.ListenUDP("udp", udpAddr)
+}
+
+// ServePacket serves QUIC requests on pc until it is closed.
+func (su *Supervisor) ServePacket(pc net.PacketConn) error {
+	if su.quicServer != nil {
+		err := su.quicServer.Serve(pc.(*net.UDPConn))
+		return fmt.Errorf("serving QUIC connections: %v", err)
+	}
+	return nil
+}
+
+func (su *Supervisor) wrapWithSvcHeaders(previousHandler http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		su.quicServer.SetQuicHeaders(w.Header())
+		previousHandler.ServeHTTP(w, r)
 	}
 }
