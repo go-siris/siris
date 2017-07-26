@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/sessions/utils"
 	"github.com/ssdb/gossdb/ssdb"
 )
 
@@ -58,7 +59,7 @@ func (p *Provider) SessionRead(sid string) (sessions.Store, error) {
 	if value == nil || len(value.(string)) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = sessions.DecodeGob([]byte(value.(string)))
+		kv, err = utils.DecodeGob([]byte(value.(string)))
 		if err != nil {
 			return nil, err
 		}
@@ -100,7 +101,7 @@ func (p *Provider) SessionRegenerate(oldsid, sid string) (sessions.Store, error)
 	if value == nil || len(value.(string)) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = sessions.DecodeGob([]byte(value.(string)))
+		kv, err = utils.DecodeGob([]byte(value.(string)))
 		if err != nil {
 			return nil, err
 		}
@@ -187,7 +188,7 @@ func (s *SessionStore) SessionID() string {
 
 // SessionRelease Store the keyvalues into ssdb
 func (s *SessionStore) SessionRelease(w http.ResponseWriter) {
-	b, err := sessions.EncodeGob(s.values)
+	b, err := utils.EncodeGob(s.values)
 	if err != nil {
 		return
 	}

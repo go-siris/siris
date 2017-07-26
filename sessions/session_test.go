@@ -4,13 +4,15 @@ package sessions
 
 import (
 	"testing"
+
+	"github.com/go-siris/siris/sessions/utils"
 )
 
 func TestSession_RandomCreateBytes(t *testing.T) {
-	_ = RandomCreateBytes(32)
-	_ = RandomCreateBytes(64)
-	_ = RandomCreateBytes(128)
-	_ = RandomCreateBytes(256)
-	_ = RandomCreateBytes(512)
-	_ = RandomCreateBytes(1024)
+	_ = utils.RandomCreateBytes(32)
+	_ = utils.RandomCreateBytes(64)
+	_ = utils.RandomCreateBytes(128)
+	_ = utils.RandomCreateBytes(256)
+	_ = utils.RandomCreateBytes(512)
+	_ = utils.RandomCreateBytes(1024)
 }

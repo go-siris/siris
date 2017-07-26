@@ -18,6 +18,8 @@ import (
 	"crypto/aes"
 	"encoding/json"
 	"testing"
+
+	"github.com/go-siris/siris/sessions/utils"
 )
 
 func Test_gob(t *testing.T) {
@@ -25,11 +27,11 @@ func Test_gob(t *testing.T) {
 	a["username"] = "astaxie"
 	a[12] = 234
 	a["user"] = User{"asta", "xie"}
-	b, err := EncodeGob(a)
+	b, err := utils.EncodeGob(a)
 	if err != nil {
 		t.Error(err)
 	}
-	c, err := DecodeGob(b)
+	c, err := utils.DecodeGob(b)
 	if err != nil {
 		t.Error(err)
 	}
@@ -53,7 +55,7 @@ type User struct {
 }
 
 func TestGenerate(t *testing.T) {
-	str := generateRandomKey(20)
+	str := utils.GenerateRandomKey(20)
 	if len(str) != 20 {
 		t.Fatal("generate length is not equal to 20")
 	}
@@ -61,20 +63,20 @@ func TestGenerate(t *testing.T) {
 
 func TestCookieEncodeDecode(t *testing.T) {
 	hashKey := "testhashKey"
-	blockkey := generateRandomKey(16)
+	blockkey := utils.GenerateRandomKey(16)
 	block, err := aes.NewCipher(blockkey)
 	if err != nil {
 		t.Fatal("NewCipher:", err)
 	}
-	securityName := string(generateRandomKey(20))
+	securityName := string(utils.GenerateRandomKey(20))
 	val := make(map[interface{}]interface{})
 	val["name"] = "astaxie"
 	val["gender"] = "male"
-	str, err := encodeCookie(block, hashKey, securityName, val)
+	str, err := utils.EncodeCookie(block, hashKey, securityName, val)
 	if err != nil {
 		t.Fatal("encodeCookie:", err)
 	}
-	dst, err := decodeCookie(block, hashKey, securityName, str, 3600)
+	dst, err := utils.DecodeCookie(block, hashKey, securityName, str, 3600)
 	if err != nil {
 		t.Fatal("decodeCookie", err)
 	}

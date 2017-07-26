@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sessions
+package utils
 
 import (
 	"bytes"
@@ -70,8 +70,8 @@ func DecodeGob(encoded []byte) (map[interface{}]interface{}, error) {
 	return out, nil
 }
 
-// generateRandomKey creates a random key with the given strength.
-func generateRandomKey(strength int) []byte {
+// GenerateRandomKey creates a random key with the given strength.
+func GenerateRandomKey(strength int) []byte {
 	k := make([]byte, strength)
 	if n, err := io.ReadFull(rand.Reader, k); n != strength || err != nil {
 		return RandomCreateBytes(strength)
@@ -81,12 +81,12 @@ func generateRandomKey(strength int) []byte {
 
 // Encryption -----------------------------------------------------------------
 
-// encrypt encrypts a value using the given block in counter mode.
+// Encrypt encrypts a value using the given block in counter mode.
 //
 // A random initialization vector (http://goo.gl/zF67k) with the length of the
 // block size is prepended to the resulting ciphertext.
-func encrypt(block cipher.Block, value []byte) ([]byte, error) {
-	iv := generateRandomKey(block.BlockSize())
+func Encrypt(block cipher.Block, value []byte) ([]byte, error) {
+	iv := GenerateRandomKey(block.BlockSize())
 	if iv == nil {
 		return nil, errors.New("encrypt: failed to generate random iv")
 	}
@@ -97,11 +97,11 @@ func encrypt(block cipher.Block, value []byte) ([]byte, error) {
 	return append(iv, value...), nil
 }
 
-// decrypt decrypts a value using the given block in counter mode.
+// Decrypt decrypts a value using the given block in counter mode.
 //
 // The value to be decrypted must be prepended by a initialization vector
 // (http://goo.gl/zF67k) with the length of the block size.
-func decrypt(block cipher.Block, value []byte) ([]byte, error) {
+func Decrypt(block cipher.Block, value []byte) ([]byte, error) {
 	size := block.BlockSize()
 	if len(value) > size {
 		// Extract iv.
@@ -116,7 +116,7 @@ func decrypt(block cipher.Block, value []byte) ([]byte, error) {
 	return nil, errors.New("decrypt: the value could not be decrypted")
 }
 
-func encodeCookie(block cipher.Block, hashKey, name string, value map[interface{}]interface{}) (string, error) {
+func EncodeCookie(block cipher.Block, hashKey, name string, value map[interface{}]interface{}) (string, error) {
 	var err error
 	var b []byte
 	// 1. EncodeGob.
@@ -124,10 +124,10 @@ func encodeCookie(block cipher.Block, hashKey, name string, value map[interface{
 		return "", err
 	}
 	// 2. Encrypt (optional).
-	if b, err = encrypt(block, b); err != nil {
+	if b, err = Encrypt(block, b); err != nil {
 		return "", err
 	}
-	b = encode(b)
+	b = Encode(b)
 	// 3. Create MAC for "name|date|value". Extra pipe to be used later.
 	b = []byte(fmt.Sprintf("%s|%d|%s|", name, time.Now().UTC().Unix(), b))
 	h := hmac.New(sha1.New, []byte(hashKey))
@@ -136,14 +136,14 @@ func encodeCookie(block cipher.Block, hashKey, name string, value map[interface{
 	// Append mac, remove name.
 	b = append(b, sig...)[len(name)+1:]
 	// 4. Encode to base64.
-	b = encode(b)
+	b = Encode(b)
 	// Done.
 	return string(b), nil
 }
 
-func decodeCookie(block cipher.Block, hashKey, name, value string, gcmaxlifetime int64) (map[interface{}]interface{}, error) {
+func DecodeCookie(block cipher.Block, hashKey, name, value string, gcmaxlifetime int64) (map[interface{}]interface{}, error) {
 	// 1. Decode from base64.
-	b, err := decode([]byte(value))
+	b, err := Decode([]byte(value))
 	if err != nil {
 		return nil, err
 	}
@@ -173,11 +173,11 @@ func decodeCookie(block cipher.Block, hashKey, name, value string, gcmaxlifetime
 		return nil, errors.New("Decode: expired timestamp")
 	}
 	// 4. Decrypt (optional).
-	b, err = decode(parts[1])
+	b, err = Decode(parts[1])
 	if err != nil {
 		return nil, err
 	}
-	if b, err = decrypt(block, b); err != nil {
+	if b, err = Decrypt(block, b); err != nil {
 		return nil, err
 	}
 	// 5. DecodeGob.
@@ -190,15 +190,15 @@ func decodeCookie(block cipher.Block, hashKey, name, value string, gcmaxlifetime
 
 // Encoding -------------------------------------------------------------------
 
-// encode encodes a value using base64.
-func encode(value []byte) []byte {
+// Encode encodes a value using base64.
+func Encode(value []byte) []byte {
 	encoded := make([]byte, base64.URLEncoding.EncodedLen(len(value)))
 	base64.URLEncoding.Encode(encoded, value)
 	return encoded
 }
 
-// decode decodes a cookie using base64.
-func decode(value []byte) ([]byte, error) {
+// Decode decodes a cookie using base64.
+func Decode(value []byte) ([]byte, error) {
 	decoded := make([]byte, base64.URLEncoding.DecodedLen(len(value)))
 	b, err := base64.URLEncoding.Decode(decoded, value)
 	if err != nil {

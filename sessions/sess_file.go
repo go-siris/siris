@@ -23,6 +23,8 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/go-siris/siris/sessions/utils"
 )
 
 var (
@@ -78,7 +80,7 @@ func (fs *FileSessionStore) SessionID() string {
 
 // SessionRelease Write file session to local file with Gob string
 func (fs *FileSessionStore) SessionRelease(w http.ResponseWriter) {
-	b, err := EncodeGob(fs.values)
+	b, err := utils.EncodeGob(fs.values)
 	if err != nil {
 		SLogger.Println(err)
 		return
@@ -153,7 +155,7 @@ func (fp *FileProvider) SessionRead(sid string) (Store, error) {
 	if len(b) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = DecodeGob(b)
+		kv, err = utils.DecodeGob(b)
 		if err != nil {
 			return nil, err
 		}
@@ -242,7 +244,7 @@ func (fp *FileProvider) SessionRegenerate(oldsid, sid string) (Store, error) {
 		if len(b) == 0 {
 			kv = make(map[interface{}]interface{})
 		} else {
-			kv, err = DecodeGob(b)
+			kv, err = utils.DecodeGob(b)
 			if err != nil {
 				return nil, err
 			}

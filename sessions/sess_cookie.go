@@ -21,6 +21,8 @@ import (
 	"net/http"
 	"net/url"
 	"sync"
+
+	"github.com/go-siris/siris/sessions/utils"
 )
 
 var cookiepder = &CookieProvider{}
@@ -74,7 +76,7 @@ func (st *CookieSessionStore) SessionID() string {
 
 // SessionRelease Write cookie session to http response cookie
 func (st *CookieSessionStore) SessionRelease(w http.ResponseWriter) {
-	encodedCookie, err := encodeCookie(cookiepder.block, cookiepder.config.SecurityKey, cookiepder.config.SecurityName, st.values)
+	encodedCookie, err := utils.EncodeCookie(cookiepder.block, cookiepder.config.SecurityKey, cookiepder.config.SecurityName, st.values)
 	if err == nil {
 		cookie := &http.Cookie{Name: cookiepder.config.CookieName,
 			Value:    url.QueryEscape(encodedCookie),
@@ -119,10 +121,10 @@ func (pder *CookieProvider) SessionInit(maxlifetime int64, config string) error 
 		return err
 	}
 	if pder.config.BlockKey == "" {
-		pder.config.BlockKey = string(generateRandomKey(16))
+		pder.config.BlockKey = string(utils.GenerateRandomKey(16))
 	}
 	if pder.config.SecurityName == "" {
-		pder.config.SecurityName = string(generateRandomKey(20))
+		pder.config.SecurityName = string(utils.GenerateRandomKey(20))
 	}
 	pder.block, err = aes.NewCipher([]byte(pder.config.BlockKey))
 	if err != nil {
@@ -135,7 +137,7 @@ func (pder *CookieProvider) SessionInit(maxlifetime int64, config string) error 
 // SessionRead Get SessionStore in cooke.
 // decode cooke string to map and put into SessionStore with sid.
 func (pder *CookieProvider) SessionRead(sid string) (Store, error) {
-	maps, _ := decodeCookie(pder.block,
+	maps, _ := utils.DecodeCookie(pder.block,
 		pder.config.SecurityKey,
 		pder.config.SecurityName,
 		sid, pder.maxlifetime)

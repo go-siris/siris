@@ -38,6 +38,7 @@ import (
 	"sync"
 
 	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/sessions/utils"
 
 	"github.com/bradfitz/gomemcache/memcache"
 )
@@ -94,7 +95,7 @@ func (rs *SessionStore) SessionID() string {
 
 // SessionRelease save session values to memcache
 func (rs *SessionStore) SessionRelease(w http.ResponseWriter) {
-	b, err := sessions.EncodeGob(rs.values)
+	b, err := utils.EncodeGob(rs.values)
 	if err != nil {
 		return
 	}
@@ -136,7 +137,7 @@ func (rp *MemProvider) SessionRead(sid string) (sessions.Store, error) {
 	if len(item.Value) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = sessions.DecodeGob(item.Value)
+		kv, err = utils.DecodeGob(item.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -187,7 +188,7 @@ func (rp *MemProvider) SessionRegenerate(oldsid, sid string) (sessions.Store, er
 		kv = make(map[interface{}]interface{})
 	} else {
 		var err error
-		kv, err = sessions.DecodeGob(contain)
+		kv, err = utils.DecodeGob(contain)
 		if err != nil {
 			return nil, err
 		}

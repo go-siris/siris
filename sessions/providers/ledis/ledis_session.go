@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/sessions/utils"
 	"github.com/siddontang/ledisdb/config"
 	"github.com/siddontang/ledisdb/ledis"
 )
@@ -66,7 +67,7 @@ func (ls *SessionStore) SessionID() string {
 
 // SessionRelease save session values to ledis
 func (ls *SessionStore) SessionRelease(w http.ResponseWriter) {
-	b, err := sessions.EncodeGob(ls.values)
+	b, err := utils.EncodeGob(ls.values)
 	if err != nil {
 		return
 	}
@@ -121,7 +122,7 @@ func (lp *Provider) SessionRead(sid string) (sessions.Store, error) {
 	if len(kvs) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		if kv, err = sessions.DecodeGob(kvs); err != nil {
+		if kv, err = utils.DecodeGob(kvs); err != nil {
 			return nil, err
 		}
 	}

@@ -12,43 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package postgres for session provider
+// Package mysql for session provider
 //
-// depends on github.com/lib/pq:
+// depends on github.com/go-sql-driver/mysql:
 //
-// go install github.com/lib/pq
+// go install github.com/go-sql-driver/mysql
 //
-//
-// needs this table in your database:
-//
-// CREATE TABLE session (
-// session_key	char(64) NOT NULL,
-// session_data	bytea,
-// session_expiry	timestamp NOT NULL,
-// CONSTRAINT session_key PRIMARY KEY(session_key)
-// );
-//
-// will be activated with these settings in app.conf:
-//
-// SessionOn = true
-// SessionProvider = postgresql
-// SessionSavePath = "user=a password=b dbname=c sslmode=disable"
-// SessionName = session
-//
+// mysql session support need create table as sql:
+//	CREATE TABLE `session` (
+//	`session_key` char(64) NOT NULL,
+//	`session_data` blob,
+//	`session_expiry` int(11) unsigned NOT NULL,
+//	PRIMARY KEY (`session_key`)
+//	) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 //
 // Usage:
 // import(
-//   _ "github.com/go-siris/siris/sessions/postgresql"
+//   _ "github.com/go-siris/siris/sessions/mysql"
 //   "github.com/go-siris/siris/sessions"
 // )
 //
 //	func init() {
-//		globalSessions, _ = sessions.NewManager("postgresql", ``{"cookieName":"gosessionid","gclifetime":3600,"ProviderConfig":"user=pqgotest dbname=pqgotest sslmode=verify-full"}``)
+//		globalSessions, _ = sessions.NewManager("mysql", ``{"cookieName":"gosessionid","gclifetime":3600,"ProviderConfig":"[username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]"}``)
 //		go globalSessions.GC()
 //	}
 //
 // more docs: http://beego.me/docs/module/sessions.md
-package postgres
+package mysql
 
 import (
 	"database/sql"
@@ -57,13 +47,18 @@ import (
 	"time"
 
 	"github.com/go-siris/siris/sessions"
-	// import postgresql Driver
-	_ "github.com/lib/pq"
+	"github.com/go-siris/siris/sessions/utils"
+	// import mysql driver
+	_ "github.com/go-sql-driver/mysql"
 )
 
-var postgresqlpder = &Provider{}
+var (
+	// TableName store the session in MySQL
+	TableName = "session"
+	mysqlpder = &Provider{}
+)
 
-// SessionStore postgresql session store
+// SessionStore mysql session store
 type SessionStore struct {
 	c      *sql.DB
 	sid    string
@@ -71,7 +66,7 @@ type SessionStore struct {
 	values map[interface{}]interface{}
 }
 
-// Set value in postgresql sessions.
+// Set value in mysql sessions.
 // it is temp value in map.
 func (st *SessionStore) Set(key, value interface{}) error {
 	st.lock.Lock()
@@ -80,7 +75,7 @@ func (st *SessionStore) Set(key, value interface{}) error {
 	return nil
 }
 
-// Get value from postgresql session
+// Get value from mysql session
 func (st *SessionStore) Get(key interface{}) interface{} {
 	st.lock.RLock()
 	defer st.lock.RUnlock()
@@ -90,7 +85,7 @@ func (st *SessionStore) Get(key interface{}) interface{} {
 	return nil
 }
 
-// Delete value in postgresql session
+// Delete value in mysql session
 func (st *SessionStore) Delete(key interface{}) error {
 	st.lock.Lock()
 	defer st.lock.Unlock()
@@ -98,7 +93,7 @@ func (st *SessionStore) Delete(key interface{}) error {
 	return nil
 }
 
-// Flush clear all values in postgresql session
+// Flush clear all values in mysql session
 func (st *SessionStore) Flush() error {
 	st.lock.Lock()
 	defer st.lock.Unlock()
@@ -106,69 +101,61 @@ func (st *SessionStore) Flush() error {
 	return nil
 }
 
-// SessionID get session id of this postgresql session store
+// SessionID get session id of this mysql session store
 func (st *SessionStore) SessionID() string {
 	return st.sid
 }
 
-// SessionRelease save postgresql session values to database.
+// SessionRelease save mysql session values to database.
 // must call this method to save values to database.
 func (st *SessionStore) SessionRelease(w http.ResponseWriter) {
 	defer st.c.Close()
-	b, err := sessions.EncodeGob(st.values)
+	b, err := utils.EncodeGob(st.values)
 	if err != nil {
 		return
 	}
-	st.c.Exec("UPDATE session set session_data=$1, session_expiry=$2 where session_key=$3",
-		b, time.Now().Format(time.RFC3339), st.sid)
-
+	st.c.Exec("UPDATE "+TableName+" set `session_data`=?, `session_expiry`=? where session_key=?",
+		b, time.Now().Unix(), st.sid)
 }
 
-// Provider postgresql session provider
+// Provider mysql session provider
 type Provider struct {
 	maxlifetime int64
 	savePath    string
 }
 
-// connect to postgresql
+// connect to mysql
 func (mp *Provider) connectInit() *sql.DB {
-	db, e := sql.Open("postgres", mp.savePath)
+	db, e := sql.Open("mysql", mp.savePath)
 	if e != nil {
 		return nil
 	}
 	return db
 }
 
-// SessionInit init postgresql sessions.
-// savepath is the connection string of postgresql.
+// SessionInit init mysql sessions.
+// savepath is the connection string of mysql.
 func (mp *Provider) SessionInit(maxlifetime int64, savePath string) error {
 	mp.maxlifetime = maxlifetime
 	mp.savePath = savePath
 	return nil
 }
 
-// SessionRead get postgresql session by sid
+// SessionRead get mysql session by sid
 func (mp *Provider) SessionRead(sid string) (sessions.Store, error) {
 	c := mp.connectInit()
-	row := c.QueryRow("select session_data from session where session_key=$1", sid)
+	row := c.QueryRow("select session_data from "+TableName+" where session_key=?", sid)
 	var sessiondata []byte
 	err := row.Scan(&sessiondata)
 	if err == sql.ErrNoRows {
-		_, err = c.Exec("insert into session(session_key,session_data,session_expiry) values($1,$2,$3)",
-			sid, "", time.Now().Format(time.RFC3339))
-
-		if err != nil {
-			return nil, err
-		}
-	} else if err != nil {
-		return nil, err
+		c.Exec("insert into "+TableName+"(`session_key`,`session_data`,`session_expiry`) values(?,?,?)",
+			sid, "", time.Now().Unix())
 	}
-
 	var kv map[interface{}]interface{}
 	if len(sessiondata) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = sessions.DecodeGob(sessiondata)
+		kv, err = utils.DecodeGob(sessiondata)
 		if err != nil {
 			return nil, err
 		}
@@ -177,32 +164,31 @@ func (mp *Provider) SessionRead(sid string) (sessions.Store, error) {
 	return rs, nil
 }
 
-// SessionExist check postgresql session exist
+// SessionExist check mysql session exist
 func (mp *Provider) SessionExist(sid string) bool {
 	c := mp.connectInit()
 	defer c.Close()
-	row := c.QueryRow("select session_data from session where session_key=$1", sid)
+	row := c.QueryRow("select session_data from "+TableName+" where session_key=?", sid)
 	var sessiondata []byte
 	err := row.Scan(&sessiondata)
 	return !(err == sql.ErrNoRows)
 }
 
-// SessionRegenerate generate new sid for postgresql session
+// SessionRegenerate generate new sid for mysql session
 func (mp *Provider) SessionRegenerate(oldsid, sid string) (sessions.Store, error) {
 	c := mp.connectInit()
-	row := c.QueryRow("select session_data from session where session_key=$1", oldsid)
+	row := c.QueryRow("select session_data from "+TableName+" where session_key=?", oldsid)
 	var sessiondata []byte
 	err := row.Scan(&sessiondata)
 	if err == sql.ErrNoRows {
-		c.Exec("insert into session(session_key,session_data,session_expiry) values($1,$2,$3)",
-			oldsid, "", time.Now().Format(time.RFC3339))
+		c.Exec("insert into "+TableName+"(`session_key`,`session_data`,`session_expiry`) values(?,?,?)", oldsid, "", time.Now().Unix())
 	}
-	c.Exec("update session set session_key=$1 where session_key=$2", sid, oldsid)
+	c.Exec("update "+TableName+" set `session_key`=? where session_key=?", sid, oldsid)
 	var kv map[interface{}]interface{}
 	if len(sessiondata) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = sessions.DecodeGob(sessiondata)
+		kv, err = utils.DecodeGob(sessiondata)
 		if err != nil {
 			return nil, err
 		}
@@ -211,27 +197,27 @@ func (mp *Provider) SessionRegenerate(oldsid, sid string) (sessions.Store, error
 	return rs, nil
 }
 
-// SessionDestroy delete postgresql session by sid
+// SessionDestroy delete mysql session by sid
 func (mp *Provider) SessionDestroy(sid string) error {
 	c := mp.connectInit()
-	c.Exec("DELETE FROM session where session_key=$1", sid)
+	c.Exec("DELETE FROM "+TableName+" where session_key=?", sid)
 	c.Close()
 	return nil
 }
 
-// SessionGC delete expired values in postgresql session
+// SessionGC delete expired values in mysql session
 func (mp *Provider) SessionGC() {
 	c := mp.connectInit()
-	c.Exec("DELETE from session where EXTRACT(EPOCH FROM (current_timestamp - session_expiry)) > $1", mp.maxlifetime)
+	c.Exec("DELETE from "+TableName+" where session_expiry < ?", time.Now().Unix()-mp.maxlifetime)
 	c.Close()
 }
 
-// SessionAll count values in postgresql session
+// SessionAll count values in mysql session
 func (mp *Provider) SessionAll() int {
 	c := mp.connectInit()
 	defer c.Close()
 	var total int
-	err := c.QueryRow("SELECT count(*) as num from session").Scan(&total)
+	err := c.QueryRow("SELECT count(*) as num from " + TableName).Scan(&total)
 	if err != nil {
 		return 0
 	}
@@ -239,5 +225,5 @@ func (mp *Provider) SessionAll() int {
 }
 
 func init() {
-	sessions.Register("postgresql", postgresqlpder)
+	sessions.Register("mysql", mysqlpder)
 }

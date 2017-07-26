@@ -40,6 +40,7 @@ import (
 	couchbase "github.com/couchbase/go-couchbase"
 
 	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/sessions/utils"
 )
 
 var couchbpder = &Provider{}
@@ -105,7 +106,7 @@ func (cs *SessionStore) SessionID() string {
 func (cs *SessionStore) SessionRelease(w http.ResponseWriter) {
 	defer cs.b.Close()
 
-	bo, err := sessions.EncodeGob(cs.values)
+	bo, err := utils.EncodeGob(cs.values)
 	if err != nil {
 		return
 	}
@@ -167,7 +168,7 @@ func (cp *Provider) SessionRead(sid string) (sessions.Store, error) {
 	} else if doc == nil {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = sessions.DecodeGob(doc)
+		kv, err = utils.DecodeGob(doc)
 		if err != nil {
 			return nil, err
 		}
@@ -214,7 +215,7 @@ func (cp *Provider) SessionRegenerate(oldsid, sid string) (sessions.Store, error
 	if doc == nil {
 		kv = make(map[interface{}]interface{})
 	} else {
-		kv, err = sessions.DecodeGob(doc)
+		kv, err = utils.DecodeGob(doc)
 		if err != nil {
 			return nil, err
 		}

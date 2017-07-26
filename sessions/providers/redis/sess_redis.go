@@ -40,6 +40,7 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/go-siris/siris/sessions"
+	"github.com/go-siris/siris/sessions/utils"
 )
 
 var redispder = &Provider{}
@@ -97,7 +98,7 @@ func (rs *SessionStore) SessionID() string {
 
 // SessionRelease save session values to redis
 func (rs *SessionStore) SessionRelease(w http.ResponseWriter) {
-	b, err := sessions.EncodeGob(rs.values)
+	b, err := utils.EncodeGob(rs.values)
 	if err != nil {
 		return
 	}
@@ -184,7 +185,7 @@ func (rp *Provider) SessionRead(sid string) (sessions.Store, error) {
 	if len(kvs) == 0 {
 		kv = make(map[interface{}]interface{})
 	} else {
-		if kv, err = sessions.DecodeGob([]byte(kvs)); err != nil {
+		if kv, err = utils.DecodeGob([]byte(kvs)); err != nil {
 			return nil, err
 		}
 	}
