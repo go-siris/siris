@@ -15,9 +15,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/Unknwon/i18n"
-  packages = ["."]
-  revision = "8372b908b5876d26cfa46a85fc4851b981dad102"
+  name = "github.com/aead/chacha20"
+  packages = [".","chacha"]
+  revision = "8d6ce0550041f9d97e7f15ec27ed489f8bbbb0fb"
 
 [[projects]]
   name = "github.com/ajg/form"
@@ -111,6 +111,24 @@
   revision = "47d58efa69556a936a3c15eb2ed42706d968ab01"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/go-siris/middleware-basicauth"
+  packages = ["."]
+  revision = "ee035de6d1660a2fb6b8c94e3df7f0ec278c2994"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-siris/middleware-logger"
+  packages = ["."]
+  revision = "d796ac804e7ec16da0117777e54930ce23301f36"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-siris/middleware-recover"
+  packages = ["."]
+  revision = "2867fcea40e272bbe2831d971a61a2c23bebaab4"
+
+[[projects]]
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   revision = "a0583e0143b1624142adab07e0e97fe106d99561"
@@ -133,6 +151,12 @@
   packages = ["."]
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
   version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/hashicorp/golang-lru"
+  packages = [".","simplelru"]
+  revision = "0a025b7e63adc15a622f29b0b2c4c3848243bbf6"
 
 [[projects]]
   name = "github.com/imkira/go-interpol"
@@ -169,6 +193,30 @@
   name = "github.com/lib/pq"
   packages = [".","oid"]
   revision = "dd1fe2071026ce53f36a39112e645b4d4f5793a4"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lucas-clemente/aes12"
+  packages = ["."]
+  revision = "25700e67be5c860bcc999137275b9ef8b65932bd"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lucas-clemente/fnv128a"
+  packages = ["."]
+  revision = "393af48d391698c6ae4219566bfbdfef67269997"
+
+[[projects]]
+  name = "github.com/lucas-clemente/quic-go"
+  packages = [".","ackhandler","congestion","crypto","flowcontrol","frames","h2quic","handshake","protocol","qerr","utils"]
+  revision = "d51a4a1ba70df8c2d5c4522c071aaa225690a11d"
+  version = "v0.5.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lucas-clemente/quic-go-certificates"
+  packages = ["."]
+  revision = "d2f86524cced5186554df90d92529757d22c1cb6"
 
 [[projects]]
   branch = "master"
@@ -342,13 +390,13 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["acme","acme/autocert","pbkdf2"]
+  packages = ["acme","acme/autocert","curve25519","hkdf","pbkdf2"]
   revision = "6914964337150723782436d56b3f21610a74ce7b"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["html","html/atom","idna","publicsuffix"]
+  packages = ["html","html/atom","http2","http2/hpack","idna","lex/httplex","publicsuffix"]
   revision = "ab5485076ff3407ad2d02db054635913f017b0ed"
 
 [[projects]]
@@ -370,12 +418,6 @@
   version = "v1.0.4"
 
 [[projects]]
-  name = "gopkg.in/ini.v1"
-  packages = ["."]
-  revision = "d3de07a94d22b4a0972deb4b96d790c2c0ce8333"
-  version = "v1.28.0"
-
-[[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -384,6 +426,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "24f2777fc8e79a64cb55d4ba3db729ab01734e6ed7c81ace1605e29143e88b7c"
+  inputs-digest = "910ca1e6231ed6f92e44d57a9bfea16bfe3985bfdefeb12d8842988d32062b8b"
   solver-name = "gps-cdcl"
   solver-version = 1
