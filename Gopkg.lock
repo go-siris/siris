@@ -20,6 +20,12 @@
   revision = "8372b908b5876d26cfa46a85fc4851b981dad102"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/aead/chacha20"
+  packages = [".","chacha"]
+  revision = "8d6ce0550041f9d97e7f15ec27ed489f8bbbb0fb"
+
+[[projects]]
   name = "github.com/ajg/form"
   packages = ["."]
   revision = "cc2954064ec9ea8d93917f0f87456e11d7b881ad"
@@ -135,6 +141,12 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/hashicorp/golang-lru"
+  packages = [".","simplelru"]
+  revision = "0a025b7e63adc15a622f29b0b2c4c3848243bbf6"
+
+[[projects]]
   name = "github.com/imkira/go-interpol"
   packages = ["."]
   revision = "5accad8134979a6ac504d456a6c7f1c53da237ca"
@@ -169,6 +181,30 @@
   name = "github.com/lib/pq"
   packages = [".","oid"]
   revision = "dd1fe2071026ce53f36a39112e645b4d4f5793a4"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lucas-clemente/aes12"
+  packages = ["."]
+  revision = "25700e67be5c860bcc999137275b9ef8b65932bd"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lucas-clemente/fnv128a"
+  packages = ["."]
+  revision = "393af48d391698c6ae4219566bfbdfef67269997"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lucas-clemente/quic-go"
+  packages = [".","ackhandler","congestion","crypto","flowcontrol","frames","h2quic","handshake","internal/utils","protocol","qerr"]
+  revision = "811315e31a0c190e7a9e86c84102e86c9ed2a072"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lucas-clemente/quic-go-certificates"
+  packages = ["."]
+  revision = "d2f86524cced5186554df90d92529757d22c1cb6"
 
 [[projects]]
   branch = "master"
@@ -342,13 +378,13 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["acme","acme/autocert","pbkdf2"]
+  packages = ["acme","acme/autocert","curve25519","hkdf","pbkdf2"]
   revision = "6914964337150723782436d56b3f21610a74ce7b"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["html","html/atom","idna","publicsuffix"]
+  packages = ["html","html/atom","http2","http2/hpack","idna","lex/httplex","publicsuffix"]
   revision = "ab5485076ff3407ad2d02db054635913f017b0ed"
 
 [[projects]]
@@ -384,6 +420,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "24f2777fc8e79a64cb55d4ba3db729ab01734e6ed7c81ace1605e29143e88b7c"
+  inputs-digest = "ab8b4e3ab77f9aaa269d4d4bac3ab68c71499c156a3643d3aa73b82de95cf273"
   solver-name = "gps-cdcl"
   solver-version = 1
