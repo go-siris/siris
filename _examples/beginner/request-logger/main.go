@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/go-siris/middleware-logger"
+	logger "github.com/go-siris/middleware-logger"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
 )
