@@ -14,7 +14,7 @@ import (
 	//"github.com/stretchr/testify/assert"
 	"gopkg.in/gavv/httpexpect.v1"
 
-	"github.com/go-siris/middleware-basicauth"
+	basicauth "github.com/go-siris/middleware-basicauth"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
 )

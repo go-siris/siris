@@ -29,7 +29,7 @@ import (
 	"github.com/go-siris/siris/view"
 	// middleware used in Default method
 	requestLogger "github.com/go-siris/middleware-logger"
-	"github.com/go-siris/middleware-recover"
+	recover "github.com/go-siris/middleware-recover"
 )
 
 const (
