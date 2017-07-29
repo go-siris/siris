@@ -208,6 +208,10 @@
 
 [[override]]
   branch = "master"
+  name = "github.com/lucas-clemente/quic-go"
+
+[[override]]
+  branch = "master"
   name = "github.com/couchbase/go-couchbase"
   source = "https://github.com/go-siris/go-couchbase.git"
 
