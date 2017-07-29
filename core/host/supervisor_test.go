@@ -153,11 +153,12 @@ func testSupervisor2(t *testing.T, creator func(*http.Server, []func(TaskHost)) 
 	defer host.Shutdown(context.TODO())
 
 	go func() {
+		tlsNewTicketEvery = time.Second * 5
 		err2 := host.ListenAndServeTLS("../../coverage-tests/fixtures/server.crt", "../../coverage-tests/fixtures/server.key")
 		fmt.Println(err2)
 	}()
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(15 * time.Second)
 	// http testsing and various calls
 	// no need for time sleep because the following will take some time by theirselves
 	tester := newTester(t, "https://"+addr, mux)

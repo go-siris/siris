@@ -18,7 +18,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-const (
+var (
 	tlsNewTicketEvery = time.Hour * 6 // generate a new ticket for TLS PFS encryption every so often
 	tlsNumTickets     = 5             // hold and consider that many tickets to decrypt TLS sessions
 )
