@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/go-siris/middleware-i18n"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
-	"github.com/go-siris/siris/middleware/i18n"
 )
 
 func main() {

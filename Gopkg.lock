@@ -15,12 +15,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/Unknwon/i18n"
-  packages = ["."]
-  revision = "8372b908b5876d26cfa46a85fc4851b981dad102"
-
-[[projects]]
-  branch = "master"
   name = "github.com/aead/chacha20"
   packages = [".","chacha"]
   revision = "8d6ce0550041f9d97e7f15ec27ed489f8bbbb0fb"
@@ -115,6 +109,24 @@
   name = "github.com/gavv/monotime"
   packages = ["."]
   revision = "47d58efa69556a936a3c15eb2ed42706d968ab01"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-siris/middleware-basicauth"
+  packages = ["."]
+  revision = "ee035de6d1660a2fb6b8c94e3df7f0ec278c2994"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-siris/middleware-logger"
+  packages = ["."]
+  revision = "d796ac804e7ec16da0117777e54930ce23301f36"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-siris/middleware-recover"
+  packages = ["."]
+  revision = "2867fcea40e272bbe2831d971a61a2c23bebaab4"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -406,12 +418,6 @@
   version = "v1.0.4"
 
 [[projects]]
-  name = "gopkg.in/ini.v1"
-  packages = ["."]
-  revision = "d3de07a94d22b4a0972deb4b96d790c2c0ce8333"
-  version = "v1.28.0"
-
-[[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -420,6 +426,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ab8b4e3ab77f9aaa269d4d4bac3ab68c71499c156a3643d3aa73b82de95cf273"
+  inputs-digest = "242be04cbf329e053cdd750f72138b6dbad09b9a50a282cd627e3c31092cd0f4"
   solver-name = "gps-cdcl"
   solver-version = 1

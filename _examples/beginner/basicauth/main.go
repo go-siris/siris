@@ -3,9 +3,9 @@ package main
 import (
 	"time"
 
+	basicauth "github.com/go-siris/middleware-basicauth"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
-	"github.com/go-siris/siris/middleware/basicauth"
 )
 
 func main() {

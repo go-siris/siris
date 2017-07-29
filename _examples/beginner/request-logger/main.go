@@ -1,9 +1,9 @@
 package main
 
 import (
+	logger "github.com/go-siris/middleware-logger"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
-	"github.com/go-siris/siris/middleware/logger"
 )
 
 func main() {
