@@ -14,9 +14,9 @@ import (
 	//"github.com/stretchr/testify/assert"
 	"gopkg.in/gavv/httpexpect.v1"
 
+	"github.com/go-siris/middleware-basicauth"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
-	"github.com/go-siris/siris/middleware/basicauth"
 )
 
 func createApp() *siris.Application {
