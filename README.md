@@ -5,7 +5,7 @@ A fast, cross-platform and efficient web framework with robust set of well-desig
 [![Build status](https://api.travis-ci.org/go-siris/siris.svg?branch=master&style=flat-square)](https://travis-ci.org/go-siris/siris)
 [![Report card](https://img.shields.io/badge/report%20card%20-a%2B-F44336.svg?style=flat-square)](https://goreportcard.com/report/github.com/go-siris/siris)
 [![Support forum](https://img.shields.io/badge/support-page-ec2eb4.svg?style=flat-square)](http://support.go-siris.com)
-[![Examples](https://img.shields.io/badge/howto-examples-3362c2.svg?style=flat-square)](https://github.com/go-siris/siris/tree/master/_examples#table-of-contents)
+[![Examples](https://img.shields.io/badge/howto-examples-3362c2.svg?style=flat-square)](https://github.com/go-siris/siris-examples/tree/master#table-of-contents)
 [![Godocs](https://img.shields.io/badge/7.3.4-%20documentation-5272B4.svg?style=flat-square)](https://godoc.org/github.com/go-siris/siris)
 [![Chat](https://img.shields.io/badge/community-%20chat-00BCD4.svg?style=flat-square)](https://gitter.im/gosiris/siris)
 
@@ -19,7 +19,7 @@ If you're coming from [Node.js](https://nodejs.org) world, this is the [expressj
 * [Installation](#installation)
 * [Feature overview](#feature-overview)
 * [Documentation](#documentation)
-    * [Examples](https://github.com/go-siris/siris/tree/master/_examples)
+    * [Examples](https://github.com/go-siris/siris-examples/tree/master)
 * [Support](#support)
 * [Third-party middleware list](#third-party-middleware)    
 * [Testing](#testing)
@@ -164,28 +164,28 @@ func createUser(ctx context.Context) {
 | Feature | More Information |
 | --------|------------------|
 | high performance | [benchmark](https://github.com/smallnest/go-web-framework-benchmark) |
-| Authentication | [basicauth](_examples/beginner/basicauth) [oauth2](_examples/intermediate/oauth2) TODO JWT|
-| Cache | [cache-markdown](_examples/intermediate/cache-markdown)  |
-| Certificates | [letsencrypt](/_examples/beginner/listening/listen-letsencrypt/main.go) [custom](/_examples/beginner/listening/listen-tls/main.go) |
+| Authentication | [basicauth](https://github.com/go-siris/siris-examples/beginner/basicauth) [oauth2](https://github.com/go-siris/siris-examples/intermediate/oauth2) TODO JWT|
+| Cache | [cache-markdown](https://github.com/go-siris/siris-examples/intermediate/cache-markdown)  |
+| Certificates | [letsencrypt](https://github.com/go-siris/siris-examples/beginner/listening/listen-letsencrypt/main.go) [custom](https://github.com/go-siris/siris-examples/beginner/listening/listen-tls/main.go) |
 | Compression | gzip and deflate |
-| Decode Json, Forms | [json](_examples/beginner/read-json) [form](_examples/beginner/read-form)|
-| Encode Json, JsonP, XML, Forms, Markdown | [json](_examples/beginner/write-json) [cache-markdown](_examples/intermediate/cache-markdown) |
+| Decode Json, Forms | [json](https://github.com/go-siris/siris-examples/beginner/read-json) [form](https://github.com/go-siris/siris-examples/beginner/read-form)|
+| Encode Json, JsonP, XML, Forms, Markdown | [json](https://github.com/go-siris/siris-examples/beginner/write-json) [cache-markdown](https://github.com/go-siris/siris-examples/intermediate/cache-markdown) |
 | Error handling | custom [error handler] [panic handler]|
 | http2 push | TODO add Documentation |
 | Limits | RequestBody TODO add docu|
-| Localization | [i18n](_examples/intermediate/i18n) |
-| Logger Engines | [file-logger](_examples/beginner/file-logger) [request-logger](_examples/beginner/request-logger) |
-| Routing | [routing](_examples/beginner/routing)  |
-| Sessions | [sessions](_examples/intermediate/sessions) |
-| Static Files | [file-server](_examples/beginner/file-server) |
-| Subdomains and Grouping | [subdomains](_examples/intermediate/subdomains) |
-| Tempalte HTML, django, pug(jade), handlebars, amber | [views](_examples/intermediate/view) |
+| Localization | [i18n](https://github.com/go-siris/siris-examples/intermediate/i18n) |
+| Logger Engines | [file-logger](https://github.com/go-siris/siris-examples/beginner/file-logger) [request-logger](https://github.com/go-siris/siris-examples/beginner/request-logger) |
+| Routing | [routing](https://github.com/go-siris/siris-examples/beginner/routing)  |
+| Sessions | [sessions](https://github.com/go-siris/siris-examples/intermediate/sessions) |
+| Static Files | [file-server](https://github.com/go-siris/siris-examples/beginner/file-server) |
+| Subdomains and Grouping | [subdomains](https://github.com/go-siris/siris-examples/intermediate/subdomains) |
+| Tempalte HTML, django, pug(jade), handlebars, amber | [views](https://github.com/go-siris/siris-examples/intermediate/view) |
 | Tooling | Typescript integration + Web IDE |
-| Websockets | [websockets](_examples/intermediate/websockets) |
+| Websockets | [websockets](https://github.com/go-siris/siris-examples/intermediate/websockets) |
 
 # Documentation
 
-Small but practical [examples](https://github.com/go-siris/siris/tree/master/_examples#table-of-contents) --they cover each feature.
+Small but practical [examples](https://github.com/go-siris/siris-examples/tree/master#table-of-contents) --they cover each feature.
 
 Wanna create your own fast URL Shortener Service Using Siris? --click [here](https://medium.com/@kataras/a-url-shortener-service-using-go-iris-and-bolt-4182f0b00ae7) to learn how.
 
@@ -208,7 +208,7 @@ See [THIRD-PARTY-MIDDLEWARE.md](https://github.com/go-siris/siris/blob/master/TH
 
 The `httptest` package is your way for end-to-end HTTP testing, it uses the httpexpect library created by our friend, [gavv](https://github.com/gavv).
 
-A simple test is located to [./_examples/intermediate/httptest/main_test.go](https://github.com/go-siris/siris/blob/master/_examples/intermediate/httptest/main_test.go)
+A simple test is located to [intermediate/httptest/main_test.go](https://github.com/go-siris/siris-examples/blob/master/intermediate/httptest/main_test.go)
 
 # Philosophy
 
