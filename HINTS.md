@@ -15,7 +15,7 @@ app.Run(siris.Addr(":8080"), siris.EnableReuseport)
 app.Configure(siris.EnableReuseport)
 ```
 
-- Enable the Reuseport feature like abdove
+- Enable the Reuseport feature like above
 - Run a separate server instance per CPU core with GOMAXPROCS=1.
 - Pin each server instance to a separate CPU core using [taskset](http://linux.die.net/man/1/taskset).
 - Ensure the interrupts of multiqueue network card are evenly distributed between CPU cores. See [this article](https://blog.cloudflare.com/how-to-achieve-low-latency/) for details.
