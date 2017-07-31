@@ -17,6 +17,8 @@ import (
 	//logger
 	//"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
+
+	"github.com/go-siris/siris/configuration"
 	// context for the handlers
 	"github.com/go-siris/siris/context"
 	// core packages, needed to build the application
@@ -105,7 +107,7 @@ type Application struct {
 
 	// config contains the configuration fields
 	// all fields defaults to something that is working, developers don't have to set it.
-	config *Configuration
+	config *configuration.Configuration
 
 	// the logrus logger instance, defaults to "Info" level messages (all except "Debug")
 	logger *zap.SugaredLogger
@@ -134,7 +136,7 @@ type Application struct {
 
 // New creates and returns a fresh empty Siris *Application instance.
 func New() *Application {
-	config := DefaultConfiguration()
+	config := configuration.DefaultConfiguration()
 	logger, _ := zap.NewDevelopmentConfig().Build()
 
 	app := &Application{
@@ -271,16 +273,16 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 
 	// create the new host supervisor
 	// bind the constructed server and return it
-	su := host.New(srv, app.config.EnableReuseport)
+	su := host.New(srv, app.config)
 
-	if app.config.vhost == "" { // vhost now is useful for router subdomain on wildcard subdomains,
+	if app.config.GetVHost() == "" { // vhost now is useful for router subdomain on wildcard subdomains,
 		// in order to correct decide what to do on:
 		// mydomain.com -> invalid
 		// localhost -> invalid
 		// sub.mydomain.com -> valid
 		// sub.localhost -> valid
 		// we need the host (without port if 80 or 443) in order to validate these, so:
-		app.config.vhost = nettools.ResolveVHost(srv.Addr)
+		app.config.SetVHost(nettools.ResolveVHost(srv.Addr))
 	}
 
 	if !app.config.DisableBanner {
@@ -334,7 +336,7 @@ type Runner func(*Application) error
 // See `Run` for more.
 func Listener(l net.Listener) Runner {
 	return func(app *Application) error {
-		app.config.vhost = nettools.ResolveVHost(l.Addr().String())
+		app.config.SetVHost(nettools.ResolveVHost(l.Addr().String()))
 		return app.NewHost(new(http.Server)).
 			Serve(l)
 	}

@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/go-siris/siris/configuration"
 	"github.com/go-siris/siris/core/nettools"
 )
 
@@ -67,11 +68,12 @@ func ProxyHandler(target *url.URL) *httputil.ReverseProxy {
 // proxy := NewProxy("mydomain.com:80", target)
 // proxy.ListenAndServe() // use of proxy.Shutdown to close the proxy server.
 func NewProxy(hostAddr string, target *url.URL) *Supervisor {
+	config := configuration.DefaultConfiguration()
 	proxyHandler := ProxyHandler(target)
 	proxy := New(&http.Server{
 		Addr:    hostAddr,
 		Handler: proxyHandler,
-	}, false)
+	}, &config)
 
 	return proxy
 }

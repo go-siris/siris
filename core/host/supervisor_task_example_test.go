@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+
+	"github.com/go-siris/siris/configuration"
 )
 
 const (
@@ -31,7 +33,8 @@ const (
 )
 
 func ExampleSupervisor_RegisterOnErrorHook() {
-	su := New(&http.Server{Addr: ":8273", Handler: http.DefaultServeMux}, false)
+	config := configuration.DefaultConfiguration()
+	su := New(&http.Server{Addr: ":8273", Handler: http.DefaultServeMux}, &config)
 
 	su.RegisterOnErrorHook(func(err error) {
 		fmt.Println(err.Error())
@@ -104,10 +107,11 @@ func (m myTestTask) OnServe(host TaskHost) {
 }
 
 func ExampleSupervisor_RegisterOnServeHook() {
+	config := configuration.DefaultConfiguration()
 	h := New(&http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		}),
-	}, false)
+	}, &config)
 
 	logger := log.New(os.Stdout, "Supervisor: ", 0)
 
