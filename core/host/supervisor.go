@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/tls"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -152,9 +151,9 @@ func (su *Supervisor) notifyServe(host TaskHost) {
 // I don't know channels are not so safe, when go func and race risk..
 // so better with callbacks....
 func (su *Supervisor) supervise(blockFunc func() error) error {
-	host := createTaskHost(su)
+	createdHost := createTaskHost(su)
 
-	su.notifyServe(host)
+	su.notifyServe(createdHost)
 
 	tryStartInterruptNotifier()
 
@@ -188,11 +187,33 @@ func (su *Supervisor) supervise(blockFunc func() error) error {
 func (su *Supervisor) Serve(l net.Listener) error {
 
 	return su.supervise(func() error {
-		err := su.Server.Serve(l)
+		hErr := make(chan error)
+		qErr := make(chan error)
+		go func() {
+			hErr <- su.Server.Serve(l)
+		}()
+
 		if su.quicServer != nil {
-			su.quicServer.Close()
+			// Open the listeners
+			udpConn, err := su.ListenPacket()
+			if err != nil {
+				return err
+			}
+			go func() {
+				qErr <- su.quicServer.Serve(udpConn)
+			}()
 		}
-		return err
+
+		select {
+		case err := <-hErr:
+			if su.quicServer != nil {
+				su.quicServer.Close()
+			}
+			return err
+		case err := <-qErr:
+			// Cannot close the HTTP server or wait for requests to complete properly :/
+			return err
+		}
 	})
 }
 
@@ -370,21 +391,12 @@ func standaloneTLSTicketKeyRotation(c *tls.Config, timer *time.Ticker, exitChan 
 }
 
 // ListenPacket creates udp connection for QUIC if it is enabled,
-func (su *Supervisor) ListenPacket() (net.PacketConn, error) {
+func (su *Supervisor) ListenPacket() (*net.UDPConn, error) {
 	udpAddr, err := net.ResolveUDPAddr("udp", su.Server.Addr)
 	if err != nil {
 		return nil, err
 	}
 	return net.ListenUDP("udp", udpAddr)
-}
-
-// ServePacket serves QUIC requests on pc until it is closed.
-func (su *Supervisor) ServePacket(pc net.PacketConn) error {
-	if su.quicServer != nil {
-		err := su.quicServer.Serve(pc.(*net.UDPConn))
-		return fmt.Errorf("serving QUIC connections: %v", err)
-	}
-	return nil
 }
 
 func (su *Supervisor) wrapWithSvcHeaders(previousHandler http.Handler) http.HandlerFunc {
