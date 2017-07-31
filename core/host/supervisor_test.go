@@ -16,6 +16,8 @@ import (
 	"time"
 
 	"gopkg.in/gavv/httpexpect.v1"
+
+	"github.com/go-siris/siris/configuration"
 )
 
 const (
@@ -113,7 +115,9 @@ func testSupervisor(t *testing.T, creator func(*http.Server, []func(TaskHost)) *
 }
 func TestSupervisor(t *testing.T) {
 	testSupervisor(t, func(srv *http.Server, tasks []func(TaskHost)) *Supervisor {
-		su := New(srv, false)
+		config := configuration.DefaultConfiguration()
+
+		su := New(srv, &config)
 		for _, t := range tasks {
 			su.RegisterOnServeHook(t)
 		}
@@ -178,7 +182,9 @@ func testSupervisor2(t *testing.T, creator func(*http.Server, []func(TaskHost)) 
 }
 func TestSupervisor2(t *testing.T) {
 	testSupervisor2(t, func(srv *http.Server, tasks []func(TaskHost)) *Supervisor {
-		su := New(srv, false)
+		config := configuration.DefaultConfiguration()
+
+		su := New(srv, &config)
 		for _, t := range tasks {
 			su.RegisterOnServeHook(t)
 		}

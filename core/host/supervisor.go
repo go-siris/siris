@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/go-siris/siris/configuration"
 	"github.com/go-siris/siris/core/errors"
 	"github.com/go-siris/siris/core/nettools"
 	"github.com/lucas-clemente/quic-go/h2quic"
@@ -29,7 +30,7 @@ var (
 type Supervisor struct {
 	Server         *http.Server
 	quicServer     *h2quic.Server
-	useReuseport   bool  // is by default: false
+	config         *configuration.Configuration
 	closedManually int32 // future use, accessed atomically (non-zero means we've called the Shutdown)
 	manuallyTLS    bool  // we need that in order to determinate what to output on the console before the server begin.
 	shouldWait     int32 // non-zero means that the host should wait for unblocking
@@ -51,11 +52,11 @@ type Supervisor struct {
 // Plus you can add tasks on specific events.
 // It has its own flow, which means that you can prevent
 // to return and exit and restore the flow too.
-func New(srv *http.Server, reuseport bool) *Supervisor {
+func New(srv *http.Server, sirisConfig *configuration.Configuration) *Supervisor {
 	return &Supervisor{
-		Server:       srv,
-		useReuseport: reuseport,
-		unblockChan:  make(chan struct{}, 1),
+		Server:      srv,
+		config:      sirisConfig,
+		unblockChan: make(chan struct{}, 1),
 	}
 }
 
@@ -95,7 +96,7 @@ func (su *Supervisor) newListener() (net.Listener, error) {
 	// restarts we may want for the server.
 	//
 	// User still be able to call .Serve instead.
-	l, err := nettools.TCPKeepAlive(su.Server.Addr, su.useReuseport)
+	l, err := nettools.TCPKeepAlive(su.Server.Addr, su.config.EnableReuseport)
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +194,7 @@ func (su *Supervisor) Serve(l net.Listener) error {
 			hErr <- su.Server.Serve(l)
 		}()
 
-		if su.quicServer != nil {
+		if su.config.GetEnableQUICSupport() && su.quicServer != nil {
 			// Open the listeners
 			udpConn, err := su.ListenPacket()
 			if err != nil {
@@ -206,7 +207,7 @@ func (su *Supervisor) Serve(l net.Listener) error {
 
 		select {
 		case err := <-hErr:
-			if su.quicServer != nil {
+			if su.config.GetEnableQUICSupport() && su.quicServer != nil {
 				su.quicServer.Close()
 			}
 			return err
@@ -253,8 +254,10 @@ func (su *Supervisor) ListenAndServeTLS(certFile string, keyFile string) error {
 	su.Server.TLSConfig = cfg
 	su.manuallyTLS = true
 
-	su.quicServer = &h2quic.Server{Server: su.Server}
-	su.Server.Handler = su.wrapWithSvcHeaders(su.Server.Handler)
+	if su.config.GetEnableQUICSupport() {
+		su.quicServer = &h2quic.Server{Server: su.Server}
+		su.Server.Handler = su.wrapWithSvcHeaders(su.Server.Handler)
+	}
 
 	// Setup any goroutines governing over TLS settings
 	su.tlsGovChan = make(chan struct{})
@@ -278,8 +281,10 @@ func (su *Supervisor) ListenAndServeAutoTLS() error {
 	su.Server.TLSConfig = cfg
 	su.manuallyTLS = true
 
-	su.quicServer = &h2quic.Server{Server: su.Server}
-	su.Server.Handler = su.wrapWithSvcHeaders(su.Server.Handler)
+	if su.config.GetEnableQUICSupport() {
+		su.quicServer = &h2quic.Server{Server: su.Server}
+		su.Server.Handler = su.wrapWithSvcHeaders(su.Server.Handler)
+	}
 
 	// Setup any goroutines governing over TLS settings
 	su.tlsGovChan = make(chan struct{})
