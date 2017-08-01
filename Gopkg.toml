@@ -206,6 +206,10 @@
   branch = "master"
   name = "github.com/theckman/httpforwarded"
 
+[[constraint]]
+  branch = "master"
+  name = "github.com/lucas-clemente/quic-go" 
+  
 [[override]]
   branch = "master"
   name = "github.com/lucas-clemente/quic-go"

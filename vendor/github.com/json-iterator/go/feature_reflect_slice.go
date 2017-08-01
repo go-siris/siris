@@ -124,7 +124,8 @@ func growOne(slice *sliceHeader, sliceType reflect.Type, elementType reflect.Typ
 			}
 		}
 	}
-	dst := unsafe.Pointer(reflect.MakeSlice(sliceType, newLen, newCap).Pointer())
+	newVal := reflect.MakeSlice(sliceType, newLen, newCap)
+	dst := unsafe.Pointer(newVal.Pointer())
 	// copy old array into new array
 	originalBytesCount := uintptr(slice.Len) * elementType.Size()
 	srcPtr := (*[1 << 30]byte)(slice.Data)
@@ -141,7 +142,8 @@ func reuseSlice(slice *sliceHeader, sliceType reflect.Type, expectedCap int) {
 	if expectedCap <= slice.Cap {
 		return
 	}
-	dst := unsafe.Pointer(reflect.MakeSlice(sliceType, 0, expectedCap).Pointer())
+	newVal := reflect.MakeSlice(sliceType, 0, expectedCap)
+	dst := unsafe.Pointer(newVal.Pointer())
 	slice.Cap = expectedCap
 	slice.Data = dst
 }

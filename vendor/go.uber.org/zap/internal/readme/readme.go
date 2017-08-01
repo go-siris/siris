@@ -44,6 +44,7 @@ var (
 		"inconshreveable/log15": "log15",
 		"apex/log":              "apex/log",
 		"go.pedge.io/lion":      "lion",
+		"rs/zerolog":            "zerolog",
 	}
 )
 
@@ -111,8 +112,8 @@ func getBenchmarkRows(benchmarkName string) (string, error) {
 	}
 	sort.Sort(benchmarkRowsByTime(benchmarkRows))
 	rows := []string{
-		"| Package | Time | Bytes Allocated | Objects Allocated |",
-		"| :--- | :---: | :---: | :---: |",
+		"| Package | Time | Objects Allocated |",
+		"| :--- | :---: | :---: |",
 	}
 	for _, benchmarkRow := range benchmarkRows {
 		rows = append(rows, benchmarkRow.String())
@@ -191,7 +192,7 @@ type benchmarkRow struct {
 }
 
 func (b *benchmarkRow) String() string {
-	return fmt.Sprintf("| %s | %d ns/op | %d B/op | %d allocs/op |", b.Name, b.Time.Nanoseconds(), b.AllocatedBytes, b.AllocatedObjects)
+	return fmt.Sprintf("| %s | %d ns/op | %d allocs/op |", b.Name, b.Time.Nanoseconds(), b.AllocatedObjects)
 }
 
 type benchmarkRowsByTime []*benchmarkRow
@@ -199,5 +200,13 @@ type benchmarkRowsByTime []*benchmarkRow
 func (b benchmarkRowsByTime) Len() int      { return len(b) }
 func (b benchmarkRowsByTime) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
 func (b benchmarkRowsByTime) Less(i, j int) bool {
-	return b[i].Time.Nanoseconds() < b[j].Time.Nanoseconds()
+	left, right := b[i], b[j]
+	leftZap, rightZap := strings.Contains(left.Name, "zap"), strings.Contains(right.Name, "zap")
+
+	// If neither benchmark is for zap or both are, sort by time.
+	if !(leftZap || rightZap) || (leftZap && rightZap) {
+		return left.Time.Nanoseconds() < right.Time.Nanoseconds()
+	}
+	// Sort zap benchmark first.
+	return leftZap
 }

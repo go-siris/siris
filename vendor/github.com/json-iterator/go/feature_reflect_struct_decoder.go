@@ -5,6 +5,7 @@ import (
 	"io"
 	"reflect"
 	"unsafe"
+	"strings"
 )
 
 func createStructDecoder(typ reflect.Type, fields map[string]*structFieldDecoder) (ValDecoder, error) {
@@ -428,7 +429,7 @@ func (decoder *generalStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) 
 	}
 	fieldBytes := iter.readObjectFieldAsBytes()
 	field := *(*string)(unsafe.Pointer(&fieldBytes))
-	fieldDecoder := decoder.fields[field]
+	fieldDecoder := decoder.fields[strings.ToLower(field)]
 	if fieldDecoder == nil {
 		iter.Skip()
 	} else {
@@ -437,7 +438,7 @@ func (decoder *generalStructDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) 
 	for iter.nextToken() == ',' {
 		fieldBytes = iter.readObjectFieldAsBytes()
 		field = *(*string)(unsafe.Pointer(&fieldBytes))
-		fieldDecoder = decoder.fields[field]
+		fieldDecoder = decoder.fields[strings.ToLower(field)]
 		if fieldDecoder == nil {
 			iter.Skip()
 		} else {

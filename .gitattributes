@@ -11,7 +11,7 @@
 # http://davidlaing.com/2012/09/19/customise-your-gitattributes-to-become-a-git-ninja/
 * text=auto
 
-*.go text linguist-language=Go
+*.go text=auto linguist-language=Go
 vendor/* linguist-vendored
 _examples/* linguist-documentation 
 

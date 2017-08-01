@@ -23,35 +23,41 @@ package benchmarks
 import (
 	"io/ioutil"
 
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/json"
+	"github.com/rs/zerolog"
 )
 
-func newDisabledApexLog() *log.Logger {
-	return &log.Logger{
-		Handler: json.New(ioutil.Discard),
-		Level:   log.ErrorLevel,
-	}
+func newZerolog() zerolog.Logger {
+	return zerolog.New(ioutil.Discard).With().Timestamp().Logger()
 }
 
-func newApexLog() *log.Logger {
-	return &log.Logger{
-		Handler: json.New(ioutil.Discard),
-		Level:   log.DebugLevel,
-	}
+func newDisabledZerolog() zerolog.Logger {
+	return newZerolog().Level(zerolog.Disabled)
 }
 
-func fakeApexFields() log.Fields {
-	return log.Fields{
-		"int":     _tenInts[0],
-		"ints":    _tenInts,
-		"string":  _tenStrings[0],
-		"strings": _tenStrings,
-		"time":    _tenTimes[0],
-		"times":   _tenTimes,
-		"user1":   _oneUser,
-		"user2":   _oneUser,
-		"users":   _tenUsers,
-		"error":   errExample,
-	}
+func fakeZerologFields(e *zerolog.Event) *zerolog.Event {
+	return e.
+		Int("int", _tenInts[0]).
+		Interface("ints", _tenInts).
+		Str("string", _tenStrings[0]).
+		Interface("strings", _tenStrings).
+		Time("time", _tenTimes[0]).
+		Interface("times", _tenTimes).
+		Interface("user1", _oneUser).
+		Interface("user2", _oneUser).
+		Interface("users", _tenUsers).
+		Err(errExample)
+}
+
+func fakeZerologContext(c zerolog.Context) zerolog.Context {
+	return c.
+		Int("int", _tenInts[0]).
+		Interface("ints", _tenInts).
+		Str("string", _tenStrings[0]).
+		Interface("strings", _tenStrings).
+		Time("time", _tenTimes[0]).
+		Interface("times", _tenTimes).
+		Interface("user1", _oneUser).
+		Interface("user2", _oneUser).
+		Interface("users", _tenUsers).
+		Err(errExample)
 }

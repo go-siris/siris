@@ -48,7 +48,7 @@
   branch = "master"
   name = "github.com/couchbase/gomemcached"
   packages = [".","client"]
-  revision = "39fe61b0969ae38f8c6841e9c19c5ad9e57d2b75"
+  revision = "70b5cd4e71d0714b3aaf449c6d23bbe0dc094c37"
 
 [[projects]]
   branch = "master"
@@ -90,7 +90,7 @@
   name = "github.com/fatih/structs"
   packages = ["."]
   revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
-  version = "v1.0"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -168,7 +168,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "c15b4d116cb805508fd5862d8761a88076b3cc8e"
+  revision = "b67201557ab304640cd85b1d9cee4d5fb1d47280"
 
 [[projects]]
   branch = "master"
@@ -185,8 +185,8 @@
 [[projects]]
   name = "github.com/klauspost/cpuid"
   packages = ["."]
-  revision = "09cded8978dc9e80714c4d85b0322337b0a1e5e0"
-  version = "v1.0"
+  revision = "ae7887de9fa5d2db4eaa8174a7eff2c1ac00f2da"
+  version = "v1.1"
 
 [[projects]]
   branch = "master"
@@ -264,7 +264,7 @@
   branch = "master"
   name = "github.com/russross/blackfriday"
   packages = ["."]
-  revision = "067529f716f4c3f5e37c8c95ddd59df1007290ae"
+  revision = "4048872b16cc0fc2c5fd9eacf0ed2c2fedaa0c8c"
 
 [[projects]]
   branch = "master"
@@ -288,7 +288,7 @@
   branch = "master"
   name = "github.com/siddontang/ledisdb"
   packages = ["config","ledis","rpl","store","store/driver","store/goleveldb","store/leveldb","store/rocksdb"]
-  revision = "0cb8e1a348b4877bff4648d59a75b793a0664b41"
+  revision = "f49ad4d5ed26d265a64954ed0195d5ac1eabb42e"
 
 [[projects]]
   branch = "master"
@@ -313,7 +313,7 @@
   branch = "master"
   name = "github.com/syndtr/goleveldb"
   packages = ["leveldb","leveldb/cache","leveldb/comparer","leveldb/errors","leveldb/filter","leveldb/iterator","leveldb/journal","leveldb/memdb","leveldb/opt","leveldb/storage","leveldb/table","leveldb/util"]
-  revision = "8c81ea47d4c41a385645e133e15510fc6a2a74b4"
+  revision = "b89cc31ef7977104127d34c1bd31ebd1a9db2199"
 
 [[projects]]
   name = "github.com/theckman/httpforwarded"
@@ -385,25 +385,25 @@
   branch = "master"
   name = "go.uber.org/zap"
   packages = [".","buffer","internal/bufferpool","internal/color","internal/exit","zapcore"]
-  revision = "dadca013650a921313c28fa51e4e89e84e3e252d"
+  revision = "f9487279b09365389590aad0af947af4a4f41f3f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert","curve25519","hkdf","pbkdf2"]
-  revision = "6914964337150723782436d56b3f21610a74ce7b"
+  revision = "558b6879de74bc843225cde5686419267ff707ca"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","http2","http2/hpack","idna","lex/httplex","publicsuffix"]
-  revision = "ab5485076ff3407ad2d02db054635913f017b0ed"
+  revision = "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "836efe42bb4aa16aaa17b9c155d8813d336ed720"
+  revision = "3bd178b88a8180be2df394a1fbb81313916f0e7b"
 
 [[projects]]
   branch = "v1"
