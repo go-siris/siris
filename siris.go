@@ -131,7 +131,8 @@ type Application struct {
 	// Additional Host Supervisors can be added to that list by calling the `app.NewHost` manually.
 	//
 	// Hosts field is available after `Run` or `NewHost`.
-	Hosts []*host.Supervisor
+	Hosts             []*host.Supervisor
+	hostConfigurators []host.Configurator
 }
 
 // New creates and returns a fresh empty Siris *Application instance.
@@ -250,6 +251,28 @@ func (app *Application) Build() (err error) {
 	return
 }
 
+// ConfigureHost accepts one or more `host#Configuration`, these configurators functions
+// can access the host created by `app.Run`,
+// they're being executed when application is ready to being served to the public.
+//
+// It's an alternative way to interact with a host that is automatically created by
+// `app.Run`.
+//
+// These "configurators" can work side-by-side with the `iris#Addr, iris#Server, iris#TLS, iris#AutoTLS, iris#Listener`
+// final arguments("hostConfigs") too.
+//
+// Note that these application's host "configurators" will be shared with the rest of
+// the hosts that this app will may create (using `app.NewHost`), meaning that
+// `app.NewHost` will execute these "configurators" everytime that is being called as well.
+//
+// These "configurators" should be registered before the `app.Run` or `host.Serve/Listen` functions.
+func (app *Application) ConfigureHost(configurators ...host.Configurator) *Application {
+	app.mu.Lock()
+	app.hostConfigurators = append(app.hostConfigurators, configurators...)
+	app.mu.Unlock()
+	return app
+}
+
 // NewHost accepts a standar *http.Server object,
 // completes the necessary missing parts of that "srv"
 // and returns a new, ready-to-use, host (supervisor).
@@ -298,6 +321,8 @@ func (app *Application) NewHost(srv *http.Server) *host.Supervisor {
 		host.RegisterOnInterruptHook(host.ShutdownOnInterrupt(su, shutdownTimeout))
 	}
 
+	su.Configure(app.hostConfigurators...)
+
 	app.Hosts = append(app.Hosts, su)
 
 	return su
@@ -333,11 +358,19 @@ type Runner func(*Application) error
 // Listener can be used as an argument for the `Run` method.
 // It can start a server with a custom net.Listener via server's `Serve`.
 //
+// Second argument is optional, it accepts one or more
+// `func(*host.Configurator)` that are being executed
+// on that specific host that this function will create to start the server.
+// Via host configurators you can configure the back-end host supervisor,
+// i.e to add events for shutdown, serve or error.
+// Look at the `ConfigureHost` too.
+//
 // See `Run` for more.
-func Listener(l net.Listener) Runner {
+func Listener(l net.Listener, hostConfigs ...host.Configurator) Runner {
 	return func(app *Application) error {
 		app.config.SetVHost(nettools.ResolveVHost(l.Addr().String()))
 		return app.NewHost(new(http.Server)).
+			Configure(hostConfigs...).
 			Serve(l)
 	}
 }
@@ -345,10 +378,18 @@ func Listener(l net.Listener) Runner {
 // Server can be used as an argument for the `Run` method.
 // It can start a server with a *http.Server.
 //
+// Second argument is optional, it accepts one or more
+// `func(*host.Configurator)` that are being executed
+// on that specific host that this function will create to start the server.
+// Via host configurators you can configure the back-end host supervisor,
+// i.e to add events for shutdown, serve or error.
+// Look at the `ConfigureHost` too.
+//
 // See `Run` for more.
-func Server(srv *http.Server) Runner {
+func Server(srv *http.Server, hostConfigs ...host.Configurator) Runner {
 	return func(app *Application) error {
 		return app.NewHost(srv).
+			Configure(hostConfigs...).
 			ListenAndServe()
 	}
 }
@@ -359,10 +400,18 @@ func Server(srv *http.Server) Runner {
 //
 // Addr should have the form of [host]:port, i.e localhost:8080 or :8080.
 //
+// Second argument is optional, it accepts one or more
+// `func(*host.Configurator)` that are being executed
+// on that specific host that this function will create to start the server.
+// Via host configurators you can configure the back-end host supervisor,
+// i.e to add events for shutdown, serve or error.
+// Look at the `ConfigureHost` too.
+//
 // See `Run` for more.
-func Addr(addr string) Runner {
+func Addr(addr string, hostConfigs ...host.Configurator) Runner {
 	return func(app *Application) error {
 		return app.NewHost(&http.Server{Addr: addr}).
+			Configure(hostConfigs...).
 			ListenAndServe()
 	}
 }
@@ -375,10 +424,18 @@ func Addr(addr string) Runner {
 // Addr should have the form of [host]:port, i.e localhost:443 or :443.
 // CertFile & KeyFile should be filenames with their extensions.
 //
+// Second argument is optional, it accepts one or more
+// `func(*host.Configurator)` that are being executed
+// on that specific host that this function will create to start the server.
+// Via host configurators you can configure the back-end host supervisor,
+// i.e to add events for shutdown, serve or error.
+// Look at the `ConfigureHost` too.
+//
 // See `Run` for more.
-func TLS(addr string, certFile, keyFile string) Runner {
+func TLS(addr string, certFile, keyFile string, hostConfigs ...host.Configurator) Runner {
 	return func(app *Application) error {
 		return app.NewHost(&http.Server{Addr: addr}).
+			Configure(hostConfigs...).
 			ListenAndServeTLS(certFile, keyFile)
 	}
 }
@@ -390,10 +447,18 @@ func TLS(addr string, certFile, keyFile string) Runner {
 //
 // Addr should have the form of [host]:port, i.e mydomain.com:443.
 //
+// Second argument is optional, it accepts one or more
+// `func(*host.Configurator)` that are being executed
+// on that specific host that this function will create to start the server.
+// Via host configurators you can configure the back-end host supervisor,
+// i.e to add events for shutdown, serve or error.
+// Look at the `ConfigureHost` too.
+//
 // See `Run` for more.
-func AutoTLS(addr string) Runner {
+func AutoTLS(addr string, hostConfigs ...host.Configurator) Runner {
 	return func(app *Application) error {
 		return app.NewHost(&http.Server{Addr: addr}).
+			Configure(hostConfigs...).
 			ListenAndServeAutoTLS()
 	}
 }

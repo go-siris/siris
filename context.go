@@ -4,8 +4,12 @@ package siris
 
 import (
 	"github.com/go-siris/siris/context"
+	"github.com/go-siris/siris/core/host"
+
 )
 
+// TODO: When go 1.9 will be released
+// split this file in order to separate the concepts.
 type (
 	// Context is the midle-man server's "object" for the clients.
 	//
@@ -34,5 +38,9 @@ type (
 
 	// A Map is a shortcut of the map[string]interface{}.
 	Map = context.Map
-)
 
+  // Supervisor is a shortcut of the `host#Supervisor`.
+  // Used to add supervisor configurators on common Runners
+  // without the need of importing the `core/host` package.
+  Supervisor = host.Supervisor
+)
