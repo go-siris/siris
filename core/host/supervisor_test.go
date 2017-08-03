@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"testing"
@@ -191,4 +192,60 @@ func TestSupervisor2(t *testing.T) {
 
 		return su
 	})
+}
+
+func testSupervisor3(t *testing.T, creator func(*http.Server, []func(TaskHost)) *Supervisor) {
+	loggerOutput := &bytes.Buffer{}
+	logger := log.New(loggerOutput, "", 0)
+	const (
+		expectedHelloMessage = "Hello\n"
+	)
+
+	// http routing
+	var (
+		expectedBody = "this is the response body\n"
+	)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(expectedBody))
+	})
+
+	hostnameServer, _ := os.Hostname()
+	// host (server wrapper and adapter) construction
+	addr := hostnameServer + ":9443"
+	srv := &http.Server{Handler: mux, Addr: addr, ErrorLog: logger}
+
+	helloMe := func(_ TaskHost) {
+		rwmu.Lock()
+		logger.Print(expectedHelloMessage)
+		rwmu.Unlock()
+	}
+
+	host := creator(srv, []func(TaskHost){helloMe})
+	defer host.Shutdown(context.TODO())
+
+	go func() {
+		tlsNewTicketEvery = time.Second * 5
+		err2 := host.ListenAndServeAutoTLS()
+		fmt.Println(err2)
+	}()
+
+	time.Sleep(15 * time.Second)
+	// http testsing and various calls
+	// no need for time sleep because the following will take some time by theirselves
+	tester := newTester(t, "https://"+addr, mux)
+	tester.Request("GET", "/").Expect().Status(http.StatusOK).Body().Equal(expectedBody)
+
+	// WARNING: Data Race here because we try to read the logs
+	// but it's "safe" here.
+
+	// testing Task (recorded) message:
+	//
+	rwmu.RLock()
+	got := loggerOutput.String()
+	rwmu.RUnlock()
+	if expectedHelloMessage != got {
+		t.Fatalf("expected hello Task's message to be '%s' but got '%s'", expectedHelloMessage, got)
+	}
 }
