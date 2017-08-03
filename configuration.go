@@ -5,7 +5,10 @@ import (
 	"github.com/go-siris/siris/context"
 )
 
+// YAML load the YAML Configuration
 var YAML = configuration.YAML
+
+// TOML load the TOML Configuration
 var TOML = configuration.TOML
 
 var _ context.ConfigurationReadOnly = &configuration.Configuration{}

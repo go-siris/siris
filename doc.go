@@ -161,6 +161,98 @@ Example code:
     }
 
 
+Hosts
+
+Access to all hosts that serve your application can be provided by
+the `Application#Hosts` field, after the `Run` method.
+
+
+But the most common scenario is that you may need access to the host before the `Run` method,
+there are two ways of gain access to the host supervisor, read below.
+
+First way is to use the `app.NewHost` to create a new host
+and use one of its `Serve` or `Listen` functions
+to start the application via the `siris#Raw` Runner.
+Note that this way needs an extra import of the `net/http` package.
+
+Example Code:
+
+
+    h := app.NewHost(&http.Server{Addr:":8080"})
+    h.RegisterOnShutdown(func(){
+        println("server was closed!")
+    })
+
+    app.Run(siris.Raw(h.ListenAndServe))
+
+Second, and probably easier way is to use the `host.Configurator`.
+
+Note that this method requires an extra import statement of
+"github.com/go-siris/siris/core/host" when using go < 1.9,
+if you're targeting on go1.9 then you can use the `siris#Supervisor`
+and omit the extra host import.
+
+All common `Runners` we saw earlier (`siris#Addr, siris#Listener, siris#Server, siris#TLS, siris#AutoTLS`)
+accept a variadic argument of `host.Configurator`, there are just `func(*host.Supervisor)`.
+Therefore the `Application` gives you the rights to modify the auto-created host supervisor through these.
+
+
+Example Code:
+
+
+    package main
+
+    import (
+        stdContext "context"
+        "time"
+
+        "github.com/go-siris/siris"
+        "github.com/go-siris/siris/context"
+        "github.com/go-siris/siris/core/host"
+    )
+
+    func main() {
+        app := siris.New()
+
+        app.Get("/", func(ctx context.Context) {
+            ctx.HTML("<h1>Hello, try to refresh the page after ~10 secs</h1>")
+        })
+
+        app.Logger().Info("Wait 10 seconds and check your terminal again")
+        // simulate a shutdown action here...
+        go func() {
+            <-time.After(10 * time.Second)
+            timeout := 5 * time.Second
+            ctx, cancel := stdContext.WithTimeout(stdContext.Background(), timeout)
+            defer cancel()
+            // close all hosts, this will notify the callback we had register
+            // inside the `configureHost` func.
+            app.Shutdown(ctx)
+        }()
+
+        // start the server as usual, the only difference is that
+        // we're adding a second (optional) function
+        // to configure the just-created host supervisor.
+        //
+        // http://localhost:8080
+        // wait 10 seconds and check your terminal.
+        app.Run(siris.Addr(":8080", configureHost), siris.WithoutServerError(siris.ErrServerClosed))
+
+    }
+
+    func configureHost(su *host.Supervisor) {
+        // here we have full access to the host that will be created
+        // inside the `Run` function.
+        //
+        // we register a shutdown "event" callback
+        su.RegisterOnShutdown(func() {
+            println("server is closed")
+        })
+        // su.RegisterOnError
+        // su.RegisterOnServe
+    }
+
+
 Routing
 
 All HTTP methods are supported, developers can also register handlers for same paths for different methods.

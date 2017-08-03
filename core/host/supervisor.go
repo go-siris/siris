@@ -18,6 +18,12 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
+// Configurator provides an easy way to modify
+// the Supervisor.
+//
+// Look the `Configure` func for more.
+type Configurator func(su *Supervisor)
+
 var (
 	tlsNewTicketEvery = time.Hour * 6 // generate a new ticket for TLS PFS encryption every so often
 	tlsNumTickets     = 5             // hold and consider that many tickets to decrypt TLS sessions
@@ -58,6 +64,22 @@ func New(srv *http.Server, sirisConfig *configuration.Configuration) *Supervisor
 		config:      sirisConfig,
 		unblockChan: make(chan struct{}, 1),
 	}
+}
+
+// Configure accepts one or more `Configurator`.
+// With this function you can use simple functions
+// that are spread across your app to modify
+// the supervisor, these Configurators can be
+// used on any Supervisor instance.
+//
+// Look `Configurator` too.
+//
+// Returns itself.
+func (su *Supervisor) Configure(configurators ...Configurator) *Supervisor {
+	for _, conf := range configurators {
+		conf(su)
+	}
+	return su
 }
 
 // DeferFlow defers the flow of the exeuction,
