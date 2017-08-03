@@ -1,269 +1,91 @@
-// Copyright 2017 Go-SIRIS Author. All Rights Reserved.
-
+// black-box testing
 package coverageTests
 
 import (
-	"fmt"
-	"io"
-	"io/ioutil"
+	stdContext "context"
+	"crypto/tls"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
-	//"github.com/stretchr/testify/assert"
-	"gopkg.in/gavv/httpexpect.v1"
-
-	basicauth "github.com/go-siris/middleware-basicauth"
 	"github.com/go-siris/siris"
 	"github.com/go-siris/siris/context"
+
+	"gopkg.in/gavv/httpexpect.v1"
 )
 
-func createApp() *siris.Application {
-	app := siris.Default()
+const (
+	debug = false
+)
 
-	app.Get("/things", func(c context.Context) {
-		c.JSON([]map[string]interface{}{
-			{
-				"name":        "foo",
-				"description": "foo thing",
-			},
-			{
-				"name":        "bar",
-				"description": "bar thing",
-			},
-		})
-	})
+var (
+	rwmu = sync.RWMutex{}
+)
 
-	app.Post("/redirect", func(c context.Context) {
-		c.Redirect("/things", siris.StatusFound)
-	})
+func newTester(t *testing.T, baseURL string, handler http.Handler) *httpexpect.Expect {
 
-	app.Post("/params/:x/:y", func(c context.Context) {
-		c.JSON(map[string]interface{}{
-			"x":  c.Params().Get("x"),
-			"y":  c.Params().Get("y"),
-			"q":  c.URLParam("q"),
-			"p1": c.FormValue("p1"),
-			"p2": c.FormValue("p2"),
-		})
-	})
+	var transporter http.RoundTripper
 
-	authConfig := basicauth.Config{
-		Users:   map[string]string{"siris": "framework", "ford": "betelgeuse7"},
-		Realm:   "Authorization Required", // defaults to "Authorization Required"
-		Expires: time.Duration(30) * time.Minute,
+	if strings.HasPrefix(baseURL, "http") { // means we are testing real serve time
+		transporter = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	} else { // means we are testing the handler itself
+		transporter = httpexpect.NewBinder(handler)
 	}
 
-	authentication := basicauth.New(authConfig)
-
-	app.Get("/auth", authentication, func(c context.Context) {
-		c.Writef("authenticated!")
-	})
-
-	app.Post("/session/set", func(c context.Context) {
-		var sess map[string]interface{}
-
-		if err := c.ReadJSON(&sess); err != nil {
-			panic(err.Error())
-		}
-
-		c.Session().Set("name", sess["name"])
-	})
-
-	app.Get("/session/get", func(c context.Context) {
-		name := c.Session().Get("name")
-
-		c.JSON(map[string]interface{}{
-			"name": name,
-		})
-	})
-
-	app.Get("/stream", func(c context.Context) {
-		c.StreamWriter(func(w io.Writer) bool {
-			for i := 0; i < 10; i++ {
-				fmt.Fprintf(w, "%d", i)
-			}
-			// return true to continue, return false to stop and flush
-			return false
-		})
-		// if we had to write here then the StreamWriter callback should
-		// return true
-	})
-
-	app.Post("/stream", func(c context.Context) {
-		body, err := ioutil.ReadAll(c.Request().Body)
-		if err != nil {
-			c.StatusCode(siris.StatusBadRequest)
-			return
-		}
-		c.Write(body)
-	})
-
-	sub := app.Party("subdomain.")
-
-	sub.Post("/set", func(c context.Context) {
-		c.Session().Set("message", "hello from subdomain")
-	})
-
-	sub.Get("/get", func(c context.Context) {
-		c.Text(c.Session().Get("message").(string))
-	})
-
-	app.Build()
-
-	return app
-}
-
-func createClient(t *testing.T) *httpexpect.Expect {
-	handler := createApp()
-
-	return httpexpect.WithConfig(httpexpect.Config{
-		BaseURL:  "http://example.com",
-		Reporter: httpexpect.NewAssertReporter(t),
+	testConfiguration := httpexpect.Config{
+		BaseURL: baseURL,
 		Client: &http.Client{
-			Transport: httpexpect.NewBinder(handler),
+			Transport: transporter,
 			Jar:       httpexpect.NewJar(),
-			Timeout:   time.Second * 30,
 		},
-		// use verbose logging
-		//Printers: []httpexpect.Printer{
-		//	httpexpect.NewCurlPrinter(t),
-		// httpexpect.NewDebugPrinter(t, false),
-		//},
-	})
-}
+		Reporter: httpexpect.NewAssertReporter(t),
+	}
 
-func TestSiris_NewApp(t *testing.T) {
-	e := createClient(t)
-
-	schema := `{
-		"type": "array",
-		"items": {
-			"type": "object",
-			"properties": {
-				"name":        {"type": "string"},
-				"description": {"type": "string"}
-			},
-			"required": ["name", "description"]
+	if debug {
+		testConfiguration.Printers = []httpexpect.Printer{
+			httpexpect.NewDebugPrinter(t, true),
 		}
-	}`
-
-	things := e.GET("/things").
-		Expect().
-		Status(http.StatusOK).JSON()
-
-	things.Schema(schema)
-
-	names := things.Path("$[*].name").Array()
-
-	names.Elements("foo", "bar")
-
-	for n, desc := range things.Path("$..description").Array().Iter() {
-		m := desc.String().Match("(.+) (.+)")
-
-		m.Index(1).Equal(names.Element(n).String().Raw())
-		m.Index(2).Equal("thing")
-	}
-}
-
-func TestSiris_Redirect(t *testing.T) {
-	e := createClient(t)
-
-	things := e.POST("/redirect").
-		Expect().
-		Status(http.StatusOK).JSON().Array()
-
-	things.Length().Equal(2)
-
-	things.Element(0).Object().ValueEqual("name", "foo")
-	things.Element(1).Object().ValueEqual("name", "bar")
-}
-
-func TestSiris_Params(t *testing.T) {
-	e := createClient(t)
-
-	type Form struct {
-		P1 string `form:"p1"`
-		P2 string `form:"p2"`
 	}
 
-	// POST /params/xxx/yyy?q=qqq
-	// Form: p1=P1&p2=P2
-
-	r := e.POST("/params/{x}/{y}", "xxx", "yyy").
-		WithQuery("q", "qqq").WithForm(Form{P1: "P1", P2: "P2"}).
-		Expect().
-		Status(http.StatusOK).JSON().Object()
-
-	r.Value("x").Equal("xxx")
-	r.Value("y").Equal("yyy")
-	r.Value("q").Equal("qqq")
-
-	r.ValueEqual("p1", "P1")
-	r.ValueEqual("p2", "P2")
+	return httpexpect.WithConfig(testConfiguration)
 }
 
-func TestSiris_Auth(t *testing.T) {
-	e := createClient(t)
+func TestSiris(t *testing.T) {
+	app := siris.New()
+	e := newTester(t, "https://127.0.0.1:7444", nil)
 
-	e.GET("/auth").
-		Expect().
-		Status(http.StatusUnauthorized)
+	expectedFoundResponse := "body{font-size: 30px}\n"
 
-	e.GET("/auth").WithBasicAuth("ford", "<bad password>").
-		Expect().
-		Status(http.StatusUnauthorized)
+	app.StaticWeb("/static1", "./fixtures/static")
+	app.StaticServe("./fixtures/static", "/static2")
+	app.StaticContent("/static3", "text/css", []byte(expectedFoundResponse))
 
-	e.GET("/auth").WithBasicAuth("ford", "betelgeuse7").
-		Expect().
-		Status(http.StatusOK).Body().Equal("authenticated!")
-}
-
-func TestSiris_Session(t *testing.T) {
-	e := createClient(t)
-
-	e.POST("/session/set").WithJSON(map[string]string{"name": "test"}).
-		Expect().
-		Status(http.StatusOK).Cookies().NotEmpty()
-
-	r := e.GET("/session/get").
-		Expect().
-		Status(http.StatusOK).JSON().Object()
-
-	r.Equal(map[string]string{
-		"name": "test",
-	})
-}
-
-func TestSiris_Stream(t *testing.T) {
-	e := createClient(t)
-
-	e.GET("/stream").
-		Expect().
-		Status(http.StatusOK).
-		TransferEncoding("chunked"). // ensure server sent chunks
-		Body().Equal("0123456789")
-
-	// send chunks to server
-	e.POST("/stream").WithChunked(strings.NewReader("<long text>")).
-		Expect().
-		Status(http.StatusOK).Body().Equal("<long text>")
-}
-
-func TestSiris_Subdomain(t *testing.T) {
-	e := createClient(t)
-
-	sub := e.Builder(func(req *httpexpect.Request) {
-		req.WithURL("http://subdomain.127.0.0.1")
+	app.Get("/get-siris", func(ctx context.Context) {
+		ctx.Text("siris")
 	})
 
-	sub.POST("/set").
-		Expect().
-		Status(http.StatusOK)
+	go app.Run(siris.TLS("127.0.0.1:7444", "./fixtures/server.crt", "./fixtures/server.key"))
+	defer app.Shutdown(stdContext.TODO())
 
-	sub.GET("/get").
-		Expect().
-		Status(http.StatusOK).
-		Body().Equal("hello from subdomain")
+	time.Sleep(time.Duration(10 * time.Second))
+
+	e.GET("/static1/").Expect().Status(siris.StatusNotFound)
+	e.GET("/static1/test.css").Expect().Status(siris.StatusOK).
+		Body().Equal(expectedFoundResponse)
+
+	e.GET("/static2/").Expect().Status(siris.StatusNotFound)
+	e.GET("/static2/test.css").Expect().Status(siris.StatusOK).
+		Body().Equal(expectedFoundResponse)
+
+	e.GET("/static3").Expect().Status(siris.StatusOK).
+		Body().Equal(expectedFoundResponse)
+
+	e.GET("/get-siris").Expect().Status(siris.StatusOK)
+
+	e.GET("/notfound").Expect().Status(siris.StatusNotFound)
+
 }
