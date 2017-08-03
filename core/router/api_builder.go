@@ -81,6 +81,11 @@ type APIBuilder struct {
 	// the api builder global route path reverser object
 	// used by the view engine but it can be used anywhere.
 	reverser *RoutePathReverser
+	// the api builder global errors, can be filled by the Subdomain, WildcardSubdomain, Handle...
+	// the list of possible errors that can be
+	// collected on the build state to log
+	// to the end-user.
+	reporter *errors.Reporter
 
 	// the per-party middleware
 	middleware context.Handlers
@@ -101,11 +106,22 @@ func NewAPIBuilder() *APIBuilder {
 	rb := &APIBuilder{
 		macros:            defaultMacros(),
 		errorCodeHandlers: defaultErrorCodeHandlers(),
+		reporter:          errors.NewReporter(),
 		relativePath:      "/",
 		routes:            new(repository),
 	}
 
 	return rb
+}
+
+// GetReport returns an error may caused by party's methods.
+func (rb *APIBuilder) GetReport() error {
+	return rb.reporter.Return()
+}
+
+// GetReporter returns the reporter for adding errors
+func (rb *APIBuilder) GetReporter() *errors.Reporter {
+	return rb.reporter
 }
 
 // Handle registers a route to the server's rb.
@@ -143,8 +159,10 @@ func (rb *APIBuilder) Handle(method string, registeredPath string, handlers ...c
 
 	r, err := NewRoute(method, subdomain, path, routeHandlers, rb.macros)
 	if err != nil {
+		rb.reporter.Add("%v -> %s:%s:%s", err, method, subdomain, path)
 		return nil, err
 	}
+
 	// global
 	rb.routes.register(r)
 
@@ -179,6 +197,7 @@ func (rb *APIBuilder) Party(relativePath string, handlers ...context.Handler) Pa
 		routes:            rb.routes,
 		errorCodeHandlers: rb.errorCodeHandlers,
 		doneHandlers:      rb.doneHandlers,
+		reporter:          rb.reporter,
 		// per-party/children
 		middleware:   middleware,
 		relativePath: fullpath,
