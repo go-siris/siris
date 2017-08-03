@@ -235,6 +235,15 @@ func (nodes Nodes) Find(path string, params *context.RequestParams) context.Hand
 	return nil
 }
 
+// Exists returns true if a node with that "path" exists,
+// otherise false.
+//
+// We don't care about parameters here.
+func (nodes Nodes) Exists(path string) bool {
+	n, _ := nodes.findChild(path, nil)
+	return n != nil && len(n.handlers) > 0
+}
+
 func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
 	for _, n := range nodes {
 		if n.s == ":" {
