@@ -106,6 +106,9 @@ func (h *routerHandler) Build(provider RoutesProvider) error {
 	})
 
 	for _, r := range registeredRoutes {
+		// build the r.Handlers based on begin and done handlers, if any.
+		r.BuildHandlers()
+
 		if r.Subdomain != "" {
 			h.hosts = true
 		}
