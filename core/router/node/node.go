@@ -15,9 +15,12 @@ type node struct {
 	s                 string
 	wildcardParamName string   // name of the wildcard parameter, only one per whole Node is allowed
 	paramNames        []string // only-names
-	children          Nodes
+	childrenNodes     Nodes
 	handlers          context.Handlers
 	root              bool
+	rootWildcard      bool // if it's a wildcard {path} type on root, it should allow everything but it is not conflicts with
+	// any other static or dynamic or wildcard paths if exists on other nodes.
+
 }
 
 // ErrDublicate returned from MakeChild when more than one routes have the same registered path.
@@ -82,11 +85,31 @@ func (nodes *Nodes) add(path string, paramNames []string, handlers context.Handl
 	wildcardParamName := ""
 	if wildcardIdx > 0 {
 		wildcardParamName = path[wildcardIdx+1:]
+
 		path = path[0:wildcardIdx-1] + "/" // replace *paramName with single slash
+		// if root wildcard, then add it as it's and return
+		if path == "/" {
+			path += "/" // if root wildcard, then do it like "//" instead of simple "/"
+			n := &node{
+				rootWildcard:      true,
+				s:                 path,
+				wildcardParamName: wildcardParamName,
+				paramNames:        paramNames,
+				handlers:          handlers,
+				root:              root,
+			}
+			*nodes = append(*nodes, n)
+			// println("1. nodes.Add path: " + path)
+			return
+		}
+
 	}
 
 loop:
 	for _, n := range *nodes {
+		if n.rootWildcard {
+			continue
+		}
 
 		minlen := len(n.s)
 		if len(path) < minlen {
@@ -103,12 +126,12 @@ loop:
 
 			*n = node{
 				s: n.s[:i],
-				children: Nodes{
+				childrenNodes: Nodes{
 					{
 						s:                 n.s[i:],
-						wildcardParamName: wildcardParamName,
+						wildcardParamName: n.wildcardParamName,
 						paramNames:        n.paramNames,
-						children:          n.children,
+						childrenNodes:     n.childrenNodes,
 						handlers:          n.handlers,
 					},
 					{
@@ -128,12 +151,12 @@ loop:
 				s:                 n.s[:len(path)],
 				wildcardParamName: wildcardParamName,
 				paramNames:        paramNames,
-				children: Nodes{
+				childrenNodes: Nodes{
 					{
 						s:                 n.s[len(path):],
-						wildcardParamName: wildcardParamName,
+						wildcardParamName: n.wildcardParamName,
 						paramNames:        n.paramNames,
-						children:          n.children,
+						childrenNodes:     n.childrenNodes,
 						handlers:          n.handlers,
 					},
 				},
@@ -145,7 +168,20 @@ loop:
 		}
 
 		if len(path) > len(n.s) {
-			err = n.children.add(path[len(n.s):], paramNames, handlers, false)
+			if n.wildcardParamName != "" {
+				n = &node{
+					s:                 path,
+					wildcardParamName: wildcardParamName,
+					paramNames:        paramNames,
+					handlers:          handlers,
+					root:              root,
+				}
+				//     println("3.5. nodes.Add path: " + n.s)
+				*nodes = append(*nodes, n)
+				return
+			}
+			//     println("4. nodes.Add path: " + path[len(n.s):])
+			err = n.childrenNodes.add(path[len(n.s):], paramNames, handlers, false)
 			return err
 		}
 
@@ -209,7 +245,16 @@ func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
 				}
 				return n, append(params, path)
 			}
-			return n.children.findChild(path[paramEnd:], append(params, path[:paramEnd]))
+			return n.childrenNodes.findChild(path[paramEnd:], append(params, path[:paramEnd]))
+		}
+
+		// by runtime check of:,
+		// if n.s == "//" && n.root && n.wildcardParamName != "" {
+		// but this will slow down, so we have a static field on the node itself:
+		if n.rootWildcard {
+			// println("return from n.rootWildcard")
+			// single root wildcard
+			return n, append(params, path[1:])
 		}
 
 		if !strings.HasPrefix(path, n.s) {
@@ -223,11 +268,11 @@ func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
 			return n, params
 		}
 
-		child, childParamNames := n.children.findChild(path[len(n.s):], params)
+		child, childParamNames := n.childrenNodes.findChild(path[len(n.s):], params)
 
 		if child == nil || len(child.handlers) == 0 {
-			// is wildcard and it is not root neither has children
-			if n.s[len(n.s)-1] == '/' && !(n.root && (n.s == "/" || len(n.children) > 0)) {
+			if n.s[len(n.s)-1] == '/' && !(n.root && (n.s == "/" || len(n.childrenNodes) > 0)) {
+
 				if len(n.handlers) == 0 {
 					return nil, nil
 				}
@@ -243,7 +288,7 @@ func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
 
 // childLen returns all the children's and their children's length.
 func (n *node) childLen() (i int) {
-	for _, n := range n.children {
+	for _, n := range n.childrenNodes {
 		i++
 		i += n.childLen()
 	}
@@ -251,7 +296,7 @@ func (n *node) childLen() (i int) {
 }
 
 func (n *node) isDynamic() bool {
-	return n.s == ":"
+	return n.s == ":" || n.wildcardParamName != "" || n.rootWildcard
 }
 
 // Sort sets the static paths first.
@@ -268,7 +313,7 @@ func (nodes Nodes) Sort() {
 	})
 
 	for _, n := range nodes {
-		n.children.Sort()
+		n.childrenNodes.Sort()
 	}
 }
 
