@@ -1141,7 +1141,7 @@ func (ctx *context) GetHeader(name string) string {
 //
 // Read more at: http://www.w3schools.com/ajax/
 func (ctx *context) IsAjax() bool {
-	return ctx.GetHeader("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
+	return ctx.GetHeader(http.CanonicalHeaderKey("X-Requested-With")) == "XMLHttpRequest"
 
 }
 
