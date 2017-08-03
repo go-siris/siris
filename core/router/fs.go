@@ -135,7 +135,7 @@ func Prioritize(r *Route) context.Handler {
 // StaticHandler returns a new Handler which is ready
 // to serve all kind of static files.
 //
-// Developers can wrap this handler using the `siris.StripPrefix`
+// Developers can wrap this handler using the `router.StripPrefix`
 // for a fixed static path when the result handler is being, finally, registered to a route.
 //
 //
@@ -143,7 +143,7 @@ func Prioritize(r *Route) context.Handler {
 // app := siris.New()
 // ...
 // fileserver := siris.StaticHandler("./static_files", false, false)
-// h := siris.StripPrefix("/static", fileserver)
+// h := router.StripPrefix("/static", fileserver)
 // /* http://mydomain.com/static/css/style.css */
 // app.Get("/static", h)
 // ...
@@ -347,7 +347,7 @@ func (w *fsHandler) Build() context.Handler {
 //
 // Usage:
 // fileserver := siris.StaticHandler("./static_files", false, false)
-// h := siris.StripPrefix("/static", fileserver)
+// h := router.StripPrefix("/static", fileserver)
 // app.Get("/static", h)
 //
 func StripPrefix(prefix string, h context.Handler) context.Handler {

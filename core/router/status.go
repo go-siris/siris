@@ -25,8 +25,12 @@ type ErrorCodeHandler struct {
 func (ch *ErrorCodeHandler) Fire(ctx context.Context) {
 	// if we can reset the body
 	if w, ok := ctx.IsRecording(); ok {
-		// reset if previous content and it's recorder
-		w.Reset()
+		if w.StatusCode() < 400 { // if not an error status code
+			w.WriteHeader(ch.StatusCode) // then set it manually here, otherwise it should be setted via ctx.StatusCode(...)
+		}
+		// reset if previous content and it's recorder, keep the status code.
+		w.ClearHeaders()
+		w.ResetBody()
 	} else if w, ok := ctx.ResponseWriter().(*context.GzipResponseWriter); ok {
 		// reset and disable the gzip in order to be an expected form of http error result
 		w.ResetBody()
@@ -45,6 +49,19 @@ func (ch *ErrorCodeHandler) Fire(ctx context.Context) {
 	// i.e
 	// users := app.Party("/users")
 	// users.Done(func(ctx context.Context){ if ctx.StatusCode() == 400 { /*  custom error code for /users */ }})
+
+	// use .HandlerIndex
+	// that sets the current handler index to zero
+	// in order to:
+	// ignore previous runs that may changed the handler index,
+	// via ctx.Next or ctx.StopExecution, if any.
+	//
+	// use .Do
+	// that overrides the existing handlers and sets and runs these error handlers.
+	// in order to:
+	// ignore the route's after-handlers, if any.
+	ctx.HandlerIndex(0)
+
 	ctx.Do(ch.Handlers)
 }
 
