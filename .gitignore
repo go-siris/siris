@@ -1,3 +1,7 @@
+# testfile
+siristest.bin
+siristest.exe
+
 # my own configuration for vs code, my lovely editor, if someone of you want this, contact with me
 .vscode
 
@@ -19,7 +23,7 @@ specs
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
 
-# vendor examples need to be removed, otherwise go build builds all examples 
+# vendor examples need to be removed, otherwise go build builds all examples
 vendor/**/examples
 #vendor/**/*_test.go
 
