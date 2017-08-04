@@ -50,7 +50,9 @@ func ExampleSupervisor_RegisterOnErrorHook() {
 
 	go su.ListenAndServe()
 	time.Sleep(1 * time.Second)
-	su.Shutdown(context.TODO())
+	ctx, cancel := context.WithTimeout(context.TODO(), 5*time.Second)
+	defer cancel()
+	su.Shutdown(ctx)
 	time.Sleep(1 * time.Second)
 
 	// Output:

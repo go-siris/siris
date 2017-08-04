@@ -1,7 +1,3 @@
-// Copyright 2017 Gerasimos Maropoulos, ΓΜ & Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package router
 
 import (
@@ -28,7 +24,7 @@ import (
 // embedded into executable files.
 //
 //
-// Examples: https://github.com/go-siris/siris/tree/master/_examples/file-server
+// Examples: https://github.com/kataras/iris/tree/master/_examples/file-server
 func StaticEmbeddedHandler(vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string) context.Handler {
 	// Depends on the command the user gave to the go-bindata
 	// the assset path (names) may be or may not be prepended with a slash.
@@ -86,8 +82,8 @@ func StaticEmbeddedHandler(vdir string, assetFn func(name string) ([]byte, error
 			if err != nil {
 				continue
 			}
-
-			if err := ctx.WriteWithExpiration(buf, cType, modtime); err != nil {
+			ctx.ContentType(cType)
+			if _, err := ctx.WriteWithExpiration(buf, modtime); err != nil {
 				ctx.StatusCode(http.StatusInternalServerError)
 				ctx.StopExecution()
 			}
@@ -102,36 +98,6 @@ func StaticEmbeddedHandler(vdir string, assetFn func(name string) ([]byte, error
 	return h
 }
 
-// Prioritize is a middleware which executes a route against this path
-// when the request's Path has a prefix of the route's STATIC PART
-// is not executing ExecRoute to determinate if it's valid, for performance reasons
-// if this function is not enough for you and you want to test more than one parameterized path
-// then use the:  if c := ExecRoute(r); c == nil { /*  move to the next, the route is not valid */ }
-//
-// You can find the Route by siris.Default.Routes().Lookup("theRouteName")
-// you can set a route name as: myRoute := siris.Default.Get("/mypath", handler)("theRouteName")
-// that will set a name to the route and returns its siris.Route instance for further usage.
-//
-// if the route found then it executes that and don't continue to the next handler
-// if not found then continue to the next handler
-func Prioritize(r *Route) context.Handler {
-	if r != nil {
-		return func(ctx context.Context) {
-			reqPath := ctx.Path()
-			staticPath := ResolveStaticPath(reqPath)
-			if strings.HasPrefix(reqPath, staticPath) {
-				ctx.Exec(r.Method, reqPath) // execute the route based on this request path
-				// we are done here.
-				return
-			}
-			// execute the next handler if no prefix
-			// here look, the only error we catch is the 404.
-			ctx.Next()
-		}
-	}
-	return func(ctx context.Context) { ctx.Next() }
-}
-
 // StaticHandler returns a new Handler which is ready
 // to serve all kind of static files.
 //
@@ -140,28 +106,26 @@ func Prioritize(r *Route) context.Handler {
 //
 //
 // Usage:
-// app := siris.New()
+// app := iris.New()
 // ...
-// fileserver := siris.StaticHandler("./static_files", false, false)
+// fileserver := iris.StaticHandler("./static_files", false, false)
 // h := router.StripPrefix("/static", fileserver)
 // /* http://mydomain.com/static/css/style.css */
 // app.Get("/static", h)
 // ...
 //
-func StaticHandler(systemPath string, showList bool, enableGzip bool, exceptRoutes ...*Route) context.Handler {
+func StaticHandler(systemPath string, showList bool, enableGzip bool) context.Handler {
 	return NewStaticHandlerBuilder(systemPath).
 		Listing(showList).
 		Gzip(enableGzip).
-		Except(exceptRoutes...).
 		Build()
 }
 
 // StaticHandlerBuilder is the web file system's Handler builder
-// use that or the siris.StaticHandler/StaticWeb methods
+// use that or the iris.StaticHandler/StaticWeb methods.
 type StaticHandlerBuilder interface {
 	Gzip(enable bool) StaticHandlerBuilder
 	Listing(listDirectoriesOnOff bool) StaticHandlerBuilder
-	Except(r ...*Route) StaticHandlerBuilder
 	Build() context.Handler
 }
 
@@ -179,7 +143,6 @@ type fsHandler struct {
 	// these are init on the Build() call
 	filesystem http.FileSystem
 	once       sync.Once
-	exceptions []*Route
 	handler    context.Handler
 }
 
@@ -206,9 +169,9 @@ func Abs(path string) string {
 // NewStaticHandlerBuilder returns a new Handler which serves static files
 // supports gzip, no listing and much more
 // Note that, this static builder returns a Handler
-// it doesn't cares about the rest of your siris configuration.
+// it doesn't cares about the rest of your iris configuration.
 //
-// Use the siris.StaticHandler/StaticWeb in order to serve static files on more automatic way
+// Use the iris.StaticHandler/StaticWeb in order to serve static files on more automatic way
 // this builder is used by people who have more complicated application
 // structure and want a fluent api to work on.
 func NewStaticHandlerBuilder(dir string) StaticHandlerBuilder {
@@ -232,13 +195,6 @@ func (w *fsHandler) Gzip(enable bool) StaticHandlerBuilder {
 // Defaults to false
 func (w *fsHandler) Listing(listDirectoriesOnOff bool) StaticHandlerBuilder {
 	w.listDirectories = listDirectoriesOnOff
-	return w
-}
-
-// Except add a route exception,
-// gives priority to that Route over the static handler.
-func (w *fsHandler) Except(r ...*Route) StaticHandlerBuilder {
-	w.exceptions = append(w.exceptions, r...)
 	return w
 }
 
@@ -308,28 +264,13 @@ func (w *fsHandler) Build() context.Handler {
 					// headers[contentEncodingHeader] = nil
 					// headers[contentLength] = nil
 				}
-				// ctx.Application().Logger().Info(errMsg)
+				// ctx.Application().Logger().Infof(errMsg)
 				ctx.StatusCode(prevStatusCode)
 				return
 			}
 
 			// go to the next middleware
 			ctx.Next()
-		}
-
-		if len(w.exceptions) > 0 {
-			middleware := make(context.Handlers, len(w.exceptions)+1)
-			for i := range w.exceptions {
-				middleware[i] = Prioritize(w.exceptions[i])
-			}
-			middleware[len(w.exceptions)] = fileserver
-
-			w.handler = func(ctx context.Context) {
-				ctxHandlers := ctx.Handlers()
-				ctx.SetHandlers(append(middleware, ctxHandlers...))
-				ctx.Handlers()[0](ctx)
-			}
-			return
 		}
 
 		w.handler = fileserver
@@ -346,7 +287,7 @@ func (w *fsHandler) Build() context.Handler {
 // replying with an HTTP 404 not found error.
 //
 // Usage:
-// fileserver := siris.StaticHandler("./static_files", false, false)
+// fileserver := iris.StaticHandler("./static_files", false, false)
 // h := router.StripPrefix("/static", fileserver)
 // app.Get("/static", h)
 //
@@ -357,7 +298,7 @@ func StripPrefix(prefix string, h context.Handler) context.Handler {
 	// here we separate the path from the subdomain (if any), we care only for the path
 	// fixes a bug when serving static files via a subdomain
 	fixedPrefix := prefix
-	if dotWSlashIdx := strings.Index(fixedPrefix, SubdomainIndicator); dotWSlashIdx > 0 {
+	if dotWSlashIdx := strings.Index(fixedPrefix, SubdomainPrefix); dotWSlashIdx > 0 {
 		fixedPrefix = fixedPrefix[dotWSlashIdx+1:]
 	}
 	fixedPrefix = toWebPath(fixedPrefix)
@@ -372,14 +313,14 @@ func StripPrefix(prefix string, h context.Handler) context.Handler {
 	}
 }
 
-//  +--------------------------------------------------------------+
-//  |                                                              |
-//  |                      serve file handler                      |
-//  | edited from net/http/fs.go in order to support GZIP with     |
-//  | custom siris http errors and fallback to non-compressed data |
-//  | when not supported.                                          |
-//  |                                                              |
-//  +--------------------------------------------------------------+
+//  +------------------------------------------------------------+
+//  |                                                            |
+//  |                      serve file handler                    |
+//  | edited from net/http/fs.go in order to support GZIP with   |
+//  | custom iris http errors and fallback to non-compressed data|
+//  | when not supported.                                        |
+//  |                                                            |
+//  +------------------------------------------------------------+
 
 var htmlReplacer = strings.NewReplacer(
 	"&", "&amp;",
@@ -461,7 +402,6 @@ func serveContent(ctx context.Context, name string, modtime time.Time, sizeFunc 
 			_, err := content.Seek(0, io.SeekStart) // rewind to output whole file
 			if err != nil {
 				return "seeker can't seek", http.StatusInternalServerError
-
 			}
 		}
 

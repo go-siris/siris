@@ -419,7 +419,7 @@ type Context interface {
 	WriteString(body string) (int, error)
 	// WriteWithExpiration like SetBody but it sends with an expiration datetime
 	// which is managed by the client-side (all major web browsers supports this)
-	WriteWithExpiration(bodyContent []byte, cType string, modtime time.Time) error
+	WriteWithExpiration(bodyContent []byte, modtime time.Time) (int, error)
 	// StreamWriter registers the given stream writer for populating
 	// response body.
 	//
@@ -1500,18 +1500,15 @@ func (ctx *context) staticCachePassed(modtime time.Time) bool {
 
 // WriteWithExpiration like Write but it sends with an expiration datetime
 // which is managed by the client-side (all major web browsers supports this)
-func (ctx *context) WriteWithExpiration(bodyContent []byte, cType string, modtime time.Time) error {
+func (ctx *context) WriteWithExpiration(bodyContent []byte, modtime time.Time) (int, error) {
 	if ctx.staticCachePassed(modtime) {
-		return nil
+		return 0, nil
 	}
 
 	modtimeFormatted := modtime.UTC().Format(ctx.Application().ConfigurationReadOnly().GetTimeFormat())
-
-	ctx.writer.Header().Set(contentTypeHeaderKey, cType)
 	ctx.writer.Header().Set(lastModifiedHeaderKey, modtimeFormatted)
 
-	_, err := ctx.writer.Write(bodyContent)
-	return err
+	return ctx.writer.Write(bodyContent)
 }
 
 // StreamWriter registers the given stream writer for populating

@@ -57,7 +57,7 @@ func (s *SPABuilder) isAsset(reqPath string) bool {
 // It should be passed to the router's `WrapRouter`:
 // https://godoc.org/github.com/go-siris/siris/core/router#Router.WrapRouter
 //
-// Example: https://github.com/go-siris/siris/tree/master/_examples/beginner/file-server/single-page-application-builder
+// Example: https://github.com/go-siris/siris/tree/master/_examples/file-server/single-page-application-builder
 func (s *SPABuilder) BuildWrapper(cPool *context.Pool) WrapperFunc {
 
 	fileServer := s.AssetHandler

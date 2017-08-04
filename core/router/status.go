@@ -1,7 +1,3 @@
-// Copyright 2017 Gerasimos Maropoulos, ΓΜ. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package router
 
 import (
@@ -61,7 +57,6 @@ func (ch *ErrorCodeHandler) Fire(ctx context.Context) {
 	// in order to:
 	// ignore the route's after-handlers, if any.
 	ctx.HandlerIndex(0)
-
 	ctx.Do(ch.Handlers)
 }
 
@@ -97,10 +92,7 @@ func defaultErrorCodeHandlers() *ErrorCodeHandlers {
 
 func statusText(statusCode int) context.Handler {
 	return func(ctx context.Context) {
-		if _, err := ctx.WriteString(http.StatusText(statusCode)); err != nil {
-			// ctx.Application().Logger().Info("(status code: %d) %s",
-			// 	err.Error(), statusCode)
-		}
+		ctx.WriteString(http.StatusText(statusCode))
 	}
 }
 
@@ -129,14 +121,17 @@ func (s *ErrorCodeHandlers) Register(statusCode int, handlers ...context.Handler
 
 	h := s.Get(statusCode)
 	if h == nil {
+		// create new and add it
 		ch := &ErrorCodeHandler{
 			StatusCode: statusCode,
 			Handlers:   handlers,
 		}
+
 		s.handlers = append(s.handlers, ch)
-		// create new and add it
+
 		return ch
 	}
+
 	// otherwise update the handlers
 	h.updateHandlers(handlers)
 	return h
@@ -156,6 +151,5 @@ func (s *ErrorCodeHandlers) Fire(ctx context.Context) {
 	if ch == nil {
 		ch = s.Register(statusCode, statusText(statusCode))
 	}
-
 	ch.Fire(ctx)
 }

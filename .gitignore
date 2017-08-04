@@ -1,6 +1,7 @@
-# testfile
-siristest.bin
-siristest.exe
+# Testfile and Coverage
+coverage.txt
+.coverage.txt
+coverage/
 
 # my own configuration for vs code, my lovely editor, if someone of you want this, contact with me
 .vscode
@@ -29,9 +30,6 @@ vendor/**/examples
 
 # Jetbrains
 .idea
-
-# Coverage
-.coverage.txt
 
 # tmp folders
 tmp/

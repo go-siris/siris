@@ -1,6 +1,7 @@
 package node
 
 import (
+	//"fmt"
 	"sort"
 	"strings"
 
@@ -20,14 +21,14 @@ type node struct {
 	root              bool
 	rootWildcard      bool // if it's a wildcard {path} type on root, it should allow everything but it is not conflicts with
 	// any other static or dynamic or wildcard paths if exists on other nodes.
-
 }
 
-// ErrDublicate returned from MakeChild when more than one routes have the same registered path.
-var ErrDublicate = errors.New("more than one routes have the same registered path")
+// ErrDublicate returnned from `Add` when two or more routes have the same registered path.
+var ErrDublicate = errors.New("two or more routes have the same registered path")
 
 // Add adds a node to the tree, returns an ErrDublicate error on failure.
 func (nodes *Nodes) Add(path string, handlers context.Handlers) error {
+	//fmt.Println("[Add] adding path: " + path)
 	// resolve params and if that node should be added as root
 	var params []string
 	var paramStart, paramEnd int
@@ -51,12 +52,24 @@ func (nodes *Nodes) Add(path string, handlers context.Handlers) error {
 		paramEnd -= paramEnd - paramStart
 	}
 
-	for _, idx := range paramsPos(path) {
+	var p []int
+	for i := 0; i < len(path); i++ {
+		idx := strings.IndexByte(path[i:], ':')
+		if idx == -1 {
+			break
+		}
+		p = append(p, idx+i)
+		i = idx + i
+	}
 
-		if err := nodes.add(path[:idx], nil, nil, true); err != nil { // take the static path to its own node
+	for _, idx := range p {
+		//fmt.Print("-2 nodes.Add: path: " + path + " params len: ")
+		//fmt.Println(len(params))
+		if err := nodes.add(path[:idx], nil, nil, true); err != nil {
 			return err
 		}
-		// create a second, empty, dynamic parameter node without the last slash
+		//fmt.Print("-1 nodes.Add: path: " + path + " params len: ")
+		//fmt.Println(len(params))
 		if nidx := idx + 1; len(path) > nidx {
 			if err := nodes.add(path[:nidx], nil, nil, true); err != nil {
 				return err
@@ -64,17 +77,20 @@ func (nodes *Nodes) Add(path string, handlers context.Handlers) error {
 		}
 	}
 
-	// last,  create the node filled by the full path, parameters and its handlers
+	//fmt.Print("nodes.Add: path: " + path + " params len: ")
+	//fmt.Println(len(params))
 	if err := nodes.add(path, params, handlers, true); err != nil {
 		return err
 	}
 
-	// sort by static path, remember, they were already sorted by subdomains too.
-	nodes.Sort()
+	// prioritize by static path remember, they were already sorted by subdomains too.
+	nodes.prioritize()
 	return nil
 }
 
 func (nodes *Nodes) add(path string, paramNames []string, handlers context.Handlers, root bool) (err error) {
+	//fmt.Println("-----------")
+	//fmt.Printf("[add] adding path: %#v\n", path)
 	// wraia etsi doulevei ara
 	// na to kanw na exei to node to diko tou wildcard parameter name
 	// kai sto telos na pernei auto, me vasi to *paramname
@@ -87,9 +103,16 @@ func (nodes *Nodes) add(path string, paramNames []string, handlers context.Handl
 		wildcardParamName = path[wildcardIdx+1:]
 
 		path = path[0:wildcardIdx-1] + "/" // replace *paramName with single slash
+		//fmt.Printf("[add] change path: %#v\n", path)
+		//fmt.Printf("[add] adding wildcardParamName: %#v\n", wildcardParamName)
+		//fmt.Printf("[add] adding paramNames: %#v\n", paramNames)
+	}
+
+	if wildcardIdx > 0 && wildcardParamName != "" && root {
 		// if root wildcard, then add it as it's and return
 		if path == "/" {
 			path += "/" // if root wildcard, then do it like "//" instead of simple "/"
+
 			n := &node{
 				rootWildcard:      true,
 				s:                 path,
@@ -99,10 +122,9 @@ func (nodes *Nodes) add(path string, paramNames []string, handlers context.Handl
 				root:              root,
 			}
 			*nodes = append(*nodes, n)
-			// println("1. nodes.Add path: " + path)
+			//fmt.Println("1. nodes.Add path: " + path)
 			return
 		}
-
 	}
 
 loop:
@@ -129,7 +151,7 @@ loop:
 				childrenNodes: Nodes{
 					{
 						s:                 n.s[i:],
-						wildcardParamName: n.wildcardParamName,
+						wildcardParamName: n.wildcardParamName, // wildcardParamName
 						paramNames:        n.paramNames,
 						childrenNodes:     n.childrenNodes,
 						handlers:          n.handlers,
@@ -143,10 +165,15 @@ loop:
 				},
 				root: n.root,
 			}
+
+			// //fmt.Printf("%#v\n", n)
+			//fmt.Println("2. change n and return  " + n.s[:i] + " and " + path[i:])
 			return
 		}
 
 		if len(path) < len(n.s) {
+			//fmt.Println("3. change n and return | n.s[:len(path)] = " + n.s[:len(path)-1] + " and child: " + n.s[len(path)-1:])
+
 			*n = node{
 				s:                 n.s[:len(path)],
 				wildcardParamName: wildcardParamName,
@@ -154,7 +181,7 @@ loop:
 				childrenNodes: Nodes{
 					{
 						s:                 n.s[len(path):],
-						wildcardParamName: n.wildcardParamName,
+						wildcardParamName: n.wildcardParamName, // wildcardParamName
 						paramNames:        n.paramNames,
 						childrenNodes:     n.childrenNodes,
 						handlers:          n.handlers,
@@ -169,18 +196,18 @@ loop:
 
 		if len(path) > len(n.s) {
 			if n.wildcardParamName != "" {
-				n = &node{
+				n := &node{
 					s:                 path,
 					wildcardParamName: wildcardParamName,
 					paramNames:        paramNames,
 					handlers:          handlers,
 					root:              root,
 				}
-				//     println("3.5. nodes.Add path: " + n.s)
+				//fmt.Println("3.5. nodes.Add path: " + n.s)
 				*nodes = append(*nodes, n)
 				return
 			}
-			//     println("4. nodes.Add path: " + path[len(n.s):])
+			//fmt.Println("4. nodes.Add path: " + path[len(n.s):])
 			err = n.childrenNodes.add(path[len(n.s):], paramNames, handlers, false)
 			return err
 		}
@@ -188,8 +215,9 @@ loop:
 		if len(handlers) == 0 { // missing handlers
 			return nil
 		}
-		if len(n.handlers) > 0 { // n.handlers already set
-			return ErrDublicate.Append("for: %s", n.s)
+
+		if len(n.handlers) > 0 { // n.handlers already setted
+			return ErrDublicate
 		}
 		n.paramNames = paramNames
 		n.handlers = handlers
@@ -204,7 +232,7 @@ loop:
 		handlers:          handlers,
 		root:              root,
 	}
-
+	//fmt.Println("5. nodes.Add path: " + n.s)
 	*nodes = append(*nodes, n)
 	return
 }
@@ -217,7 +245,16 @@ func (nodes Nodes) Find(path string, params *context.RequestParams) context.Hand
 		//	map the params,
 		// n.params are the param names
 		if len(paramValues) > 0 {
+			//fmt.Println("-----------")
+			//fmt.Print("param values returned len: ")
+			//fmt.Println(len(paramValues))
+			//fmt.Println("first value is: " + paramValues[0])
+			//fmt.Print("n.paramNames len: ")
+			//fmt.Println(len(n.paramNames))
+			//fmt.Print("n.wildcardParamName len: ")
+			//fmt.Println(len(n.wildcardParamName))
 			for i, name := range n.paramNames {
+				//fmt.Println("setting param name: " + name + " = " + paramValues[i])
 				params.Set(name, paramValues[i])
 			}
 			// last is the wildcard,
@@ -225,7 +262,12 @@ func (nodes Nodes) Find(path string, params *context.RequestParams) context.Hand
 			// Note that n.wildcardParamName can be not empty but that doesn't meaning
 			// that it contains a wildcard path, so the check is required.
 			if len(paramValues) > len(n.paramNames) {
+				//fmt.Printf("len(paramValues) %d > %d len(n.paramNames)", len(paramValues), len(n.paramNames))
 				lastWildcardVal := paramValues[len(paramValues)-1]
+				//if n.wildcardParamName == "" {
+				//	n.wildcardParamName = "file"
+				//}
+				//fmt.Println("setting wildcard param name: " + n.wildcardParamName + " = " + lastWildcardVal)
 				params.Set(n.wildcardParamName, lastWildcardVal)
 			}
 		}
@@ -245,6 +287,7 @@ func (nodes Nodes) Exists(path string) bool {
 }
 
 func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
+	//fmt.Println("request path: " + path)
 	for _, n := range nodes {
 		if n.s == ":" {
 			paramEnd := strings.IndexByte(path, '/')
@@ -256,12 +299,18 @@ func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
 			}
 			return n.childrenNodes.findChild(path[paramEnd:], append(params, path[:paramEnd]))
 		}
+		//fmt.Printf("n: %#v\n", n)
+		//fmt.Println("n.s: " + n.s)
+		//fmt.Print("n.childrenNodes len: ")
+		//fmt.Println(len(n.childrenNodes))
+		//fmt.Print("n.root: ")
+		//fmt.Println(n.root)
 
 		// by runtime check of:,
 		// if n.s == "//" && n.root && n.wildcardParamName != "" {
 		// but this will slow down, so we have a static field on the node itself:
 		if n.rootWildcard {
-			// println("return from n.rootWildcard")
+			//fmt.Println("return from n.rootWildcard")
 			// single root wildcard
 			if len(path) < 2 {
 				// do not remove that, it seems useless but it's not,
@@ -272,10 +321,11 @@ func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
 		}
 
 		if !strings.HasPrefix(path, n.s) {
+			// //fmt.Printf("---here root: %v, n.s: "+n.s+" and path: "+path+" is dynamic: %v , wildcardParamName: %s, children len: %v \n", n.root, n.isDynamic(), n.wildcardParamName, len(n.childrenNodes))
 			continue
 		}
 
-		if len(path) == len(n.s) { // Node matched until the end of path.
+		if len(path) == len(n.s) {
 			if len(n.handlers) == 0 {
 				return nil, nil
 			}
@@ -283,15 +333,29 @@ func (nodes Nodes) findChild(path string, params []string) (*node, []string) {
 		}
 
 		child, childParamNames := n.childrenNodes.findChild(path[len(n.s):], params)
+		//fmt.Print("childParamNames len: ")
+		//fmt.Println(len(childParamNames))
+
+		if len(childParamNames) > 0 {
+			//fmt.Println("childParamsNames[0] = " + childParamNames[0])
+		}
 
 		if child == nil || len(child.handlers) == 0 {
 			if n.s[len(n.s)-1] == '/' && !(n.root && (n.s == "/" || len(n.childrenNodes) > 0)) {
-
 				if len(n.handlers) == 0 {
 					return nil, nil
 				}
+
+				//fmt.Println("if child == nil.... | n.s = " + n.s)
+				//fmt.Print("n.paramNames len: ")
+				//fmt.Println(n.paramNames)
+				//fmt.Print("n.wildcardParamName is: ")
+				//fmt.Println(n.wildcardParamName)
+				//fmt.Print("return n, append(params, path[len(n.s) | params: ")
+				//fmt.Println(path[len(n.s):])
 				return n, append(params, path[len(n.s):])
 			}
+
 			continue
 		}
 
@@ -313,9 +377,8 @@ func (n *node) isDynamic() bool {
 	return n.s == ":" || n.wildcardParamName != "" || n.rootWildcard
 }
 
-// Sort sets the static paths first.
-func (nodes Nodes) Sort() {
-
+// prioritize sets the static paths first.
+func (nodes Nodes) prioritize() {
 	sort.Slice(nodes, func(i, j int) bool {
 		if nodes[i].isDynamic() {
 			return false
@@ -323,22 +386,11 @@ func (nodes Nodes) Sort() {
 		if nodes[j].isDynamic() {
 			return true
 		}
+
 		return nodes[i].childLen() > nodes[j].childLen()
 	})
 
 	for _, n := range nodes {
-		n.childrenNodes.Sort()
+		n.childrenNodes.prioritize()
 	}
-}
-
-func paramsPos(s string) (pos []int) {
-	for i := 0; i < len(s); i++ {
-		p := strings.IndexByte(s[i:], ':')
-		if p == -1 {
-			break
-		}
-		pos = append(pos, p+i)
-		i = p + i
-	}
-	return
 }
