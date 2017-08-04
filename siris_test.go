@@ -23,6 +23,7 @@ import (
 	"github.com/go-siris/siris/cache"
 	"github.com/go-siris/siris/context"
 	"github.com/go-siris/siris/core/errors"
+	"github.com/go-siris/siris/core/router"
 )
 
 const (
@@ -51,8 +52,77 @@ func TestSiris(t *testing.T) {
 		ctx.Next()
 	})
 
+	app.Favicon(staticDir)
+
 	app.Get("/", func(ctx context.Context) {
 		ctx.Text("hi")
+	})
+	app.Post("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+	app.Delete("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+	app.Put("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+	app.Head("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+	app.Options("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+	app.Patch("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+	app.Connect("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+	app.Trace("/", func(ctx context.Context) {
+		ctx.Text("hi")
+	})
+
+	party := app.Party("/party")
+	{
+		party.Get("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Post("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Delete("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Put("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Head("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Options("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Patch("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Connect("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+		party.Trace("/", func(ctx context.Context) {
+			ctx.Text("party")
+		})
+	}
+
+	app.PartyFunc("/partyfunc", func(u router.Party) {
+		u.Get("/", func(ctx context.Context) {
+			ctx.Text("partyfunc")
+		})
+		u.Post("/", func(ctx context.Context) {
+			ctx.Text("partyfunc")
+		})
+		u.Delete("/", func(ctx context.Context) {
+			ctx.Text("partyfunc")
+		})
 	})
 
 	app.Get("/cache", cache.WrapHandler(func(ctx context.Context) {
@@ -194,5 +264,22 @@ func testClient(e *httpexpect.Expect) {
 	e.GET("/cache").Expect().Status(StatusOK)
 	time.Sleep(time.Duration(1 * time.Second))
 
+	e.GET("/").Expect().Status(StatusOK)
+	e.POST("/").Expect().Status(StatusOK)
+	e.PUT("/").Expect().Status(StatusOK)
+	e.DELETE("/").Expect().Status(StatusOK)
+	e.OPTIONS("/").Expect().Status(StatusOK)
+	e.HEAD("/").Expect().Status(StatusOK)
+	e.PATCH("/").Expect().Status(StatusOK)
+
+	e.GET("/party/").Expect().Status(StatusOK)
+	e.POST("/party/").Expect().Status(StatusOK)
+	e.PUT("/party/").Expect().Status(StatusOK)
+	e.DELETE("/party/").Expect().Status(StatusOK)
+	e.OPTIONS("/party/").Expect().Status(StatusOK)
+	e.HEAD("/party/").Expect().Status(StatusOK)
+	e.PATCH("/party/").Expect().Status(StatusOK)
+
 	e.GET("/notfound").Expect().Status(StatusNotFound)
+	e.GET("/favicon.ico").Expect().Status(StatusOK)
 }
