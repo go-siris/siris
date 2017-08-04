@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
-
 set -e
 echo "" > coverage.txt
-
-for d in $(go list ./... | grep -v vendor); do
-    go test -coverprofile=profile.out -covermode=atomic $d
-    if [ -f profile.out ]; then
-        cat profile.out >> coverage.txt
-        gocov convert profile.out | gocov annotate -
-        rm profile.out
-    fi
+echo "#!/usr/bin/env bash" > ___source.out
+for d in "$(go env)" ; do
+  echo "$d" >> ___source.out
 done
+
+source ___source.out
+exec make "$@" GOPATH="$GOPATH"

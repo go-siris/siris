@@ -53,9 +53,9 @@ func (s *server) Attach(app *siris.Application) {
 	// check if client side doesn't already exists
 	if app.GetRoute(clientSideLookupName) == nil {
 		// serve the client side on domain:port/siris-ws.js
-		r, err := app.StaticContent(wsClientSidePath, "application/javascript", ClientSource)
-		if err != nil {
-			app.Logger().Warnf("websocket's route for javascript client-side library failed with: %v", err)
+		r := app.StaticContent(wsClientSidePath, "application/javascript", ClientSource)
+		if r == nil {
+			app.Logger().Warnf("websocket's route for javascript client-side library failed")
 			return
 		}
 		r.Name = clientSideLookupName

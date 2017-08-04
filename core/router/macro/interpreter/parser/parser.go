@@ -1,7 +1,3 @@
-// Copyright 2017 Gerasimos Maropoulos. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package parser
 
 import (
@@ -78,7 +74,7 @@ func (p *ParamParser) appendErr(format string, a ...interface{}) {
 
 const (
 	// DefaultParamErrorCode is the default http error code, 404 not found,
-	// per-parameter. An error code can be set via
+	// per-parameter. An error code can be setted via
 	// the "else" keyword inside a route's path.
 	DefaultParamErrorCode = 404
 	// DefaultParamType when parameter type is missing use this param type, defaults to string

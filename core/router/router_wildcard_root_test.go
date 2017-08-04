@@ -157,7 +157,7 @@ func testTheRoutes(t *testing.T, tests []testRoute, debug bool) {
 			if method == "" {
 				method = tt.method
 			}
-			ex := e.Request(method, req.path)
+			ex := e.Request(tt.method, req.path)
 			if req.subdomain != "" {
 				ex.WithURL("http://" + req.subdomain + ".localhost:8080")
 			}
