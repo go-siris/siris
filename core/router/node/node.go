@@ -109,22 +109,24 @@ func (nodes *Nodes) add(path string, paramNames []string, handlers context.Handl
 	}
 
 	if wildcardIdx > 0 && wildcardParamName != "" && root {
+		n := &node{
+			s:                 path,
+			wildcardParamName: wildcardParamName,
+			paramNames:        paramNames,
+			handlers:          handlers,
+			root:              root,
+		}
 		// if root wildcard, then add it as it's and return
 		if path == "/" {
 			path += "/" // if root wildcard, then do it like "//" instead of simple "/"
+			n.s = path
+			n.rootWildcard = true
 
-			n := &node{
-				rootWildcard:      true,
-				s:                 path,
-				wildcardParamName: wildcardParamName,
-				paramNames:        paramNames,
-				handlers:          handlers,
-				root:              root,
-			}
-			*nodes = append(*nodes, n)
-			//fmt.Println("1. nodes.Add path: " + path)
-			return
+		} else {
+			n.rootWildcard = false
 		}
+		*nodes = append(*nodes, n)
+		return
 	}
 
 loop:
