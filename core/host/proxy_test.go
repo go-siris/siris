@@ -35,7 +35,7 @@ func TestProxy(t *testing.T) {
 	// proxySrv.Downgrade(p.ServeHTTP)
 	// go proxySrv.Run(siris.Addr(":80"), siris.WithoutBanner, siris.WithoutInterruptHandler)
 
-	go host.NewProxy("localhost:2018", u).ListenAndServe() // should be localhost/127.0.0.1:80 but travis throws permission denied.
+	go host.NewProxy("localhost:2018", u).ListenAndServe() // should be localhost/go-siris.com:80 but travis throws permission denied.
 
 	app := siris.New()
 
@@ -78,7 +78,7 @@ func TestProxy(t *testing.T) {
 		ctx.WriteString(unexpectedRoute)
 	})
 
-	l, err := net.Listen("tcp", "localhost:4444") // should be localhost/127.0.0.1:443 but travis throws permission denied.
+	l, err := net.Listen("tcp", "localhost:4444") // should be localhost/go-siris.com:443 but travis throws permission denied.
 	if err != nil {
 		t.Fatalf("%v while creating tcp4 listener for new tls local test listener", err)
 	}

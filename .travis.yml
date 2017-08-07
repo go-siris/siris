@@ -11,8 +11,8 @@ go:
 go_import_path: github.com/go-siris/siris
 
 before_install:
- - if [ $TRAVIS_OS_NAME = osx ]; then brew brew update; fi
- - if [ $TRAVIS_OS_NAME = osx ]; then brew install gnu-sed; fi
+ - if [ $TRAVIS_OS_NAME = osx ]; then brew update; fi
+ - if [ $TRAVIS_OS_NAME = osx ]; then brew install gnu-sed --with-default-names; fi
  - chmod +x ./go-test.sh
 
 install:
@@ -32,3 +32,10 @@ after_success:
 matrix:
   allow_failures:
     - go: tip
+
+addons:
+  hosts:
+    - go-siris.com
+    - sub.go-siris.com
+    - www.go-siris.com
+    - subdomain.go-siris.com

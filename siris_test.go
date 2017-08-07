@@ -173,7 +173,7 @@ func TestSiris(t *testing.T) {
 		}
 	})
 
-	// http://localhost:8080/profile/id>=1
+	// http://go-siris.com:8080/profile/id>=1
 	// this will throw 404 even if it's found as route on : /profile/0, /profile/blabla, /profile/-1
 	// macro parameter functions are optional of course.
 	app.Get("/profile/{id:int min(1)}", func(ctx context.Context) {
@@ -190,7 +190,7 @@ func TestSiris(t *testing.T) {
 		ctx.Writef("Hello id: %d looking for friend id: %d", id, friendid)
 	}) // this will throw e 504 error code instead of 404 if all route's macros not passed.
 
-	// http://localhost:8080/game/a-zA-Z/level/0-9
+	// http://go-siris.com:8080/game/a-zA-Z/level/0-9
 	// remember, alphabetical is lowercase or uppercase letters only.
 	app.Get("/game/{name:alphabetical}/level/{level:int}", func(ctx context.Context) {
 		ctx.Writef("name: %s | level: %s", ctx.Params().Get("name"), ctx.Params().Get("level"))
@@ -203,17 +203,17 @@ func TestSiris(t *testing.T) {
 	// let's use a trivial custom regexp that validates a single path parameter
 	// which its value is only lowercase letters.
 
-	// http://localhost:8080/lowercase/anylowercase
+	// http://go-siris.com:8080/lowercase/anylowercase
 	app.Get("/lowercase/{name:string regexp(^[a-z]+)}", func(ctx context.Context) {
 		ctx.Writef("name should be only lowercase, otherwise this handler will never executed: %s", ctx.Params().Get("name"))
 	})
 
-	// http://localhost:8080/single_file/app.js
+	// http://go-siris.com:8080/single_file/app.js
 	app.Get("/single_file/{myfile:file}", func(ctx context.Context) {
 		ctx.Writef("file type validates if the parameter value has a form of a file name, got: %s", ctx.Params().Get("myfile"))
 	})
 
-	// http://localhost:8080/myfiles/any/directory/here/
+	// http://go-siris.com:8080/myfiles/any/directory/here/
 	// this is the only macro type that accepts any number of path segments.
 	app.Get("/myfiles/{directory:path}", func(ctx context.Context) {
 		ctx.Writef("path type accepts any number of path segments, path after /myfiles/ is: %s", ctx.Params().Get("directory"))
@@ -272,12 +272,12 @@ func TestSiris(t *testing.T) {
 	loggerP.Write([]byte("Logger: Start Servers"))
 
 	app.ConfigureHost(configureHosts)
-	go app.Run(Addr("127.0.0.1:9080"), WithoutBanner, WithoutInterruptHandler)
+	go app.Run(Addr("go-siris.com:9080"), WithoutBanner, WithoutInterruptHandler)
 
 	if runLetsEncrypt {
-		go app.Run(AutoTLS("127.0.0.1:443"), WithoutBanner, WithoutInterruptHandler)
+		go app.Run(AutoTLS("go-siris.com:443"), WithoutBanner, WithoutInterruptHandler)
 	} else {
-		go app.Run(TLS("127.0.0.1:9443", sslCert, sslKey), WithoutBanner, WithoutInterruptHandler)
+		go app.Run(TLS("go-siris.com:9443", sslCert, sslKey), WithoutBanner, WithoutInterruptHandler)
 	}
 
 	loggerP.Write([]byte("Logger: Servers started"))
@@ -292,9 +292,9 @@ func TestSiris(t *testing.T) {
 
 	time.Sleep(time.Duration(5 * time.Second))
 
-	client := newTester(t, "http://127.0.0.1:9080", nil)
+	client := newTester(t, "http://go-siris.com:9080", nil)
 	testClient(client)
-	clientTls := newTester(t, "https://127.0.0.1:9443", nil)
+	clientTls := newTester(t, "https://go-siris.com:9443", nil)
 	testClient(clientTls)
 
 	time.Sleep(time.Duration(5 * time.Second))
