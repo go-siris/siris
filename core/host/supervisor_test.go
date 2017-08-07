@@ -79,7 +79,7 @@ func testSupervisor(t *testing.T, creator func(*http.Server, []func(TaskHost)) *
 	// host (server wrapper and adapter) construction
 
 	srv := &http.Server{Handler: mux, ErrorLog: logger}
-	addr := "localhost:5525"
+	addr := "go-siris.com:5525"
 	// serving
 	ln, err := net.Listen("tcp4", addr)
 	if err != nil {
@@ -145,7 +145,7 @@ func testSupervisor2(t *testing.T, creator func(*http.Server, []func(TaskHost)) 
 	})
 
 	// host (server wrapper and adapter) construction
-	addr := "127.0.0.1:5443"
+	addr := "go-siris.com:5443"
 	srv := &http.Server{Handler: mux, Addr: addr, ErrorLog: logger}
 
 	helloMe := func(_ TaskHost) {

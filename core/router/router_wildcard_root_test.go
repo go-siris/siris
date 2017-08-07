@@ -159,7 +159,7 @@ func testTheRoutes(t *testing.T, tests []testRoute, debug bool) {
 			}
 			ex := e.Request(tt.method, req.path)
 			if req.subdomain != "" {
-				ex.WithURL("http://" + req.subdomain + ".localhost:8080")
+				ex.WithURL("http://" + req.subdomain + ".go-siris.com:8080")
 			}
 
 			expectedBody := req.expectedBody
