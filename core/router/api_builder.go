@@ -489,7 +489,7 @@ func (rb *APIBuilder) StaticServe(systemPath string, requestPath ...string) *Rou
 	}
 
 	return rb.Get(joinPath(reqPath, WildcardParam("file")), func(ctx context.Context) {
-		filepath := ctx.Params().Get("") // can't be right
+		filepath := ctx.Params().Get("file")
 
 		spath := strings.Replace(filepath, "/", string(os.PathSeparator), -1)
 		spath = path.Join(systemPath, spath)

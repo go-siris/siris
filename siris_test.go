@@ -12,6 +12,7 @@ import (
 	"os/signal"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -23,11 +24,13 @@ import (
 	"github.com/go-siris/siris/cache"
 	"github.com/go-siris/siris/context"
 	"github.com/go-siris/siris/core/errors"
+	"github.com/go-siris/siris/core/host"
 	"github.com/go-siris/siris/core/router"
+	"github.com/go-siris/siris/view"
 )
 
 const (
-	debug                  = true
+	debug                  = false
 	expectedFoundResponse  = "body{font-size: 30px}\n"
 	expectedFoundResponse2 = "1234test4321"
 )
@@ -44,7 +47,20 @@ var (
 func TestSiris(t *testing.T) {
 	initial()
 
-	app := New()
+	app := Default()
+	app.AttachView(view.HTML("./", ".html").Binary(get_files, get_names))
+
+	app.OnErrorCode(StatusPaymentRequired, func(ctx context.Context) {
+		ctx.IsAjax()
+		ctx.Application()
+		ctx.ClientSupportsGzip()
+		ctx.GetStatusCode()
+		ctx.GetContentType()
+		ctx.GetHeader("User-Agent")
+		ctx.GetCookie("lang")
+		ctx.SetCookieKV("lang", "value")
+		ctx.SetMaxRequestBodySize(1234567890)
+	})
 
 	app.OnAnyErrorCode(func(ctx context.Context) {
 		fmt.Printf("OnAnyErrorCode: %d %#v\n\n", ctx.GetStatusCode(), ctx.Err())
@@ -53,7 +69,9 @@ func TestSiris(t *testing.T) {
 	})
 
 	app.Favicon(staticDir)
-
+	app.Get("/view", func(ctx context.Context) {
+		ctx.View("view/parent.html")
+	})
 	app.Get("/", func(ctx context.Context) {
 		ctx.Text("hi")
 	})
@@ -125,6 +143,82 @@ func TestSiris(t *testing.T) {
 		})
 	})
 
+	app.Any("/any", func(ctx context.Context) {
+		ctx.Text("/any")
+	})
+
+	app.Many("/many", []string{MethodGet, MethodHead, MethodPost}, func(ctx context.Context) {
+		ctx.Text("/many")
+	})
+
+	// you can use the "string" type which is valid for a single path parameter that can be anything.
+	app.Get("/username/{name}", func(ctx context.Context) {
+		ctx.Writef("Hello %s", ctx.Params().Get("name"))
+	}) // type is missing = {name:string}
+
+	// Let's register our first macro attached to int macro type.
+	// "min" = the function
+	// "minValue" = the argument of the function
+	// func(string) bool = the macro's path parameter evaluator, this executes in serve time when
+	// a user requests a path which contains the :int macro type with the min(...) macro parameter function.
+	app.Macros().Int.RegisterFunc("min", func(minValue int) func(string) bool {
+		// do anything before serve here [...]
+		// at this case we don't need to do anything
+		return func(paramValue string) bool {
+			n, err := strconv.Atoi(paramValue)
+			if err != nil {
+				return false
+			}
+			return n >= minValue
+		}
+	})
+
+	// http://localhost:8080/profile/id>=1
+	// this will throw 404 even if it's found as route on : /profile/0, /profile/blabla, /profile/-1
+	// macro parameter functions are optional of course.
+	app.Get("/profile/{id:int min(1)}", func(ctx context.Context) {
+		// second parameter is the error but it will always nil because we use macros,
+		// the validaton already happened.
+		id, _ := ctx.Params().GetInt("id")
+		ctx.Writef("Hello id: %d", id)
+	})
+
+	// to change the error code per route's macro evaluator:
+	app.Get("/profile/{id:int min(1)}/friends/{friendid:int min(1) else 504}", func(ctx context.Context) {
+		id, _ := ctx.Params().GetInt("id")
+		friendid, _ := ctx.Params().GetInt("friendid")
+		ctx.Writef("Hello id: %d looking for friend id: %d", id, friendid)
+	}) // this will throw e 504 error code instead of 404 if all route's macros not passed.
+
+	// http://localhost:8080/game/a-zA-Z/level/0-9
+	// remember, alphabetical is lowercase or uppercase letters only.
+	app.Get("/game/{name:alphabetical}/level/{level:int}", func(ctx context.Context) {
+		ctx.Writef("name: %s | level: %s", ctx.Params().Get("name"), ctx.Params().Get("level"))
+	})
+
+	app.Get("/lowercase/static", func(ctx context.Context) {
+		ctx.Writef("static and dynamic paths are not conflicted anymore!")
+	})
+
+	// let's use a trivial custom regexp that validates a single path parameter
+	// which its value is only lowercase letters.
+
+	// http://localhost:8080/lowercase/anylowercase
+	app.Get("/lowercase/{name:string regexp(^[a-z]+)}", func(ctx context.Context) {
+		ctx.Writef("name should be only lowercase, otherwise this handler will never executed: %s", ctx.Params().Get("name"))
+	})
+
+	// http://localhost:8080/single_file/app.js
+	app.Get("/single_file/{myfile:file}", func(ctx context.Context) {
+		ctx.Writef("file type validates if the parameter value has a form of a file name, got: %s", ctx.Params().Get("myfile"))
+	})
+
+	// http://localhost:8080/myfiles/any/directory/here/
+	// this is the only macro type that accepts any number of path segments.
+	app.Get("/myfiles/{directory:path}", func(ctx context.Context) {
+		ctx.Writef("path type accepts any number of path segments, path after /myfiles/ is: %s", ctx.Params().Get("directory"))
+	}) // for wildcard path (any number of path segments) without validation you can use:
+
 	app.Get("/cache", cache.WrapHandler(func(ctx context.Context) {
 		ctx.Text("hi cache " + time.Now().String())
 	}, 2*time.Minute))
@@ -133,9 +227,14 @@ func TestSiris(t *testing.T) {
 	app.StaticWeb("/static1/", staticDir)
 	app.StaticServe(staticDir, "/static2/")
 	app.StaticContent("/static3", "text/css", []byte(expectedFoundResponse))
+	app.StaticEmbedded("/static4/", "/", get_files, get_names)
 
 	app.Get("/get-siris", func(ctx context.Context) {
 		ctx.Text("siris")
+	})
+
+	app.Get("/get-payment", func(ctx context.Context) {
+		ctx.StatusCode(StatusPaymentRequired)
 	})
 
 	go func() {
@@ -161,6 +260,18 @@ func TestSiris(t *testing.T) {
 		}
 	}()
 
+	app.Build()
+	app.GetRoutes()
+	app.GetRoute("HEAD/")
+
+	app.None("/none-active", func(ctx context.Context) {
+		ctx.Text("none-active route")
+	})
+
+	loggerP := serverErrLogger{app.Logger()}
+	loggerP.Write([]byte("Logger: Start Servers"))
+
+	app.ConfigureHost(configureHosts)
 	go app.Run(Addr("127.0.0.1:9080"), WithoutBanner, WithoutInterruptHandler)
 
 	if runLetsEncrypt {
@@ -168,7 +279,8 @@ func TestSiris(t *testing.T) {
 	} else {
 		go app.Run(TLS("127.0.0.1:9443", sslCert, sslKey), WithoutBanner, WithoutInterruptHandler)
 	}
-	defer app.Shutdown(stdContext.TODO())
+
+	loggerP.Write([]byte("Logger: Servers started"))
 
 	time.Sleep(time.Duration(5 * time.Second))
 
@@ -177,6 +289,7 @@ func TestSiris(t *testing.T) {
 			fmt.Println("RegisterOnErrorHook: " + err.Error())
 		})
 	}
+
 	time.Sleep(time.Duration(5 * time.Second))
 
 	client := newTester(t, "http://127.0.0.1:9080", nil)
@@ -185,6 +298,28 @@ func TestSiris(t *testing.T) {
 	testClient(clientTls)
 
 	time.Sleep(time.Duration(5 * time.Second))
+
+	app.Shutdown(stdContext.TODO())
+
+	time.Sleep(time.Duration(5 * time.Second))
+}
+
+func configureHosts(su *host.Supervisor) {
+	// here we have full access to the host that will be created
+	// inside the `app.Run` or `app.NewHost` function .
+	//
+	// we're registering a shutdown "event" callback here:
+	su.RegisterOnShutdownHook(func() {
+		println("server is closed")
+	})
+	su.RegisterOnErrorHook(func(err error) {
+		println("error:" + err.Error())
+	})
+	su.RegisterOnServeHook(func(_ host.TaskHost) {
+		println("Server Started")
+	})
+	// su.RegisterOnError
+	// su.RegisterOnServe
 }
 
 func initial() {
@@ -209,6 +344,42 @@ func initial() {
 	staticDir = path.Join(dir, "coverage-tests", "fixtures", "static")
 
 	fmt.Println(staticDir)
+}
+
+var files2017 = map[string]string{
+	"views/parent.html": `<!DOCTYPE html>
+		<html>
+			<head>
+				<title>Iris with Pongo2 template engine</title>
+					<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+					<meta http-equiv="Pragma" content="no-cache">
+					<meta http-equiv="cache-control" content="no-cache">
+			</head>
+			<body>
+				<h1>demo</h1>
+			</body>
+		</html>`,
+
+	"css/css.css": "body{}",
+}
+
+func get_names() []string {
+	var res []string
+
+	for name := range files2017 {
+		res = append(res, name)
+	}
+
+	return res
+}
+
+func get_files(name string) ([]byte, error) {
+	content, exists := files2017[name]
+	if !exists {
+		return nil, os.ErrNotExist
+	}
+
+	return []byte(content), nil
 }
 
 func newTester(t *testing.T, baseURL string, handler http.Handler) *httpexpect.Expect {
@@ -257,6 +428,14 @@ func testClient(e *httpexpect.Expect) {
 	e.GET("/static3").Expect().Status(StatusOK).
 		Body().Equal(expectedFoundResponse)
 
+	e.GET("/static4/").Expect().Status(StatusNotFound)
+	bytes, _ := get_files("css/css.css")
+	e.GET("/static4/css/css.css").Expect().Status(StatusOK).
+		Body().Equal(string(bytes))
+	bytes, _ = get_files("views/parent.html")
+	e.GET("/static4/views/parent.html").Expect().Status(StatusOK).
+		Body().Equal(string(bytes))
+
 	e.GET("/get-siris").Expect().Status(StatusOK)
 
 	e.GET("/cache").Expect().Status(StatusOK)
@@ -280,6 +459,47 @@ func testClient(e *httpexpect.Expect) {
 	e.HEAD("/party/").Expect().Status(StatusOK)
 	e.PATCH("/party/").Expect().Status(StatusOK)
 
+	e.GET("/username/Bob").Expect().Status(StatusOK).
+		Body().Equal("Hello Bob")
+
+	e.GET("/profile/1029").
+		Expect().Status(StatusOK).
+		Body().Equal("Hello id: 1029")
+	e.GET("/profile/0").
+		Expect().Status(StatusNotFound)
+
+	e.GET("/profile/1029/friends/4321").
+		Expect().Status(StatusOK).
+		Body().Equal("Hello id: 1029 looking for friend id: 4321")
+	e.GET("/profile/1029/friends/0").
+		Expect().Status(StatusGatewayTimeout)
+
+	e.GET("/game/Siris/level/302").
+		Expect().Status(StatusOK).
+		Body().Equal("name: Siris | level: 302")
+
+	e.GET("/lowercase/static").
+		Expect().Status(StatusOK).
+		Body().Equal("static and dynamic paths are not conflicted anymore!")
+
+	e.GET("/lowercase/staticlow").
+		Expect().Status(StatusOK).
+		Body().Equal("name should be only lowercase, otherwise this handler will never executed: staticlow")
+
+	e.GET("/lowercase/killer").
+		Expect().Status(StatusOK).
+		Body().Equal("name should be only lowercase, otherwise this handler will never executed: killer")
+
+	e.GET("/single_file/whatthehell.zip").
+		Expect().Status(StatusOK).
+		Body().Equal("file type validates if the parameter value has a form of a file name, got: whatthehell.zip")
+
+	e.GET("/myfiles/whatthehell/get/me").
+		Expect().Status(StatusOK).
+		Body().Equal("path type accepts any number of path segments, path after /myfiles/ is: whatthehell/get/me")
+
 	e.GET("/notfound").Expect().Status(StatusNotFound)
 	e.GET("/favicon.ico").Expect().Status(StatusOK)
+
+	e.GET("/get-payment").Expect().Status(StatusPaymentRequired)
 }

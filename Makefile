@@ -11,7 +11,7 @@ empty:=
 space:= $(empty) $(empty)
 
 # List of pkgs for the project
-PKGS          = $(shell go list ./... | grep -v vendor | grep -v "github.com/go-siris/siris/httptest")
+PKGS          = $(shell go list ./... | grep -v vendor | grep -v "github.com/go-siris/siris/httptest" | grep -v "github.com/go-siris/siris/sessions/" | grep -v "github.com/go-siris/siris/typescript"  | grep -v "github.com/go-siris/siris/websocket")
 PKGSLIST      = $(subst $(space),$(comma),$(PKGS))
 
 # Coverage output: coverage/$PKG/coverage.out
@@ -20,7 +20,7 @@ COVPKGS=$(addsuffix /coverage.out,$(addprefix coverage/,$(PKGS)))
 .FORCE:
 all: testbuild coverage/all.out mergecoverfiles clean
 
-coverage/all.out: testrunbin $(COVPKGS)  
+coverage/all.out: testrunbin $(COVPKGS)
 	echo "mode: set" >$@
 	grep -hv "mode: set" $(wildcard $^) >>$@
 
@@ -35,7 +35,9 @@ testbuild:
 
 .PHONY: mergecoverfiles
 mergecoverfiles:
+	echo "" > coverage.txt
 	cat coverage/all.out >> coverage.txt
+	sed -i '/^$$/d' coverage.txt
 
 .PHONY: testrunbin
 testrunbin:

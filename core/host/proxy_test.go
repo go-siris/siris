@@ -35,7 +35,7 @@ func TestProxy(t *testing.T) {
 	// proxySrv.Downgrade(p.ServeHTTP)
 	// go proxySrv.Run(siris.Addr(":80"), siris.WithoutBanner, siris.WithoutInterruptHandler)
 
-	go host.NewProxy("localhost:2017", u).ListenAndServe() // should be localhost/127.0.0.1:80 but travis throws permission denied.
+	go host.NewProxy("localhost:2018", u).ListenAndServe() // should be localhost/127.0.0.1:80 but travis throws permission denied.
 
 	app := siris.New()
 
@@ -85,7 +85,7 @@ func TestProxy(t *testing.T) {
 	// main server
 	go app.Run(siris.Listener(httptest.NewLocalTLSListener(l)), siris.WithoutBanner)
 
-	e := httptest.NewInsecure(t, httptest.URL("http://localhost:2017"))
+	e := httptest.NewInsecure(t, httptest.URL("http://localhost:2018"))
 	e.GET("/").Expect().Status(siris.StatusOK).Body().Equal(expectedIndex)
 	e.GET("").Expect().Status(siris.StatusOK).Body().Equal(expectedIndex)
 	e.GET("/about").Expect().Status(siris.StatusOK).Body().Equal(expectedAbout)
