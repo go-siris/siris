@@ -25,6 +25,7 @@ import (
 	"github.com/go-siris/siris/context"
 	"github.com/go-siris/siris/core/errors"
 	"github.com/go-siris/siris/core/host"
+	"github.com/go-siris/siris/core/nettools"
 	"github.com/go-siris/siris/core/router"
 	"github.com/go-siris/siris/view"
 )
@@ -48,6 +49,7 @@ func TestSiris(t *testing.T) {
 	initial()
 
 	app := Default()
+	app.Configure(WithJSONInteratorReplacement, EnableReuseport, EnableQUICSupport, WithTimeFormat(time.RFC3339), WithCharset("UTF-8"), WithRemoteAddrHeader("X-Real-Ip"), WithoutRemoteAddrHeader("X-No-Real-Ip"), WithOtherValue("AppName", "SIRIS"))
 	app.AttachView(view.HTML("./", ".html").Binary(get_files, get_names))
 
 	app.OnErrorCode(StatusPaymentRequired, func(ctx context.Context) {
@@ -69,7 +71,7 @@ func TestSiris(t *testing.T) {
 	})
 
 	app.Favicon(staticDir)
-	app.Get("/view", func(ctx context.Context) {
+	app.Get("/view", context.LimitRequestBodySize(1234567890), func(ctx context.Context) {
 		ctx.View("view/parent.html")
 	})
 	app.Get("/", func(ctx context.Context) {
@@ -237,6 +239,11 @@ func TestSiris(t *testing.T) {
 		ctx.StatusCode(StatusPaymentRequired)
 	})
 
+	app.Get("/get-gzip", func(ctx context.Context) {
+		ctx.Gzip(ctx.ClientSupportsGzip())
+		ctx.Text("Gzip")
+	})
+
 	go func() {
 		ch := make(chan os.Signal, 1)
 		signal.Notify(ch,
@@ -280,6 +287,13 @@ func TestSiris(t *testing.T) {
 		go app.Run(TLS("go-siris.com:9443", sslCert, sslKey), WithoutBanner, WithoutInterruptHandler)
 	}
 
+	unicl, err := nettools.UNIX("/tmp/srv.sock", 0777) // see its code to see how you can manually create a new file listener, it's easy.
+	if err != nil {
+		panic(err)
+	}
+
+	go app.Run(Listener(unicl))
+
 	loggerP.Write([]byte("Logger: Servers started"))
 
 	time.Sleep(time.Duration(5 * time.Second))
@@ -315,8 +329,10 @@ func configureHosts(su *host.Supervisor) {
 	su.RegisterOnErrorHook(func(err error) {
 		println("error:" + err.Error())
 	})
-	su.RegisterOnServeHook(func(_ host.TaskHost) {
+	su.RegisterOnServeHook(func(th host.TaskHost) {
 		println("Server Started")
+		println(th.HostURL())
+		println(th.Hostname())
 	})
 	// su.RegisterOnError
 	// su.RegisterOnServe
@@ -502,4 +518,5 @@ func testClient(e *httpexpect.Expect) {
 	e.GET("/favicon.ico").Expect().Status(StatusOK)
 
 	e.GET("/get-payment").Expect().Status(StatusPaymentRequired)
+	e.GET("/get-gzip").Expect().Status(StatusOK)
 }
