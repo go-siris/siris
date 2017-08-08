@@ -129,7 +129,7 @@ func (cfg *Config) fdSetup(fd int, sa syscall.Sockaddr, addr string) error {
 }
 
 func getSockaddr(network, addr string) (sa syscall.Sockaddr, soType int, err error) {
-	if network != "tcp4" && network != "tcp6" {
+	if network != "tcp" && network != "tcp4" && network != "tcp6" {
 		return nil, -1, errors.New("only tcp4 and tcp6 network is supported")
 	}
 
@@ -139,7 +139,7 @@ func getSockaddr(network, addr string) (sa syscall.Sockaddr, soType int, err err
 	}
 
 	switch network {
-	case "tcp4":
+	case "tcp", "tcp4":
 		var sa4 syscall.SockaddrInet4
 		sa4.Port = tcpAddr.Port
 		copy(sa4.Addr[:], tcpAddr.IP.To4())

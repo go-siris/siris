@@ -81,16 +81,10 @@
   revision = "b8bd8b03e4f747e33f092617225e9fa8076c0448"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/esemplastic/unis"
-  packages = [".","logger"]
-  revision = "6e30ed034e8cb31227b24057d030fdd0261bcfc6"
-
-[[projects]]
   name = "github.com/fatih/structs"
   packages = ["."]
   revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
-  version = "v1.0.0"
+  version = "v1.0"
 
 [[projects]]
   branch = "master"
@@ -109,12 +103,6 @@
   name = "github.com/gavv/monotime"
   packages = ["."]
   revision = "47d58efa69556a936a3c15eb2ed42706d968ab01"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/go-siris/middleware-basicauth"
-  packages = ["."]
-  revision = "ee035de6d1660a2fb6b8c94e3df7f0ec278c2994"
 
 [[projects]]
   branch = "master"
@@ -168,7 +156,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "b67201557ab304640cd85b1d9cee4d5fb1d47280"
+  revision = "1cfa233923ea407d7f0c70d7a7d835030678e788"
 
 [[projects]]
   branch = "master"
@@ -210,7 +198,7 @@
   branch = "master"
   name = "github.com/lucas-clemente/quic-go"
   packages = [".","ackhandler","congestion","crypto","flowcontrol","frames","h2quic","handshake","internal/utils","protocol","qerr"]
-  revision = "811315e31a0c190e7a9e86c84102e86c9ed2a072"
+  revision = "18c2ed33d32dcaf4136d8336064e12f8c682534d"
 
 [[projects]]
   branch = "master"
@@ -222,7 +210,7 @@
   branch = "master"
   name = "github.com/microcosm-cc/bluemonday"
   packages = ["."]
-  revision = "e79763773ab6222ca1d5a7cbd9d62d83c1f77081"
+  revision = "336935e80c959bde96101771af9857fd4b7df450"
 
 [[projects]]
   branch = "master"
@@ -385,19 +373,19 @@
   branch = "master"
   name = "go.uber.org/zap"
   packages = [".","buffer","internal/bufferpool","internal/color","internal/exit","zapcore"]
-  revision = "f9487279b09365389590aad0af947af4a4f41f3f"
+  revision = "e68420e36ce87d08dc24bb74bfc316a0a57c5f7b"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert","curve25519","hkdf","pbkdf2"]
-  revision = "558b6879de74bc843225cde5686419267ff707ca"
+  revision = "81db3efc71b576a04b145ca576c0bb9c0fb74d4f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","http2","http2/hpack","idna","lex/httplex","publicsuffix"]
-  revision = "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f"
+  revision = "090ebbdfc2aff44cc6674372b72e02e731f7f0ef"
 
 [[projects]]
   branch = "master"
@@ -414,8 +402,8 @@
 [[projects]]
   name = "gopkg.in/go-siris/tcplisten.v1"
   packages = ["."]
-  revision = "5e007ba2ce3590d49eb170597c65b0b5e3149873"
-  version = "v1.0.4"
+  revision = "cbd0479425c147dfb78ad3eef004583d128f1827"
+  version = "v1.0.5"
 
 [[projects]]
   branch = "v2"
@@ -426,6 +414,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "242be04cbf329e053cdd750f72138b6dbad09b9a50a282cd627e3c31092cd0f4"
+  inputs-digest = "678d120c7de1e8c033dfef72528d554f20d0ed552d719a031508fc1a0c565bb1"
   solver-name = "gps-cdcl"
   solver-version = 1
