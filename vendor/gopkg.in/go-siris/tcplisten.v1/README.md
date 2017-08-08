@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/valyala/tcplisten.svg)](https://travis-ci.org/valyala/tcplisten)
-[![GoDoc](https://godoc.org/github.com/valyala/tcplisten?status.svg)](http://godoc.org/github.com/valyala/tcplisten)
-[![Go Report](https://goreportcard.com/badge/github.com/valyala/tcplisten)](https://goreportcard.com/report/github.com/valyala/tcplisten)
+[![Build Status](https://travis-ci.org/go-siris/tcplisten.svg)](https://travis-ci.org/go-siris/tcplisten)
+[![GoDoc](https://godoc.org/github.com/go-siris/tcplisten?status.svg)](http://godoc.org/github.com/go-siris/tcplisten)
+[![Go Report](https://goreportcard.com/badge/github.com/go-siris/tcplisten)](https://goreportcard.com/report/github.com/go-siris/tcplisten)
 
 
 Package tcplisten provides customizable TCP net.Listener with various
