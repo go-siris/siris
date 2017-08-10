@@ -164,24 +164,24 @@ func createUser(ctx context.Context) {
 | Feature | More Information |
 | --------|------------------|
 | high performance | [benchmark](https://github.com/smallnest/go-web-framework-benchmark) |
-| Authentication | [basicauth](https://github.com/go-siris/siris-examples/beginner/basicauth) [oauth2](https://github.com/go-siris/siris-examples/intermediate/oauth2) TODO JWT|
-| Cache | [cache-markdown](https://github.com/go-siris/siris-examples/intermediate/cache-markdown)  |
-| Certificates | [letsencrypt](https://github.com/go-siris/siris-examples/beginner/listening/listen-letsencrypt/main.go) [custom](https://github.com/go-siris/siris-examples/beginner/listening/listen-tls/main.go) |
+| Authentication | [basicauth](https://github.com/go-siris/siris-examples/tree/master/beginner/basicauth) [oauth2](https://github.com/go-siris/siris-examples/tree/master/intermediate/oauth2) TODO JWT|
+| Cache | [cache-markdown](https://github.com/go-siris/siris-examples/blob/master/intermediate/cache-markdown)  |
+| Certificates | [letsencrypt](https://github.com/go-siris/siris-examples/blob/master/beginner/listening/listen-letsencrypt) [custom](https://github.com/go-siris/siris-examples/blob/master/beginner/listening/listen-tls) |
 | Compression | gzip and deflate |
-| Decode Json, Forms | [json](https://github.com/go-siris/siris-examples/beginner/read-json) [form](https://github.com/go-siris/siris-examples/beginner/read-form)|
-| Encode Json, JsonP, XML, Forms, Markdown | [json](https://github.com/go-siris/siris-examples/beginner/write-json) [cache-markdown](https://github.com/go-siris/siris-examples/intermediate/cache-markdown) |
+| Decode Json, Forms | [json](https://github.com/go-siris/siris-examples/blob/master/beginner/read-json) [form](https://github.com/go-siris/siris-examples/blob/master/beginner/read-form)|
+| Encode Json, JsonP, XML, Forms, Markdown | [json](https://github.com/go-siris/siris-examples/blob/master/beginner/write-json) [cache-markdown](https://github.com/go-siris/siris-examples/blob/master/intermediate/cache-markdown) |
 | Error handling | custom [error handler] [panic handler]|
 | http2 push | TODO add Documentation |
 | Limits | RequestBody TODO add docu|
-| Localization | [i18n](https://github.com/go-siris/siris-examples/intermediate/i18n) |
-| Logger Engines | [file-logger](https://github.com/go-siris/siris-examples/beginner/file-logger) [request-logger](https://github.com/go-siris/siris-examples/beginner/request-logger) |
-| Routing | [routing](https://github.com/go-siris/siris-examples/beginner/routing)  |
-| Sessions | [sessions](https://github.com/go-siris/siris-examples/intermediate/sessions) |
-| Static Files | [file-server](https://github.com/go-siris/siris-examples/beginner/file-server) |
-| Subdomains and Grouping | [subdomains](https://github.com/go-siris/siris-examples/intermediate/subdomains) |
-| Tempalte HTML, django, pug(jade), handlebars, amber | [views](https://github.com/go-siris/siris-examples/intermediate/view) |
+| Localization | [i18n](https://github.com/go-siris/siris-examples/blob/master/intermediate/i18n) |
+| Logger Engines | [file-logger](https://github.com/go-siris/siris-examples/blob/master/beginner/file-logger) [request-logger](https://github.com/go-siris/siris-examples/blob/master/beginner/request-logger) |
+| Routing | [routing](https://github.com/go-siris/siris-examples/tree/master/beginner/routing)  |
+| Sessions | [sessions](https://github.com/go-siris/siris-examples/blob/master/intermediate/sessions) |
+| Static Files | [file-server](https://github.com/go-siris/siris-examples/tree/master/beginner/file-server) |
+| Subdomains and Grouping | [subdomains](https://github.com/go-siris/siris-examples/tree/master/intermediate/subdomains) |
+| Template HTML, django, pug(jade), handlebars, amber | [views](https://github.com/go-siris/siris-examples/blob/master/intermediate/view) |
 | Tooling | Typescript integration + Web IDE |
-| Websockets | [websockets](https://github.com/go-siris/siris-examples/intermediate/websockets) |
+| Websockets | [websockets](https://github.com/go-siris/siris-examples/blob/master/intermediate/websockets) |
 
 # Documentation
 
