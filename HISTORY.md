@@ -20,6 +20,8 @@ Developers are not forced to upgrade if they don't really need it. Upgrade whene
 
 # Su, 03 September 2017 | v7.4.0
 
+You need at last Go1.9
+
 - improve faster json with jsoniter #24, #49
 - feature add QUIC Support for SSL Connections #12
 - feature add QueryString Parser and Creator for structs #29

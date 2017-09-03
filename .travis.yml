@@ -5,7 +5,7 @@ os:
   - osx
 
 go:
-  - go1.8.x
+  - go1.9.x
   - tip
 
 go_import_path: github.com/go-siris/siris

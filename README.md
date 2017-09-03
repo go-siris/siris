@@ -31,7 +31,7 @@ If you're coming from [Node.js](https://nodejs.org) world, this is the [expressj
 
 # Installation
 
-The only requirement is the [Go Programming Language](https://golang.org/dl/), at least version 1.8
+The only requirement is the [Go Programming Language](https://golang.org/dl/), at least version 1.9
 
 ```sh
 $ go get -u github.com/go-siris/siris
