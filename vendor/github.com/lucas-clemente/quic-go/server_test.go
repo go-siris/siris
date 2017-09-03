@@ -11,8 +11,9 @@ import (
 
 	"github.com/lucas-clemente/quic-go/crypto"
 	"github.com/lucas-clemente/quic-go/handshake"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
+	"github.com/lucas-clemente/quic-go/internal/wire"
 	"github.com/lucas-clemente/quic-go/qerr"
 
 	. "github.com/onsi/ginkgo"
@@ -59,11 +60,12 @@ func (s *mockSession) closeRemote(e error) {
 func (s *mockSession) OpenStream() (Stream, error) {
 	return &stream{streamID: 1337}, nil
 }
-func (s *mockSession) AcceptStream() (Stream, error)   { panic("not implemented") }
-func (s *mockSession) OpenStreamSync() (Stream, error) { panic("not implemented") }
-func (s *mockSession) LocalAddr() net.Addr             { panic("not implemented") }
-func (s *mockSession) RemoteAddr() net.Addr            { panic("not implemented") }
-func (*mockSession) Context() context.Context          { panic("not implemented") }
+func (s *mockSession) AcceptStream() (Stream, error)    { panic("not implemented") }
+func (s *mockSession) OpenStreamSync() (Stream, error)  { panic("not implemented") }
+func (s *mockSession) LocalAddr() net.Addr              { panic("not implemented") }
+func (s *mockSession) RemoteAddr() net.Addr             { panic("not implemented") }
+func (*mockSession) Context() context.Context           { panic("not implemented") }
+func (*mockSession) GetVersion() protocol.VersionNumber { return protocol.VersionWhatever }
 
 var _ Session = &mockSession{}
 var _ NonFWSession = &mockSession{}
@@ -93,7 +95,7 @@ var _ = Describe("Server", func() {
 	)
 
 	BeforeEach(func() {
-		conn = &mockPacketConn{}
+		conn = &mockPacketConn{addr: &net.UDPAddr{}}
 		config = &Config{Versions: protocol.SupportedVersions}
 	})
 
@@ -114,7 +116,7 @@ var _ = Describe("Server", func() {
 				errorChan:    make(chan struct{}),
 			}
 			b := &bytes.Buffer{}
-			utils.WriteUint32(b, protocol.VersionNumberToTag(protocol.SupportedVersions[0]))
+			utils.LittleEndian.WriteUint32(b, protocol.VersionNumberToTag(protocol.SupportedVersions[0]))
 			firstPacket = []byte{0x09, 0xf6, 0x19, 0x86, 0x66, 0x9b, 0x9f, 0xfa, 0x4c}
 			firstPacket = append(append(firstPacket, b.Bytes()...), 0x01)
 		})
@@ -125,14 +127,6 @@ var _ = Describe("Server", func() {
 				Port: 1234,
 			}
 			Expect(serv.Addr().String()).To(Equal("192.168.13.37:1234"))
-		})
-
-		It("composes version negotiation packets", func() {
-			expected := append(
-				[]byte{0x01 | 0x08, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
-				[]byte{'Q', '0', '9', '9'}...,
-			)
-			Expect(composeVersionNegotiation(1, []protocol.VersionNumber{99})).To(Equal(expected))
 		})
 
 		It("creates new sessions", func() {
@@ -288,7 +282,7 @@ var _ = Describe("Server", func() {
 			Expect(serv.sessions[connID].(*mockSession).packetCount).To(Equal(1))
 			b := &bytes.Buffer{}
 			// add an unsupported version
-			utils.WriteUint32(b, protocol.VersionNumberToTag(protocol.SupportedVersions[0]+1))
+			utils.LittleEndian.WriteUint32(b, protocol.VersionNumberToTag(protocol.SupportedVersions[0]+1))
 			data := []byte{0x09, 0xf6, 0x19, 0x86, 0x66, 0x9b, 0x9f, 0xfa, 0x4c}
 			data = append(append(data, b.Bytes()...), 0x01)
 			err = serv.handlePacket(nil, nil, data)
@@ -305,7 +299,7 @@ var _ = Describe("Server", func() {
 		})
 
 		It("ignores public resets for unknown connections", func() {
-			err := serv.handlePacket(nil, nil, writePublicReset(999, 1, 1337))
+			err := serv.handlePacket(nil, nil, wire.WritePublicReset(999, 1, 1337))
 			Expect(err).ToNot(HaveOccurred())
 			Expect(serv.sessions).To(BeEmpty())
 		})
@@ -314,7 +308,7 @@ var _ = Describe("Server", func() {
 			err := serv.handlePacket(nil, nil, firstPacket)
 			Expect(serv.sessions).To(HaveLen(1))
 			Expect(serv.sessions[connID].(*mockSession).packetCount).To(Equal(1))
-			err = serv.handlePacket(nil, nil, writePublicReset(connID, 1, 1337))
+			err = serv.handlePacket(nil, nil, wire.WritePublicReset(connID, 1, 1337))
 			Expect(err).ToNot(HaveOccurred())
 			Expect(serv.sessions).To(HaveLen(1))
 			Expect(serv.sessions[connID].(*mockSession).packetCount).To(Equal(1))
@@ -324,7 +318,7 @@ var _ = Describe("Server", func() {
 			err := serv.handlePacket(nil, nil, firstPacket)
 			Expect(serv.sessions).To(HaveLen(1))
 			Expect(serv.sessions[connID].(*mockSession).packetCount).To(Equal(1))
-			data := writePublicReset(connID, 1, 1337)
+			data := wire.WritePublicReset(connID, 1, 1337)
 			err = serv.handlePacket(nil, nil, data[:len(data)-2])
 			Expect(err).ToNot(HaveOccurred())
 			Expect(serv.sessions).To(HaveLen(1))
@@ -333,7 +327,7 @@ var _ = Describe("Server", func() {
 
 		It("doesn't respond with a version negotiation packet if the first packet is too small", func() {
 			b := &bytes.Buffer{}
-			hdr := PublicHeader{
+			hdr := wire.PublicHeader{
 				VersionFlag:     true,
 				ConnectionID:    0x1337,
 				PacketNumber:    1,
@@ -354,6 +348,7 @@ var _ = Describe("Server", func() {
 			Versions:         supportedVersions,
 			AcceptSTK:        acceptSTK,
 			HandshakeTimeout: 1337 * time.Hour,
+			IdleTimeout:      42 * time.Minute,
 		}
 		ln, err := Listen(conn, &tls.Config{}, &config)
 		Expect(err).ToNot(HaveOccurred())
@@ -363,6 +358,7 @@ var _ = Describe("Server", func() {
 		Expect(server.scfg).ToNot(BeNil())
 		Expect(server.config.Versions).To(Equal(supportedVersions))
 		Expect(server.config.HandshakeTimeout).To(Equal(1337 * time.Hour))
+		Expect(server.config.IdleTimeout).To(Equal(42 * time.Minute))
 		Expect(reflect.ValueOf(server.config.AcceptSTK)).To(Equal(reflect.ValueOf(acceptSTK)))
 	})
 
@@ -372,6 +368,7 @@ var _ = Describe("Server", func() {
 		server := ln.(*server)
 		Expect(server.config.Versions).To(Equal(protocol.SupportedVersions))
 		Expect(server.config.HandshakeTimeout).To(Equal(protocol.DefaultHandshakeTimeout))
+		Expect(server.config.IdleTimeout).To(Equal(protocol.DefaultIdleTimeout))
 		Expect(reflect.ValueOf(server.config.AcceptSTK)).To(Equal(reflect.ValueOf(defaultAcceptSTK)))
 	})
 
@@ -398,7 +395,7 @@ var _ = Describe("Server", func() {
 	It("setups and responds with version negotiation", func() {
 		config.Versions = []protocol.VersionNumber{99}
 		b := &bytes.Buffer{}
-		hdr := PublicHeader{
+		hdr := wire.PublicHeader{
 			VersionFlag:     true,
 			ConnectionID:    0x1337,
 			PacketNumber:    1,
@@ -420,7 +417,7 @@ var _ = Describe("Server", func() {
 		Eventually(func() int { return conn.dataWritten.Len() }).ShouldNot(BeZero())
 		Expect(conn.dataWrittenTo).To(Equal(udpAddr))
 		b = &bytes.Buffer{}
-		utils.WriteUint32(b, protocol.VersionNumberToTag(99))
+		utils.LittleEndian.WriteUint32(b, protocol.VersionNumberToTag(99))
 		expected := append(
 			[]byte{0x9, 0x37, 0x13, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 			b.Bytes()...,

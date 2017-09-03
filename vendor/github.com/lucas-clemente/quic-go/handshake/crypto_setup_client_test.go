@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/lucas-clemente/quic-go/crypto"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
 	"github.com/lucas-clemente/quic-go/qerr"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -111,8 +111,11 @@ var _ = Describe("Client Crypto Setup", func() {
 			version,
 			stream,
 			nil,
-			NewConnectionParamatersManager(protocol.PerspectiveClient, version,
+			NewConnectionParamatersManager(
+				protocol.PerspectiveClient,
+				version,
 				protocol.DefaultMaxReceiveStreamFlowControlWindowClient, protocol.DefaultMaxReceiveConnectionFlowControlWindowClient,
+				protocol.DefaultIdleTimeout,
 			),
 			aeadChanged,
 			&TransportParameters{},
@@ -198,7 +201,7 @@ var _ = Describe("Client Crypto Setup", func() {
 			It("detects a downgrade attack", func() {
 				cs.negotiatedVersions = []protocol.VersionNumber{protocol.Version36}
 				b := &bytes.Buffer{}
-				utils.WriteUint32(b, protocol.VersionNumberToTag(protocol.Version35))
+				utils.LittleEndian.WriteUint32(b, protocol.VersionNumberToTag(protocol.Version35))
 				Expect(cs.validateVersionList(b.Bytes())).To(BeFalse())
 			})
 
@@ -211,7 +214,7 @@ var _ = Describe("Client Crypto Setup", func() {
 				cs.negotiatedVersions = []protocol.VersionNumber{protocol.VersionUnsupported, protocol.Version36, protocol.VersionUnsupported}
 				b := &bytes.Buffer{}
 				b.Write([]byte{0, 0, 0, 0})
-				utils.WriteUint32(b, protocol.VersionNumberToTag(protocol.Version36))
+				utils.LittleEndian.WriteUint32(b, protocol.VersionNumberToTag(protocol.Version36))
 				b.Write([]byte{0x13, 0x37, 0x13, 0x37})
 				Expect(cs.validateVersionList(b.Bytes())).To(BeTrue())
 			})
@@ -406,7 +409,7 @@ var _ = Describe("Client Crypto Setup", func() {
 			cs.negotiatedVersions = []protocol.VersionNumber{protocol.Version36}
 			cs.receivedSecurePacket = true
 			b := &bytes.Buffer{}
-			utils.WriteUint32(b, protocol.VersionNumberToTag(protocol.Version36))
+			utils.LittleEndian.WriteUint32(b, protocol.VersionNumberToTag(protocol.Version36))
 			shloMap[TagVER] = b.Bytes()
 			err := cs.handleSHLOMessage(shloMap)
 			Expect(err).ToNot(HaveOccurred())

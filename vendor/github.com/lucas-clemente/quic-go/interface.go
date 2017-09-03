@@ -6,8 +6,14 @@ import (
 	"net"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/protocol"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 )
+
+// The StreamID is the ID of a QUIC stream.
+type StreamID = protocol.StreamID
+
+// A VersionNumber is a QUIC version number.
+type VersionNumber = protocol.VersionNumber
 
 // Stream is the interface implemented by QUIC streams
 type Stream interface {
@@ -20,7 +26,7 @@ type Stream interface {
 	// after a fixed time limit; see SetDeadline and SetWriteDeadline.
 	io.Writer
 	io.Closer
-	StreamID() protocol.StreamID
+	StreamID() StreamID
 	// Reset closes the stream with an error.
 	Reset(error)
 	// The context is canceled as soon as the write-side of the stream is closed.
@@ -48,7 +54,7 @@ type Session interface {
 	// AcceptStream returns the next stream opened by the peer, blocking until one is available.
 	// Since stream 1 is reserved for the crypto stream, the first stream is either 2 (for a client) or 3 (for a server).
 	AcceptStream() (Stream, error)
-	// OpenStream opens a new QUIC stream, returning a special error when the peeer's concurrent stream limit is reached.
+	// OpenStream opens a new QUIC stream, returning a special error when the peer's concurrent stream limit is reached.
 	// New streams always have the smallest possible stream ID.
 	// TODO: Enable testing for the special error
 	OpenStream() (Stream, error)
@@ -86,12 +92,11 @@ type STK struct {
 }
 
 // Config contains all configuration data needed for a QUIC server or client.
-// More config parameters (such as timeouts) will be added soon, see e.g. https://github.com/lucas-clemente/quic-go/issues/441.
 type Config struct {
 	// The QUIC versions that can be negotiated.
 	// If not set, it uses all versions available.
 	// Warning: This API should not be considered stable and will change soon.
-	Versions []protocol.VersionNumber
+	Versions []VersionNumber
 	// Ask the server to truncate the connection ID sent in the Public Header.
 	// This saves 8 bytes in the Public Header in every packet. However, if the IP address of the server changes, the connection cannot be migrated.
 	// Currently only valid for the client.
@@ -100,6 +105,11 @@ type Config struct {
 	// If the timeout is exceeded, the connection is closed.
 	// If this value is zero, the timeout is set to 10 seconds.
 	HandshakeTimeout time.Duration
+	// IdleTimeout is the maximum duration that may pass without any incoming network activity.
+	// This value only applies after the handshake has completed.
+	// If the timeout is exceeded, the connection is closed.
+	// If this value is zero, the timeout is set to 30 seconds.
+	IdleTimeout time.Duration
 	// AcceptSTK determines if an STK is accepted.
 	// It is called with stk = nil if the client didn't send an STK.
 	// If not set, it verifies that the address matches, and that the STK was issued within the last 24 hours.
@@ -107,10 +117,10 @@ type Config struct {
 	AcceptSTK func(clientAddr net.Addr, stk *STK) bool
 	// MaxReceiveStreamFlowControlWindow is the maximum stream-level flow control window for receiving data.
 	// If this value is zero, it will default to 1 MB for the server and 6 MB for the client.
-	MaxReceiveStreamFlowControlWindow protocol.ByteCount
+	MaxReceiveStreamFlowControlWindow uint64
 	// MaxReceiveConnectionFlowControlWindow is the connection-level flow control window for receiving data.
 	// If this value is zero, it will default to 1.5 MB for the server and 15 MB for the client.
-	MaxReceiveConnectionFlowControlWindow protocol.ByteCount
+	MaxReceiveConnectionFlowControlWindow uint64
 	// KeepAlive defines whether this peer will periodically send PING frames to keep the connection alive.
 	KeepAlive bool
 }

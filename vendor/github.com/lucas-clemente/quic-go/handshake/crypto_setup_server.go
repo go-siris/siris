@@ -10,8 +10,8 @@ import (
 	"sync"
 
 	"github.com/lucas-clemente/quic-go/crypto"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
 	"github.com/lucas-clemente/quic-go/qerr"
 )
 
@@ -38,8 +38,8 @@ type cryptoSetupServer struct {
 	secureAEAD                  crypto.AEAD
 	forwardSecureAEAD           crypto.AEAD
 	receivedForwardSecurePacket bool
-	sentSHLO                    bool
 	receivedSecurePacket        bool
+	sentSHLO                    chan struct{} // this channel is closed as soon as the SHLO has been written
 	aeadChanged                 chan<- protocol.EncryptionLevel
 
 	keyDerivation KeyDerivationFunction
@@ -54,10 +54,14 @@ type cryptoSetupServer struct {
 
 var _ CryptoSetup = &cryptoSetupServer{}
 
-// ErrHOLExperiment is returned when the client sends the FHL2 tag in the CHLO
-// this is an expiremnt implemented by Chrome in QUIC 36, which we don't support
+// ErrHOLExperiment is returned when the client sends the FHL2 tag in the CHLO.
+// This is an experiment implemented by Chrome in QUIC 36, which we don't support.
 // TODO: remove this when dropping support for QUIC 36
 var ErrHOLExperiment = qerr.Error(qerr.InvalidCryptoMessageParameter, "HOL experiment. Unsupported")
+
+// ErrNSTPExperiment is returned when the client sends the NSTP tag in the CHLO.
+// This is an experiment implemented by Chrome in QUIC 38, which we don't support at this point.
+var ErrNSTPExperiment = qerr.Error(qerr.InvalidCryptoMessageParameter, "NSTP experiment. Unsupported")
 
 // NewCryptoSetup creates a new CryptoSetup instance for a server
 func NewCryptoSetup(
@@ -89,6 +93,7 @@ func NewCryptoSetup(
 		cryptoStream:         cryptoStream,
 		connectionParameters: connectionParametersManager,
 		acceptSTKCallback:    acceptSTK,
+		sentSHLO:             make(chan struct{}),
 		aeadChanged:          aeadChanged,
 	}, nil
 }
@@ -119,6 +124,9 @@ func (h *cryptoSetupServer) HandleCryptoStream() error {
 func (h *cryptoSetupServer) handleMessage(chloData []byte, cryptoData map[Tag][]byte) (bool, error) {
 	if _, isHOLExperiment := cryptoData[TagFHL2]; isHOLExperiment {
 		return false, ErrHOLExperiment
+	}
+	if _, isNSTPExperiment := cryptoData[TagNSTP]; isNSTPExperiment {
+		return false, ErrNSTPExperiment
 	}
 
 	sniSlice, ok := cryptoData[TagSNI]
@@ -160,10 +168,11 @@ func (h *cryptoSetupServer) handleMessage(chloData []byte, cryptoData map[Tag][]
 		if err != nil {
 			return false, err
 		}
-		_, err = h.cryptoStream.Write(reply)
-		if err != nil {
+		if _, err := h.cryptoStream.Write(reply); err != nil {
 			return false, err
 		}
+		h.aeadChanged <- protocol.EncryptionForwardSecure
+		close(h.sentSHLO)
 		return true, nil
 	}
 
@@ -186,6 +195,8 @@ func (h *cryptoSetupServer) Open(dst, src []byte, packetNumber protocol.PacketNu
 		if err == nil {
 			if !h.receivedForwardSecurePacket { // this is the first forward secure packet we receive from the client
 				h.receivedForwardSecurePacket = true
+				// wait until protocol.EncryptionForwardSecure was sent on the aeadChan
+				<-h.sentSHLO
 				close(h.aeadChanged)
 			}
 			return res, protocol.EncryptionForwardSecure, nil
@@ -430,7 +441,7 @@ func (h *cryptoSetupServer) handleCHLO(sni string, data []byte, cryptoData map[T
 	// add crypto parameters
 	verTag := &bytes.Buffer{}
 	for _, v := range h.supportedVersions {
-		utils.WriteUint32(verTag, protocol.VersionNumberToTag(v))
+		utils.LittleEndian.WriteUint32(verTag, protocol.VersionNumberToTag(v))
 	}
 	replyMap[TagPUBS] = ephermalKex.PublicKey()
 	replyMap[TagSNO] = serverNonce
@@ -444,9 +455,6 @@ func (h *cryptoSetupServer) handleCHLO(sni string, data []byte, cryptoData map[T
 	var reply bytes.Buffer
 	message.Write(&reply)
 	utils.Debugf("Sending %s", message)
-
-	h.aeadChanged <- protocol.EncryptionForwardSecure
-
 	return reply.Bytes(), nil
 }
 

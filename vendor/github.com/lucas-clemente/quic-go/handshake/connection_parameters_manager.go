@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
 	"github.com/lucas-clemente/quic-go/qerr"
 )
 
@@ -64,8 +64,11 @@ var (
 
 // NewConnectionParamatersManager creates a new connection parameters manager
 func NewConnectionParamatersManager(
-	pers protocol.Perspective, v protocol.VersionNumber,
-	maxReceiveStreamFlowControlWindow protocol.ByteCount, maxReceiveConnectionFlowControlWindow protocol.ByteCount,
+	pers protocol.Perspective,
+	v protocol.VersionNumber,
+	maxReceiveStreamFlowControlWindow protocol.ByteCount,
+	maxReceiveConnectionFlowControlWindow protocol.ByteCount,
+	idleTimeout time.Duration,
 ) ConnectionParametersManager {
 	h := &connectionParametersManager{
 		perspective:                           pers,
@@ -78,12 +81,11 @@ func NewConnectionParamatersManager(
 		maxReceiveConnectionFlowControlWindow: maxReceiveConnectionFlowControlWindow,
 	}
 
+	h.idleConnectionStateLifetime = idleTimeout
 	if h.perspective == protocol.PerspectiveServer {
-		h.idleConnectionStateLifetime = protocol.DefaultIdleTimeout
 		h.maxStreamsPerConnection = protocol.MaxStreamsPerConnection                // this is the value negotiated based on what the client sent
 		h.maxIncomingDynamicStreamsPerConnection = protocol.MaxStreamsPerConnection // "incoming" seen from the client's perspective
 	} else {
-		h.idleConnectionStateLifetime = protocol.MaxIdleTimeoutClient
 		h.maxStreamsPerConnection = protocol.MaxStreamsPerConnection                // this is the value negotiated based on what the client sent
 		h.maxIncomingDynamicStreamsPerConnection = protocol.MaxStreamsPerConnection // "incoming" seen from the server's perspective
 	}
@@ -97,28 +99,28 @@ func (h *connectionParametersManager) SetFromMap(params map[Tag][]byte) error {
 	defer h.mutex.Unlock()
 
 	if value, ok := params[TagTCID]; ok && h.perspective == protocol.PerspectiveServer {
-		clientValue, err := utils.ReadUint32(bytes.NewBuffer(value))
+		clientValue, err := utils.LittleEndian.ReadUint32(bytes.NewBuffer(value))
 		if err != nil {
 			return ErrMalformedTag
 		}
 		h.truncateConnectionID = (clientValue == 0)
 	}
 	if value, ok := params[TagMSPC]; ok {
-		clientValue, err := utils.ReadUint32(bytes.NewBuffer(value))
+		clientValue, err := utils.LittleEndian.ReadUint32(bytes.NewBuffer(value))
 		if err != nil {
 			return ErrMalformedTag
 		}
 		h.maxStreamsPerConnection = h.negotiateMaxStreamsPerConnection(clientValue)
 	}
 	if value, ok := params[TagMIDS]; ok {
-		clientValue, err := utils.ReadUint32(bytes.NewBuffer(value))
+		clientValue, err := utils.LittleEndian.ReadUint32(bytes.NewBuffer(value))
 		if err != nil {
 			return ErrMalformedTag
 		}
 		h.maxIncomingDynamicStreamsPerConnection = h.negotiateMaxIncomingDynamicStreamsPerConnection(clientValue)
 	}
 	if value, ok := params[TagICSL]; ok {
-		clientValue, err := utils.ReadUint32(bytes.NewBuffer(value))
+		clientValue, err := utils.LittleEndian.ReadUint32(bytes.NewBuffer(value))
 		if err != nil {
 			return ErrMalformedTag
 		}
@@ -128,7 +130,7 @@ func (h *connectionParametersManager) SetFromMap(params map[Tag][]byte) error {
 		if h.flowControlNegotiated {
 			return ErrFlowControlRenegotiationNotSupported
 		}
-		sendStreamFlowControlWindow, err := utils.ReadUint32(bytes.NewBuffer(value))
+		sendStreamFlowControlWindow, err := utils.LittleEndian.ReadUint32(bytes.NewBuffer(value))
 		if err != nil {
 			return ErrMalformedTag
 		}
@@ -138,7 +140,7 @@ func (h *connectionParametersManager) SetFromMap(params map[Tag][]byte) error {
 		if h.flowControlNegotiated {
 			return ErrFlowControlRenegotiationNotSupported
 		}
-		sendConnectionFlowControlWindow, err := utils.ReadUint32(bytes.NewBuffer(value))
+		sendConnectionFlowControlWindow, err := utils.LittleEndian.ReadUint32(bytes.NewBuffer(value))
 		if err != nil {
 			return ErrMalformedTag
 		}
@@ -163,24 +165,21 @@ func (h *connectionParametersManager) negotiateMaxIncomingDynamicStreamsPerConne
 }
 
 func (h *connectionParametersManager) negotiateIdleConnectionStateLifetime(clientValue time.Duration) time.Duration {
-	if h.perspective == protocol.PerspectiveServer {
-		return utils.MinDuration(clientValue, protocol.MaxIdleTimeoutServer)
-	}
-	return utils.MinDuration(clientValue, protocol.MaxIdleTimeoutClient)
+	return utils.MinDuration(clientValue, h.idleConnectionStateLifetime)
 }
 
 // GetHelloMap gets all parameters needed for the Hello message
 func (h *connectionParametersManager) GetHelloMap() (map[Tag][]byte, error) {
 	sfcw := bytes.NewBuffer([]byte{})
-	utils.WriteUint32(sfcw, uint32(h.GetReceiveStreamFlowControlWindow()))
+	utils.LittleEndian.WriteUint32(sfcw, uint32(h.GetReceiveStreamFlowControlWindow()))
 	cfcw := bytes.NewBuffer([]byte{})
-	utils.WriteUint32(cfcw, uint32(h.GetReceiveConnectionFlowControlWindow()))
+	utils.LittleEndian.WriteUint32(cfcw, uint32(h.GetReceiveConnectionFlowControlWindow()))
 	mspc := bytes.NewBuffer([]byte{})
-	utils.WriteUint32(mspc, h.maxStreamsPerConnection)
+	utils.LittleEndian.WriteUint32(mspc, h.maxStreamsPerConnection)
 	mids := bytes.NewBuffer([]byte{})
-	utils.WriteUint32(mids, protocol.MaxIncomingDynamicStreamsPerConnection)
+	utils.LittleEndian.WriteUint32(mids, protocol.MaxIncomingDynamicStreamsPerConnection)
 	icsl := bytes.NewBuffer([]byte{})
-	utils.WriteUint32(icsl, uint32(h.GetIdleConnectionStateLifetime()/time.Second))
+	utils.LittleEndian.WriteUint32(icsl, uint32(h.GetIdleConnectionStateLifetime()/time.Second))
 
 	return map[Tag][]byte{
 		TagICSL: icsl.Bytes(),

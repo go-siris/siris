@@ -16,8 +16,12 @@ Developers are not forced to upgrade if they don't really need it. Upgrade whene
 
 **How to upgrade**: Open your command-line and execute this command: `go get -u github.com/go-siris/siris`.
 
-# {{release.date}} | v7.4.x
+# {{release.date}} | v7.x.x
 
+# Su, 03 September 2017 | v7.4.0
+
+- improve faster json with jsoniter #24, #49
+- feature add QUIC Support for SSL Connections #12
 - feature add QueryString Parser and Creator for structs #29
 - feature/fix RemoteAddr: only overwrite when options are set #36
 - feature add "Many" route option #27
@@ -25,6 +29,7 @@ Developers are not forced to upgrade if they don't really need it. Upgrade whene
 - feature added jsoniter as drop-in replacement for encoding/json, can be enabled via options #24, #49
 - bugfix sessions with out GC, memory was never cleaned up... #31, #45
 - bugfix race condition #39, #44
+- many more...
 
 # Sa, 24 June 2017 | v7.3.4
 

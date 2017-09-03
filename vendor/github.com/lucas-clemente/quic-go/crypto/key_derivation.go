@@ -5,8 +5,8 @@ import (
 	"crypto/sha256"
 	"io"
 
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
 
 	"golang.org/x/crypto/hkdf"
 )
@@ -42,7 +42,7 @@ func deriveKeys(forwardSecure bool, sharedSecret, nonces []byte, connID protocol
 	} else {
 		info.Write([]byte("QUIC key expansion\x00"))
 	}
-	utils.WriteUint64(&info, uint64(connID))
+	utils.LittleEndian.WriteUint64(&info, uint64(connID))
 	info.Write(chlo)
 	info.Write(scfg)
 	info.Write(cert)

@@ -1,12 +1,14 @@
 package ackhandler
 
 import (
-	"github.com/lucas-clemente/quic-go/frames"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
+	"github.com/lucas-clemente/quic-go/internal/wire"
 	"github.com/lucas-clemente/quic-go/qerr"
 )
 
+// The receivedPacketHistory stores if a packet number has already been received.
+// It does not store packet contents.
 type receivedPacketHistory struct {
 	ranges *utils.PacketIntervalList
 
@@ -84,20 +86,20 @@ func (h *receivedPacketHistory) ReceivedPacket(p protocol.PacketNumber) error {
 	return nil
 }
 
-// DeleteBelow deletes all entries below the leastUnacked packet number
-func (h *receivedPacketHistory) DeleteBelow(leastUnacked protocol.PacketNumber) {
-	h.lowestInReceivedPacketNumbers = utils.MaxPacketNumber(h.lowestInReceivedPacketNumbers, leastUnacked)
+// DeleteUpTo deletes all entries up to (and including) p
+func (h *receivedPacketHistory) DeleteUpTo(p protocol.PacketNumber) {
+	h.lowestInReceivedPacketNumbers = utils.MaxPacketNumber(h.lowestInReceivedPacketNumbers, p+1)
 
 	nextEl := h.ranges.Front()
 	for el := h.ranges.Front(); nextEl != nil; el = nextEl {
 		nextEl = el.Next()
 
-		if leastUnacked > el.Value.Start && leastUnacked <= el.Value.End {
-			for i := el.Value.Start; i < leastUnacked; i++ { // adjust start value of a range
+		if p >= el.Value.Start && p < el.Value.End {
+			for i := el.Value.Start; i <= p; i++ { // adjust start value of a range
 				delete(h.receivedPacketNumbers, i)
 			}
-			el.Value.Start = leastUnacked
-		} else if el.Value.End < leastUnacked { // delete a whole range
+			el.Value.Start = p + 1
+		} else if el.Value.End <= p { // delete a whole range
 			for i := el.Value.Start; i <= el.Value.End; i++ {
 				delete(h.receivedPacketNumbers, i)
 			}
@@ -120,22 +122,22 @@ func (h *receivedPacketHistory) IsDuplicate(p protocol.PacketNumber) bool {
 }
 
 // GetAckRanges gets a slice of all AckRanges that can be used in an AckFrame
-func (h *receivedPacketHistory) GetAckRanges() []frames.AckRange {
+func (h *receivedPacketHistory) GetAckRanges() []wire.AckRange {
 	if h.ranges.Len() == 0 {
 		return nil
 	}
 
-	var ackRanges []frames.AckRange
+	var ackRanges []wire.AckRange
 
 	for el := h.ranges.Back(); el != nil; el = el.Prev() {
-		ackRanges = append(ackRanges, frames.AckRange{FirstPacketNumber: el.Value.Start, LastPacketNumber: el.Value.End})
+		ackRanges = append(ackRanges, wire.AckRange{FirstPacketNumber: el.Value.Start, LastPacketNumber: el.Value.End})
 	}
 
 	return ackRanges
 }
 
-func (h *receivedPacketHistory) GetHighestAckRange() frames.AckRange {
-	ackRange := frames.AckRange{}
+func (h *receivedPacketHistory) GetHighestAckRange() wire.AckRange {
+	ackRange := wire.AckRange{}
 	if h.ranges.Len() > 0 {
 		r := h.ranges.Back().Value
 		ackRange.FirstPacketNumber = r.Start

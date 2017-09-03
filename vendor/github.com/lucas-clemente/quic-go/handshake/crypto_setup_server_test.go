@@ -7,8 +7,8 @@ import (
 	"net"
 
 	"github.com/lucas-clemente/quic-go/crypto"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
 	"github.com/lucas-clemente/quic-go/qerr"
 
 	. "github.com/onsi/ginkgo"
@@ -184,8 +184,11 @@ var _ = Describe("Server Crypto Setup", func() {
 		Expect(err).NotTo(HaveOccurred())
 		version = protocol.SupportedVersions[len(protocol.SupportedVersions)-1]
 		supportedVersions = []protocol.VersionNumber{version, 98, 99}
-		cpm = NewConnectionParamatersManager(protocol.PerspectiveServer, protocol.VersionWhatever,
+		cpm = NewConnectionParamatersManager(
+			protocol.PerspectiveServer,
+			protocol.VersionWhatever,
 			protocol.DefaultMaxReceiveStreamFlowControlWindowServer, protocol.DefaultMaxReceiveConnectionFlowControlWindowServer,
+			protocol.DefaultIdleTimeout,
 		)
 		csInt, err := NewCryptoSetup(
 			protocol.ConnectionID(42),
@@ -264,6 +267,17 @@ var _ = Describe("Server Crypto Setup", func() {
 			Expect(err).To(MatchError(ErrHOLExperiment))
 		})
 
+		It("doesn't support Chrome's no STOP_WAITING experiment", func() {
+			HandshakeMessage{
+				Tag: TagCHLO,
+				Data: map[Tag][]byte{
+					TagNSTP: []byte("foobar"),
+				},
+			}.Write(&stream.dataToRead)
+			err := cs.HandleCryptoStream()
+			Expect(err).To(MatchError(ErrNSTPExperiment))
+		})
+
 		It("generates REJ messages", func() {
 			sourceAddrValid = false
 			response, err := cs.handleInchoateCHLO("", bytes.Repeat([]byte{'a'}, protocol.ClientHelloMinimumSize), nil)
@@ -311,7 +325,7 @@ var _ = Describe("Server Crypto Setup", func() {
 			Expect(response).To(ContainSubstring("SNO\x00"))
 			for _, v := range supportedVersions {
 				b := &bytes.Buffer{}
-				utils.WriteUint32(b, protocol.VersionNumberToTag(v))
+				utils.LittleEndian.WriteUint32(b, protocol.VersionNumberToTag(v))
 				Expect(response).To(ContainSubstring(string(b.Bytes())))
 			}
 			Expect(cs.secureAEAD).ToNot(BeNil())
@@ -339,7 +353,6 @@ var _ = Describe("Server Crypto Setup", func() {
 			Expect(aeadChanged).To(Receive(Equal(protocol.EncryptionSecure)))
 			Expect(stream.dataWritten.Bytes()).To(ContainSubstring("SHLO"))
 			Expect(aeadChanged).To(Receive(Equal(protocol.EncryptionForwardSecure)))
-			Expect(aeadChanged).ToNot(Receive())
 			Expect(aeadChanged).ToNot(BeClosed())
 		})
 
@@ -373,6 +386,7 @@ var _ = Describe("Server Crypto Setup", func() {
 			Expect(stream.dataWritten.Bytes()).ToNot(ContainSubstring("REJ"))
 			Expect(aeadChanged).To(Receive(Equal(protocol.EncryptionSecure)))
 			Expect(aeadChanged).To(Receive(Equal(protocol.EncryptionForwardSecure)))
+			Expect(aeadChanged).ToNot(BeClosed())
 		})
 
 		It("recognizes inchoate CHLOs missing SCID", func() {
@@ -435,7 +449,7 @@ var _ = Describe("Server Crypto Setup", func() {
 		})
 
 		It("detects version downgrade attacks", func() {
-			highestSupportedVersion := supportedVersions[len(protocol.SupportedVersions)-1]
+			highestSupportedVersion := supportedVersions[len(supportedVersions)-1]
 			lowestSupportedVersion := supportedVersions[0]
 			Expect(highestSupportedVersion).ToNot(Equal(lowestSupportedVersion))
 			cs.version = highestSupportedVersion
@@ -543,6 +557,8 @@ var _ = Describe("Server Crypto Setup", func() {
 				TagKEXS: kexs,
 			})
 			Expect(err).ToNot(HaveOccurred())
+			Expect(aeadChanged).To(Receive(Equal(protocol.EncryptionSecure)))
+			close(cs.sentSHLO)
 		}
 
 		Context("null encryption", func() {
@@ -643,8 +659,6 @@ var _ = Describe("Server Crypto Setup", func() {
 				doCHLO()
 				_, _, err := cs.Open(nil, []byte("forward secure encrypted"), 0, []byte{})
 				Expect(err).ToNot(HaveOccurred())
-				Expect(aeadChanged).To(Receive()) // consume the protocol.EncryptionSecure
-				Expect(aeadChanged).To(Receive()) // consume the protocol.EncryptionForwardSecure
 				Expect(aeadChanged).To(BeClosed())
 			})
 		})

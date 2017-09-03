@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/lucas-clemente/quic-go/crypto"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/protocol"
 	"github.com/lucas-clemente/quic-go/qerr"
 )
 
@@ -285,7 +285,7 @@ func (h *cryptoSetupClient) validateVersionList(verTags []byte) bool {
 
 	b := bytes.NewReader(verTags)
 	for _, negotiatedVersion := range h.negotiatedVersions {
-		verTag, err := utils.ReadUint32(b)
+		verTag, err := utils.LittleEndian.ReadUint32(b)
 		if err != nil { // should never occur, since the length was already checked
 			return false
 		}

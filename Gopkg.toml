@@ -64,8 +64,6 @@
 ## what source location any dependent projects specify.
 # source = "https://github.com/myfork/package.git"
 
-
-
 [[constraint]]
   branch = "master"
   name = "github.com/BurntSushi/toml"
@@ -186,18 +184,6 @@
   branch = "master"
   name = "github.com/siddontang/ledisdb"
 
-[[override]]
-  branch = "master"
-  name = "github.com/valyala/fasthttp"
-
-[[override]]
-  branch = "master"
-  name = "go.uber.org/zap"
-
-[[override]]
-  branch = "master"
-  name = "github.com/json-iterator/go"
-
 [[constraint]]
   branch = "master"
   name = "github.com/pasztorpisti/qs"
@@ -223,3 +209,15 @@
   branch = "master"
   name = "github.com/ssdb/gossdb"
   source = "https://github.com/go-siris/gossdb.git"
+
+[[override]]
+  branch = "master"
+  name = "github.com/valyala/fasthttp"
+
+[[override]]
+  branch = "master"
+  name = "go.uber.org/zap"
+
+[[override]]
+  branch = "master"
+  name = "github.com/json-iterator/go"
